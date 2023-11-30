@@ -3,26 +3,25 @@
 import React, { FormEvent, ChangeEvent } from "react";
 import Messages from "./Messages";
 import { Message } from "ai/react";
+import { useChat } from "ai/react";
 
 interface Chat {
-  input: string;
-  handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleMessageSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
-  messages: Message[];
+  raw_case_num: string;
 }
 
-const Chat: React.FC<Chat> = ({
-  input,
-  handleInputChange,
-  handleMessageSubmit,
-  messages,
-}) => {
+const Chat: React.FC<Chat> = ({ raw_case_num }) => {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    body: { filter: raw_case_num },
+  });
+
+  console.log("hahah");
+  console.log(raw_case_num);
   return (
     <div id="chat" className="flex flex-col w-full lg:w-3/5 mr-4 mx-5 lg:mx-0">
       <Messages messages={messages} />
       <>
         <form
-          onSubmit={handleMessageSubmit}
+          onSubmit={handleSubmit}
           className="mt-5 mb-5 relative bg-gray-700 rounded-lg"
         >
           <input
