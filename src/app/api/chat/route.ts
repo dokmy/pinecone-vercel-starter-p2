@@ -15,15 +15,16 @@ export async function POST(req: Request) {
   try {
 
     const { messages, filter} = await req.json()
-    console.log(messages)
-    console.log(filter)
+    console.log("POSTMAN is summoned. Here are my messages and filter: \n")
+    console.log(messages + "\n")
+    console.log(filter + "\n")
     
 
     // Get the last message
     const lastMessage = messages[messages.length - 1]
 
     // Get the context from the last message
-    const context = await getContext(lastMessage.content, '')
+    const context = await getContext(lastMessage.content, '', filter)
 
 
     const prompt = [
