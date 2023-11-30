@@ -18,17 +18,23 @@ export const getContext = async (message: string, namespace: string, filter:stri
   console.log("context.tx is called. Here is my filter: " + filter + "\n")
 
   // Retrieve the matches for the embeddings from the specified namespace
-  const matches = await getMatchesFromEmbeddings(embedding, 3, namespace, filter);
+  const matches = await getMatchesFromEmbeddings(embedding, 5, namespace, filter);
 
   // Filter out the matches that have a score lower than the minimum score
   const qualifyingDocs = matches.filter(m => m.score && m.score > minScore);
+  // console.log("\nStill in context.ts. Here are the qualifyingDocs:\n")
+  // console.log(matches)
 
-  if (!getOnlyText) {
-    // Use a map to deduplicate matches by URL
-    return qualifyingDocs
-  }
+  let text_array: any[] = []
+  matches.map((match) => {
+    const metadata = match.metadata
+    const node_content = JSON.parse(metadata._node_content)
+    const text = node_content.text
+    text_array.push(text)
+    console.log(text_array)
+  })
 
-  let docs = matches ? qualifyingDocs.map(match => (match.metadata as Metadata).chunk) : [];
-  // Join all the chunks of text together, truncate to the maximum number of tokens, and return the result
-  return docs.join("\n").substring(0, maxTokens)
+  const context_text = text_array.join("\n").substring(0, maxTokens)
+  console.log("End of context.ts. Here is the context text that I will send back to the API:\n" + context_text)
+  return context_text
 }
