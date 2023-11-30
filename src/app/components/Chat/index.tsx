@@ -14,8 +14,6 @@ const Chat: React.FC<Chat> = ({ raw_case_num }) => {
     body: { filter: raw_case_num },
   });
 
-  console.log("hahah");
-  console.log(raw_case_num);
   return (
     <div id="chat" className="flex flex-col w-full lg:w-3/5 mr-4 mx-5 lg:mx-0">
       <Messages messages={messages} />

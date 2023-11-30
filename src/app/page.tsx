@@ -28,7 +28,7 @@ const Page: React.FC = () => {
         onClose={() => setModalOpen(false)}
       />
       <div className="flex w-full flex-grow overflow-hidden relative">
-        <Chat raw_case_num="123" />
+        <Chat raw_case_num="123456" />
         <div className="absolute transform translate-x-full transition-transform duration-500 ease-in-out right-0 w-2/3 h-full bg-gray-700 overflow-y-auto lg:static lg:translate-x-0 lg:w-2/5 lg:mx-2 rounded-lg">
           {/* <Context className="" selected={context} /> */}
         </div>

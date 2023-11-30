@@ -14,10 +14,10 @@ export const runtime = 'edge'
 export async function POST(req: Request) {
   try {
 
-    const { messages, body } = await req.json()
-
-    console.log("hahah")
-    console.log(body)
+    const { messages, filter} = await req.json()
+    console.log(messages)
+    console.log(filter)
+    
 
     // Get the last message
     const lastMessage = messages[messages.length - 1]
