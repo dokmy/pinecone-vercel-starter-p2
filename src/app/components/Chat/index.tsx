@@ -13,10 +13,7 @@ interface Chat {
 const Chat: React.FC<Chat> = ({ raw_case_num }) => {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     body: { filter: raw_case_num },
-    // initialMessages: [
-    //   { id: "first msg", role: "system", content: "hey yo whatsup" },
-    // ],
-    initialInput: "hey you whats up",
+    initialInput: "Please summarise this case for me.",
   });
 
   useEffect(() => {
@@ -30,7 +27,7 @@ const Chat: React.FC<Chat> = ({ raw_case_num }) => {
   }, []);
 
   return (
-    <div id="chat" className="flex flex-col w-full lg:w-3/5 mr-4 mx-5 lg:mx-0">
+    <div id="chat" className="flex flex-col w-full h-full lg:mx-0">
       <Messages messages={messages} />
       <>
         <form

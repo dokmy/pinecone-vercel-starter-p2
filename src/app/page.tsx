@@ -9,6 +9,7 @@ import Chat from "@/components/Chat";
 import { useChat } from "ai/react";
 import InstructionModal from "./components/InstructionModal";
 import { AiFillGithub, AiOutlineInfoCircle } from "react-icons/ai";
+import Search from "./components/Search";
 
 const Page: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -28,21 +29,18 @@ const Page: React.FC = () => {
         onClose={() => setModalOpen(false)}
       />
       <div className="flex w-full flex-grow overflow-hidden relative">
-        <Chat raw_case_num="2023_HKCFI_2489" />
-        <div className="absolute transform translate-x-full transition-transform duration-500 ease-in-out right-0 w-2/3 h-full bg-gray-700 overflow-y-auto lg:static lg:translate-x-0 lg:w-2/5 lg:mx-2 rounded-lg">
-          {/* <Context className="" selected={context} /> */}
+        <div className="w-1/5 p-2">
+          <Search />
         </div>
-        <button
-          type="button"
-          className="absolute left-20 transform -translate-x-12 bg-gray-800 text-white rounded-l py-2 px-4 lg:hidden"
-          onClick={(e) => {
-            e.currentTarget.parentElement
-              ?.querySelector(".transform")
-              ?.classList.toggle("translate-x-full");
-          }}
-        >
-          ☰
-        </button>
+        <div className="w-2/5 p-2">
+          <Chat raw_case_num="2023_HKCFI_2489" />
+        </div>
+        <div className="w-2/5 p-2">
+          <Chat raw_case_num="2023_HKCFI_2489" />
+        </div>
+        <div className="w-2/5 p-2">
+          <Chat raw_case_num="2023_HKCFI_2489" />
+        </div>
       </div>
     </div>
   );
