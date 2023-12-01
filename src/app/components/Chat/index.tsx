@@ -28,6 +28,12 @@ const Chat: React.FC<Chat> = ({ raw_case_num }) => {
 
   return (
     <div id="chat" className="flex flex-col w-full h-full lg:mx-0">
+      <div className="border-2 border-gray-600 rounded-lg flex flex-col bg-gray-800 p-3 mb-3 text-gray-200">
+        <span>Date: {raw_case_num}</span>
+        <span>Action no.: {raw_case_num}</span>
+        <span>Neutral Citation: {raw_case_num}</span>
+        <a href="#">Click here to the case</a>
+      </div>
       <Messages messages={messages} />
       <>
         <form

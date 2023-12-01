@@ -4,7 +4,7 @@ import React, { FormEvent, ChangeEvent } from "react";
 
 const Search: React.FC = () => {
   return (
-    <div id="Search" className="flex flex-col w-full border overflow-y-scroll">
+    <div id="Search" className="flex flex-col w-full bg-gray-100">
       <form
         //   onSubmit={handleMessageSubmit}
         className="mt-5 mb-5 relative bg-gray-700 rounded-lg"
