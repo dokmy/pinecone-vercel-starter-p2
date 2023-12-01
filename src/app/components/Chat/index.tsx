@@ -4,6 +4,7 @@ import React, { FormEvent, ChangeEvent } from "react";
 import Messages from "./Messages";
 import { Message } from "ai/react";
 import { useChat } from "ai/react";
+import { useEffect } from "react";
 
 interface Chat {
   raw_case_num: string;
@@ -12,7 +13,21 @@ interface Chat {
 const Chat: React.FC<Chat> = ({ raw_case_num }) => {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     body: { filter: raw_case_num },
+    // initialMessages: [
+    //   { id: "first msg", role: "system", content: "hey yo whatsup" },
+    // ],
+    initialInput: "hey you whats up",
   });
+
+  useEffect(() => {
+    const mockEvent = {
+      preventDefault: () => {},
+      // Add other minimal properties and methods if needed
+    } as unknown as React.FormEvent<HTMLFormElement>;
+
+    handleSubmit(mockEvent);
+    console.log("haha");
+  }, []);
 
   return (
     <div id="chat" className="flex flex-col w-full lg:w-3/5 mr-4 mx-5 lg:mx-0">
