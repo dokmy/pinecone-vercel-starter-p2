@@ -29,22 +29,58 @@ const Page: React.FC = () => {
   const [others, setOthers] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("Relevance");
 
-  console.log({
-    searchQuery,
-    selectedMinDate,
-    selectedMaxDate,
-    cofa,
-    coa,
-    coficivil,
-    coficriminal,
-    cofiprobate,
-    ct,
-    dc,
-    fc,
-    lt,
-    others,
-    sortOption,
-  });
+  const performSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    const filters = [
+      ...cofa,
+      ...coa,
+      ...coficivil,
+      ...coficriminal,
+      ...cofiprobate,
+      ...ct,
+      ...dc,
+      ...fc,
+      ...lt,
+      ...others,
+    ];
+    console.log(
+      "Search performed with query:",
+      searchQuery,
+      selectedMinDate.format("MM/DD/YYYY"),
+      selectedMaxDate.format("MM/DD/YYYY"),
+      filters,
+      sortOption
+    );
+    searchApi(searchQuery, filters);
+  };
+
+  async function searchApi(searchQuery: string, filters: string[]) {
+    try {
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ searchQuery, filters }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log("API response data", data);
+
+      return data;
+    } catch (error) {
+      console.error(
+        "Error during API call:",
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+      throw error;
+    }
+  }
 
   return (
     <div className="flex flex-col justify-between h-screen bg-gray-800 p-2 mx-auto max-w-full">
@@ -91,6 +127,7 @@ const Page: React.FC = () => {
             setOthers={setOthers}
             sortOption={sortOption}
             setSortOption={setSortOption}
+            performSearch={performSearch}
           />
         </div>
         <div className="w-2/5 p-2">

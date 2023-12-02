@@ -1,6 +1,6 @@
 // Search.tsx
 
-import React, { FormEvent, ChangeEvent } from "react";
+import React, { FormEvent, ChangeEvent, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -15,7 +15,8 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-import { useState } from "react";
+import Button from "@mui/material/Button";
+import { Chip } from "@mui/material";
 
 interface SearchProps {
   searchQuery: string;
@@ -46,6 +47,7 @@ interface SearchProps {
   setOthers: React.Dispatch<React.SetStateAction<string[]>>;
   sortOption: string;
   setSortOption: React.Dispatch<React.SetStateAction<string>>;
+  performSearch: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const newTheme = createTheme({
@@ -64,6 +66,20 @@ const newTheme = createTheme({
         label: {
           // Set the color for the label text
           color: "#c2c2c2",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        outlined: {
+          borderColor: "white",
+          color: "white",
+          width: "100%",
+          "&:hover": {
+            borderColor: "green", // Border color on hover
+            color: "green", // Text color on hover
+            fontWeight: 600,
+          },
         },
       },
     },
@@ -99,7 +115,43 @@ const Search: React.FC<SearchProps> = ({
   setOthers,
   sortOption,
   setSortOption,
+  performSearch,
 }) => {
+  const [searchQueryError, setSearchQueryError] = useState(false);
+  const [selectedMinDateError, setSelectedMinDateError] = useState(false);
+  const [selectedMaxDateError, setSelectedMaxDateError] = useState(false);
+  const [sortOptionError, setSortOptionError] = useState(false);
+
+  const checkRequired = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    let hasError = false;
+
+    if (!searchQuery) {
+      setSearchQueryError(true);
+      hasError = true;
+    }
+
+    if (!selectedMinDate) {
+      setSelectedMinDateError(true);
+      hasError = true;
+    }
+
+    if (!selectedMaxDate) {
+      setSelectedMaxDateError(true);
+      hasError = true;
+    }
+
+    if (!sortOption) {
+      setSortOptionError(true);
+      hasError = true;
+    }
+
+    if (!hasError) {
+      performSearch(event);
+    }
+  };
+
   return (
     <div
       id="Search"
@@ -108,240 +160,340 @@ const Search: React.FC<SearchProps> = ({
       <h2 className="text-xl font-semibold font-co text-white">
         Search by situation
       </h2>
-      <div id="search-bar">
-        <ThemeProvider theme={newTheme}>
-          <Box component="form" noValidate autoComplete="off">
-            <div>
-              <TextField
-                id="filled-multiline-static"
-                label="Your search query"
-                multiline
-                rows={4}
-                placeholder="E.g. My client slips and falls in a shopping mall while working..."
-                variant="outlined"
-                fullWidth={true}
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-              />
-            </div>
-          </Box>
-        </ThemeProvider>
-      </div>
 
-      <div id="min-date">
-        <ThemeProvider theme={newTheme}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Minimum date"
-              value={selectedMinDate}
-              onChange={(newValue) => setSelectedMinDate(dayjs(newValue))}
+      {/* start */}
+
+      <ThemeProvider theme={newTheme}>
+        <form onSubmit={checkRequired} noValidate autoComplete="off">
+          <div id="search-bar" className="mb-4">
+            <Box component="div">
+              <div>
+                <TextField
+                  required
+                  error={searchQueryError}
+                  helperText={searchQueryError ? "This field is required" : ""}
+                  id="filled-multiline-static"
+                  label="Your search query"
+                  multiline
+                  rows={4}
+                  placeholder="E.g. My client slips and falls in a shopping mall while working..."
+                  variant="outlined"
+                  fullWidth={true}
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                />
+              </div>
+            </Box>
+          </div>
+
+          <div id="min-date" className="mb-4">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                disableFuture
+                label="Minimum date"
+                value={selectedMinDate}
+                onChange={(newValue) => setSelectedMinDate(dayjs(newValue))}
+              />
+            </LocalizationProvider>
+          </div>
+
+          <div id="max-date" className="mb-4">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                disableFuture
+                label="Maximum date"
+                value={selectedMaxDate}
+                onChange={(newValue) => setSelectedMaxDate(dayjs(newValue))}
+              />
+            </LocalizationProvider>
+          </div>
+
+          <div id="sort-by" className="mb-4">
+            <FormControl>
+              <FormLabel id="sort by">Sort the results by:</FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="Relevance"
+                name="radio-buttons-group"
+                value={sortOption}
+                onChange={(event) => setSortOption(event.target.value)}
+              >
+                <FormControlLabel
+                  value="Relevance"
+                  control={<Radio />}
+                  label="Relevance"
+                />
+                <FormControlLabel
+                  value="Recency"
+                  control={<Radio />}
+                  label="Recency"
+                />
+              </RadioGroup>
+            </FormControl>
+          </div>
+
+          <div id="count-options" className="space-y-4">
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={court_of_final_appeal}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={cofa}
+              onChange={(event, newValue) => setCofa(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Court of Final Appeal"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
             />
-          </LocalizationProvider>
-        </ThemeProvider>
-      </div>
-
-      <div id="max-date">
-        <ThemeProvider theme={newTheme}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Maximum date"
-              value={selectedMaxDate}
-              onChange={(newValue) => setSelectedMaxDate(dayjs(newValue))}
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={court_of_appeal}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={coa}
+              onChange={(event, newValue) => setCoa(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Court of Appeal"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
             />
-          </LocalizationProvider>
-        </ThemeProvider>
-      </div>
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={court_of_first_instance_civil}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={coficivil}
+              onChange={(event, newValue) => setcoficivil(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Court of First Instance - Civil Matters"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={court_of_first_instance_criminal}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={coficriminal}
+              onChange={(event, newValue) => setCoficriminal(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Court of First Instance - Criminal & Appeal Cases"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={court_of_first_instance_probate}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={cofiprobate}
+              onChange={(event, newValue) => setCofiprobate(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Court of First Instance - Probate Matters"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={competition_tribunal}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={ct}
+              onChange={(event, newValue) => setCt(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Competition Tribunal"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={district_court}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={dc}
+              onChange={(event, newValue) => setDc(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="District Court"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={family_court}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={fc}
+              onChange={(event, newValue) => setFc(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Family Court"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={lands_tribunal}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={lt}
+              onChange={(event, newValue) => setLt(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Lands Tribunal"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={court_others}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              value={others}
+              onChange={(event, newValue) => setOthers(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Others"
+                  placeholder="Choose an option"
+                />
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={getTagProps({ index }).key} // Apply key directly
+                  />
+                ))
+              }
+            />
+          </div>
 
-      <div id="sort-by">
-        <ThemeProvider theme={newTheme}>
-          <FormControl>
-            <FormLabel id="sort by">Sort the results by:</FormLabel>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="Relevance"
-              name="radio-buttons-group"
-              value={sortOption}
-              onChange={(event) => setSortOption(event.target.value)}
-            >
-              <FormControlLabel
-                value="Relavance"
-                control={<Radio />}
-                label="Relavance"
-              />
-              <FormControlLabel
-                value="Recency"
-                control={<Radio />}
-                label="Recency"
-              />
-            </RadioGroup>
-          </FormControl>
-        </ThemeProvider>
-      </div>
+          <div id="submit-button" className="mt-4">
+            <Button variant="outlined" type="submit">
+              Search
+            </Button>
+          </div>
+        </form>
+      </ThemeProvider>
 
-      <div id="count-options" className="space-y-4">
-        <ThemeProvider theme={newTheme}>
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={court_of_final_appeal}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={cofa}
-            onChange={(event, newValue) => setCofa(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Court of Final Appeal"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={court_of_appeal}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={coa}
-            onChange={(event, newValue) => setCoa(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Court of Appeal"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={court_of_first_instance_civil}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={coficivil}
-            onChange={(event, newValue) => setcoficivil(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Court of First Instance - Civil Matters"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={court_of_first_instance_criminal}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={coficriminal}
-            onChange={(event, newValue) => setCoficriminal(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Court of First Instance - Criminal & Appeal Cases"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={court_of_first_instance_probate}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={cofiprobate}
-            onChange={(event, newValue) => setCofiprobate(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Court of First Instance - Probate Matters"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={competition_tribunal}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={ct}
-            onChange={(event, newValue) => setCt(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Competition Tribunal"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={district_court}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={dc}
-            onChange={(event, newValue) => setDc(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="District Court"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={family_court}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={fc}
-            onChange={(event, newValue) => setFc(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Family Court"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={lands_tribunal}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={lt}
-            onChange={(event, newValue) => setLt(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Lands Tribunal"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            id="tags-outlined"
-            options={court_others}
-            getOptionLabel={(option) => option}
-            filterSelectedOptions
-            value={others}
-            onChange={(event, newValue) => setOthers(newValue)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Others"
-                placeholder="Choose an option"
-              />
-            )}
-          />
-        </ThemeProvider>
-      </div>
+      {/* end */}
     </div>
   );
 };

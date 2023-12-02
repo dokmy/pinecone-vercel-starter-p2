@@ -7,8 +7,18 @@ export type Metadata = {
   hash: string
 }
 
+interface raw_case_num_filter {
+  raw_case_num: string
+}
+
+interface case_prefix_filter {
+  case_prefix: { "$in": string[]}
+}
+
+type metadata_filter = raw_case_num_filter | case_prefix_filter
+
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
-const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter:string): Promise<ScoredPineconeRecord<Metadata>[]> => {
+const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter?:metadata_filter): Promise<ScoredPineconeRecord<Metadata>[]> => {
   console.log("pinecone.tx is called. Here is my filter: " + filter + "\n")
   
   // Obtain a client for Pinecone
@@ -31,14 +41,19 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
   // Get the namespace
   const pineconeNamespace = index.namespace(namespace ?? '')
 
+  const queryObject:any = {
+    vector: embeddings,
+    topK,
+    includeMetadata: true
+  };
+
+  if (filter){
+    queryObject.filter = filter
+  }
+
   try {
     // Query the index with the defined request
-    const queryResult = await pineconeNamespace.query({
-      vector: embeddings,
-      topK,
-      filter: { raw_case_num: filter},
-      includeMetadata: true,
-    })
+    const queryResult = await pineconeNamespace.query(queryObject)
     console.log("\nHere are the queryResults: " + queryResult.matches)
     return queryResult.matches || []
   } catch (e) {
