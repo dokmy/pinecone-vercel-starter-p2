@@ -12,6 +12,16 @@ import { AiFillGithub, AiOutlineInfoCircle } from "react-icons/ai";
 import Search from "./components/Search";
 import dayjs from "dayjs";
 
+interface search_result {
+  raw_case_num: string;
+  case_title: string;
+  case_date: string;
+  case_court: string;
+  case_neutral_cit: string;
+  case_action_no: string;
+  url: string;
+}
+
 const Page: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,7 +80,34 @@ const Page: React.FC = () => {
 
       const data = await response.json();
 
-      console.log("API response data", data);
+      const deduplicatedResults = data.deduplicatedResults;
+      console.log("API results:", deduplicatedResults);
+
+      const filteredResults = deduplicatedResults.filter(
+        (result: search_result) => {
+          const caseDate = dayjs(result.case_date);
+          return (
+            (caseDate.isSame(selectedMinDate) ||
+              caseDate.isAfter(selectedMinDate)) &&
+            (caseDate.isSame(selectedMaxDate) ||
+              caseDate.isBefore(selectedMaxDate))
+          );
+        }
+      );
+      console.log("Length of API data: ", deduplicatedResults.length);
+      console.log("Filtered results: ", filteredResults.length);
+
+      if (sortOption === "Recency") {
+        filteredResults.sort((a: search_result, b: search_result) => {
+          // Convert case_date strings to Day.js objects for comparison
+          const dateA = dayjs(a.case_date);
+          const dateB = dayjs(b.case_date);
+
+          // Sort in descending order
+          return dateB.diff(dateA);
+        });
+      }
+      console.log("sory by ", filteredResults);
 
       return data;
     } catch (error) {
