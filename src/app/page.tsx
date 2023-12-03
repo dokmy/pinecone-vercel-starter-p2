@@ -171,7 +171,6 @@ const Page: React.FC = () => {
               className="w-2/5 border border-slate-400 min-w-[33%]"
             >
               <Chat
-                key={`${index}-${result.raw_case_num}`}
                 raw_case_num={result.raw_case_num}
                 query={searchQuery}
                 case_date={dayjs(result.case_date).format("DD MMM, YYYY")}
