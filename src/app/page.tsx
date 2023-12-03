@@ -3,7 +3,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState, FormEvent } from "react";
-import { Context } from "@/components/Context";
 import Header from "@/components/Header";
 import Chat from "@/components/Chat";
 import { useChat } from "ai/react";
