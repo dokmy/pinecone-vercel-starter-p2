@@ -95,15 +95,6 @@ const Chat: React.FC<Chat> = ({
             </AccordionDetails>
           </Accordion>
         </div>
-        {/* <div className="flex flex-col border rounded-lg p-3 bg-gray-700 pl-12">
-          <span className="font-semibold font-serif text-xl">{case_title}</span>
-          <span>Date: {case_date}</span>
-          <span>Action no.: {case_action_no}</span>
-          <span>Neutral Citation: {case_neutral_cit}</span>
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            Click here to the case
-          </a>
-        </div> */}
       </div>
       <div className="border-slate-400 bg-slate-800 overflow-y-auto">
         <Messages messages={messages} />

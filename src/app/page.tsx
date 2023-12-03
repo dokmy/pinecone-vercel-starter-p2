@@ -166,7 +166,10 @@ const Page: React.FC = () => {
         </div>
         <div className="flex flex-row overflow-x-auto">
           {filteredResults.slice(0, resultsShown).map((result, index) => (
-            <div className="w-2/5 border border-slate-400 min-w-[33%]">
+            <div
+              key={`${index}-${result.raw_case_num}`}
+              className="w-2/5 border border-slate-400 min-w-[33%]"
+            >
               <Chat
                 key={`${index}-${result.raw_case_num}`}
                 raw_case_num={result.raw_case_num}
