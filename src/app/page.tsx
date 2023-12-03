@@ -39,7 +39,8 @@ const Page: React.FC = () => {
   const [lt, setLt] = useState<string[]>([]);
   const [others, setOthers] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("Relevance");
-  const [filteredResults, setFilteredResults] = useState<any[]>([]);
+  const [filteredResults, setFilteredResults] = useState<search_result[]>([]);
+  const [resultsShown, setResultsShown] = useState<number>(3);
 
   const performSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -124,9 +125,13 @@ const Page: React.FC = () => {
   console.log("Here is the filteredResults: ", filteredResults);
   return (
     <div className="flex flex-col justify-between h-screen bg-gray-800  mx-auto max-w-full">
-      <Header />
+      <Header
+        filteredResults={filteredResults}
+        resultsShown={resultsShown}
+        setResultsShown={setResultsShown}
+      />
       <div className="flex w-full flex-grow overflow-hidden relative">
-        <div className="w-1/4 p-2 border-r">
+        <div className="w-1/4 min-w-[20%] p-2 border-r border-slate-400">
           <Search
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -159,20 +164,22 @@ const Page: React.FC = () => {
             performSearch={performSearch}
           />
         </div>
-
-        {filteredResults.slice(0, 3).map((result, index) => (
-          <div className="w-2/5">
-            <Chat
-              key={`${index}-${result.raw_case_num}`}
-              raw_case_num={result.raw_case_num}
-              query={searchQuery}
-              case_date={dayjs(result.case_date).format("DD MMM, YYYY")}
-              case_action_no={result.case_action_no}
-              case_neutral_cit={result.case_neutral_cit}
-              url={result.url}
-            />
-          </div>
-        ))}
+        <div className="flex flex-row overflow-x-auto">
+          {filteredResults.slice(0, resultsShown).map((result, index) => (
+            <div className="w-2/5 border border-slate-400 min-w-[33%]">
+              <Chat
+                key={`${index}-${result.raw_case_num}`}
+                raw_case_num={result.raw_case_num}
+                query={searchQuery}
+                case_date={dayjs(result.case_date).format("DD MMM, YYYY")}
+                case_action_no={result.case_action_no}
+                case_neutral_cit={result.case_neutral_cit}
+                url={result.url}
+                case_title={result.case_title}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
