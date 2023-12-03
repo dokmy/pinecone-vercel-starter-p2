@@ -3,18 +3,18 @@ import { getMatchesFromEmbeddings } from "./pinecone";
 import { getEmbeddings } from './embeddings'
 import { filter } from "cheerio/lib/api/traversing";
 
-export type Metadata = {
-  url: string,
-  text: string,
-  chunk: string,
-}
+// export type Metadata = {
+//   url: string,
+//   text: string,
+//   chunk: string,
+// }
 
 interface raw_case_num_filter {
   raw_case_num: string
 }
 
 // The function `getContext` is used to retrieve the context of a given message
-export const getContext = async (message: string, namespace: string, filter:string, maxTokens = 3000, minScore = 0.7, getOnlyText = true): Promise<string | ScoredVector[]> => {
+export const getContext = async (message: string, namespace: string, filter:string, maxTokens = 3000, minScore = 0.7, getOnlyText = true): Promise<any> => {
 
   // Get the embeddings of the input message
   const embedding = await getEmbeddings(message);

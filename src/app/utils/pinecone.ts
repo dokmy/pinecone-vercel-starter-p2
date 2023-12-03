@@ -1,11 +1,11 @@
 import { Pinecone, type ScoredPineconeRecord } from "@pinecone-database/pinecone";
 
-export type Metadata = {
-  url: string,
-  text: string,
-  chunk: string,
-  hash: string
-}
+// export type Metadata = {
+//   url: string,
+//   text: string,
+//   chunk: string,
+//   hash: string
+// }
 
 interface raw_case_num_filter {
   raw_case_num: string
@@ -18,7 +18,7 @@ interface case_prefix_filter {
 type metadata_filter = raw_case_num_filter | case_prefix_filter
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
-const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter?:metadata_filter): Promise<ScoredPineconeRecord<Metadata>[]> => {
+const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter?:metadata_filter): Promise<any[]> => {
   console.log("pinecone.tx is called. Here is my filter: " + filter + "\n")
   
   // Obtain a client for Pinecone
@@ -36,7 +36,8 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
   }
 
   // Get the Pinecone index
-  const index = pinecone!.Index<Metadata>(indexName);
+  // const index = pinecone!.Index<Metadata>(indexName);
+  const index = pinecone!.Index(indexName);
 
   // Get the namespace
   const pineconeNamespace = index.namespace(namespace ?? '')
