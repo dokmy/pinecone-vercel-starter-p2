@@ -5,6 +5,7 @@ import Messages from "./Messages";
 import { Message } from "ai/react";
 import { useChat } from "ai/react";
 import { useEffect } from "react";
+import "src/app/globals.css";
 
 interface Chat {
   raw_case_num: string;
@@ -51,7 +52,7 @@ const Chat: React.FC<Chat> = ({
           </a>
         </div>
       </div>
-      <div className="border-r bg-slate-800 overflow-scroll">
+      <div className="border-r bg-slate-800 overflow-y-auto">
         <Messages messages={messages} />
       </div>
 
