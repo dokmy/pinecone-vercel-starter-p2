@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       prompt = [
         {
           role: 'system',
-          content: `Start your answer by saying: Hello Adrien. Here are the context information:
+          content: `Here are the context information:
         START CONTEXT BLOCK
         ${context}
         END OF CONTEXT BLOCK
