@@ -11,6 +11,7 @@ import InstructionModal from "./components/InstructionModal";
 import { AiFillGithub, AiOutlineInfoCircle } from "react-icons/ai";
 import Search from "./components/Search";
 import dayjs from "dayjs";
+import { url } from "inspector";
 
 interface search_result {
   raw_case_num: string;
@@ -38,6 +39,7 @@ const Page: React.FC = () => {
   const [lt, setLt] = useState<string[]>([]);
   const [others, setOthers] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("Relevance");
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
 
   const performSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -95,7 +97,7 @@ const Page: React.FC = () => {
         }
       );
       console.log("Length of API data: ", deduplicatedResults.length);
-      console.log("Filtered results: ", filteredResults.length);
+      console.log("Filtered results: ", filteredResults);
 
       if (sortOption === "Recency") {
         filteredResults.sort((a: search_result, b: search_result) => {
@@ -109,7 +111,15 @@ const Page: React.FC = () => {
       }
       console.log("sory by ", filteredResults);
 
-      return data;
+      setFilteredResults(filteredResults);
+
+      // const rawCaseNums_to_use = filteredResults.map(
+      //   (item: search_result) => item.raw_case_num
+      // );
+
+      // setRawCaseNums(rawCaseNums_to_use);
+
+      // return rawCaseNums;
     } catch (error) {
       console.error(
         "Error during API call:",
@@ -119,6 +129,7 @@ const Page: React.FC = () => {
     }
   }
 
+  console.log("Here is the filteredResults: ", filteredResults);
   return (
     <div className="flex flex-col justify-between h-screen bg-gray-800 p-2 mx-auto max-w-full">
       <Header className="my-5" />
@@ -167,15 +178,20 @@ const Page: React.FC = () => {
             performSearch={performSearch}
           />
         </div>
-        <div className="w-2/5 p-2">
-          <Chat raw_case_num="2023_HKCFI_2489" />
-        </div>
-        <div className="w-2/5 p-2">
-          <Chat raw_case_num="2023_HKCFI_2489" />
-        </div>
-        <div className="w-2/5 p-2">
-          <Chat raw_case_num="2023_HKCFI_2489" />
-        </div>
+
+        {filteredResults.slice(0, 3).map((result, index) => (
+          <div className="w-2/5 p-2">
+            <Chat
+              key={`${index}-${result.raw_case_num}`}
+              raw_case_num={result.raw_case_num}
+              query={searchQuery}
+              case_date={dayjs(result.case_date).format("DD MMM, YYYY")}
+              case_action_no={result.case_action_no}
+              case_neutral_cit={result.case_neutral_cit}
+              url={result.url}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

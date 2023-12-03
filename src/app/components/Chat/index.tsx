@@ -8,12 +8,26 @@ import { useEffect } from "react";
 
 interface Chat {
   raw_case_num: string;
+  query: string;
+  case_date: string;
+  case_action_no: string;
+  case_neutral_cit: string;
+  url: string;
 }
 
-const Chat: React.FC<Chat> = ({ raw_case_num }) => {
+const Chat: React.FC<Chat> = ({
+  raw_case_num,
+  query,
+  case_date,
+  case_action_no,
+  case_neutral_cit,
+  url,
+}) => {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     body: { filter: raw_case_num },
-    initialInput: "Please summarise this case for me.",
+    initialInput:
+      "Please first summarise this case for me and then explain why this case is relevant to my siutation as follow: " +
+      query,
   });
 
   useEffect(() => {
@@ -21,18 +35,19 @@ const Chat: React.FC<Chat> = ({ raw_case_num }) => {
       preventDefault: () => {},
       // Add other minimal properties and methods if needed
     } as unknown as React.FormEvent<HTMLFormElement>;
-
     handleSubmit(mockEvent);
     console.log("haha");
-  }, []);
+  }, [raw_case_num, query]);
 
   return (
     <div id="chat" className="flex flex-col w-full h-full lg:mx-0">
       <div className="border-2 border-gray-600 rounded-lg flex flex-col bg-gray-800 p-3 mb-3 text-gray-200">
-        <span>Date: {raw_case_num}</span>
-        <span>Action no.: {raw_case_num}</span>
-        <span>Neutral Citation: {raw_case_num}</span>
-        <a href="#">Click here to the case</a>
+        <span>Date: {case_date}</span>
+        <span>Action no.: {case_action_no}</span>
+        <span>Neutral Citation: {case_neutral_cit}</span>
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Click here to the case
+        </a>
       </div>
       <Messages messages={messages} />
       <>
