@@ -157,10 +157,6 @@ const Search: React.FC<SearchProps> = ({
       id="Search"
       className="flex flex-col w-full bg-gray-800 space-y-4 overflow-y-scroll h-full p-2"
     >
-      <h2 className="text-xl font-semibold font-co text-white">
-        Search by situation
-      </h2>
-
       {/* start */}
 
       <ThemeProvider theme={newTheme}>
@@ -175,7 +171,7 @@ const Search: React.FC<SearchProps> = ({
                   id="filled-multiline-static"
                   label="Your search query"
                   multiline
-                  rows={4}
+                  rows={8}
                   placeholder="E.g. My client slips and falls in a shopping mall while working..."
                   variant="outlined"
                   fullWidth={true}

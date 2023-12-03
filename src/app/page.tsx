@@ -112,14 +112,6 @@ const Page: React.FC = () => {
       console.log("sory by ", filteredResults);
 
       setFilteredResults(filteredResults);
-
-      // const rawCaseNums_to_use = filteredResults.map(
-      //   (item: search_result) => item.raw_case_num
-      // );
-
-      // setRawCaseNums(rawCaseNums_to_use);
-
-      // return rawCaseNums;
     } catch (error) {
       console.error(
         "Error during API call:",
@@ -131,21 +123,10 @@ const Page: React.FC = () => {
 
   console.log("Here is the filteredResults: ", filteredResults);
   return (
-    <div className="flex flex-col justify-between h-screen bg-gray-800 p-2 mx-auto max-w-full">
-      <Header className="my-5" />
-      <button
-        onClick={() => setModalOpen(true)}
-        className="fixed right-4 top-4 md:right-6 md:top-6 text-xl text-white animate-pulse-once info-button"
-      >
-        <AiOutlineInfoCircle />
-      </button>
-
-      <InstructionModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-      />
+    <div className="flex flex-col justify-between h-screen bg-gray-800  mx-auto max-w-full">
+      <Header />
       <div className="flex w-full flex-grow overflow-hidden relative">
-        <div className="w-1/3 p-2">
+        <div className="w-1/4 p-2 border-r">
           <Search
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
@@ -180,7 +161,7 @@ const Page: React.FC = () => {
         </div>
 
         {filteredResults.slice(0, 3).map((result, index) => (
-          <div className="w-2/5 p-2">
+          <div className="w-2/5">
             <Chat
               key={`${index}-${result.raw_case_num}`}
               raw_case_num={result.raw_case_num}

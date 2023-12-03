@@ -41,31 +41,35 @@ const Chat: React.FC<Chat> = ({
 
   return (
     <div id="chat" className="flex flex-col w-full h-full lg:mx-0">
-      <div className="border-2 border-gray-600 rounded-lg flex flex-col bg-gray-800 p-3 mb-3 text-gray-200">
-        <span>Date: {case_date}</span>
-        <span>Action no.: {case_action_no}</span>
-        <span>Neutral Citation: {case_neutral_cit}</span>
-        <a href={url} target="_blank" rel="noopener noreferrer">
-          Click here to the case
-        </a>
+      <div className="flex flex-col bg-gray-800 p-3 text-gray-200 border-b border-r">
+        <div className="flex flex-col border rounded-lg p-3 bg-gray-700">
+          <span>Date: {case_date}</span>
+          <span>Action no.: {case_action_no}</span>
+          <span>Neutral Citation: {case_neutral_cit}</span>
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            Click here to the case
+          </a>
+        </div>
       </div>
-      <Messages messages={messages} />
-      <>
-        <form
-          onSubmit={handleSubmit}
-          className="mt-5 mb-5 relative bg-gray-700 rounded-lg"
-        >
-          <input
-            type="text"
-            className="input-glow appearance-none border rounded w-full py-2 px-3 text-gray-200 leading-tight focus:outline-none focus:shadow-outline pl-3 pr-10 bg-gray-600 border-gray-600 transition-shadow duration-200"
-            value={input}
-            onChange={handleInputChange}
-          />
+      <div className="border-r bg-slate-800 overflow-scroll">
+        <Messages messages={messages} />
+      </div>
 
-          <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-            Press ⮐ to send
-          </span>
-        </form>
+      <>
+        <div className="border">
+          <form onSubmit={handleSubmit} className="mt-1 mb-1 relative p-3">
+            <input
+              type="text"
+              className="input-glow appearance-none border rounded w-full py-2 px-3 text-gray-200 leading-tight focus:outline-none focus:shadow-outline pl-3 pr-10 bg-gray-700 border-gray-700 transition-shadow duration-200 h-16"
+              value={input}
+              onChange={handleInputChange}
+            />
+
+            <span className="absolute inset-y-0 right-3 flex items-center pr-3 pointer-events-none text-gray-400">
+              Press ⮐ to send
+            </span>
+          </form>
+        </div>
       </>
     </div>
   );
