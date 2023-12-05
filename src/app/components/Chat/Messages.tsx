@@ -22,6 +22,7 @@ export default function Messages({ messages }: { messages: Message[] }) {
     }
   };
 
+  console.log(messages);
   return (
     <div className="flex flex-col bg-gray-700 leading-7">
       {messages.map((msg, index) => (
@@ -38,8 +39,13 @@ export default function Messages({ messages }: { messages: Message[] }) {
           >
             {msg.role === "assistant" ? "🤖" : "🧑‍💻"}
           </div>
-          <div className="ml-4 flex items-center text-gray-200 pr-7">
-            {msg.content}
+          <div className="ml-4 flex flex-col items-center text-gray-200 pr-7">
+            {msg.content.split("\n").map((line, i) => (
+              <span key={i}>
+                {line}
+                <br></br>
+              </span>
+            ))}
           </div>
           <div
             onClick={() => handleIconClick(msg.content, index)}

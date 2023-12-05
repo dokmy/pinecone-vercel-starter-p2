@@ -15,9 +15,9 @@ export async function POST(req: Request) {
   try {
 
     const { messages, filter} = await req.json()
-    console.log("POSTMAN is summoned. Here are my messages and filter: \n")
-    console.log(messages + "\n")
-    console.log(filter + "\n")
+    // console.log("POSTMAN is summoned. Here are my messages and filter: \n")
+    // console.log(messages + "\n")
+    // console.log(filter + "\n")
     
 
     // Get the last message
@@ -26,9 +26,8 @@ export async function POST(req: Request) {
     // Get the context from the last message
     const context = await getContext(lastMessage.content, '', filter)
 
-    let prompt
-    if (filter) {
-      prompt = [
+
+      let prompt = [
         {
           role: 'system',
           content: `Here are the context information:
@@ -39,14 +38,6 @@ export async function POST(req: Request) {
         `,
         },
       ]
-    } else {
-      prompt = [
-        {
-          role: 'system',
-          content: ``,
-        },
-      ]
-    }
     
 
     // Ask OpenAI for a streaming chat completion given the prompt
@@ -56,9 +47,12 @@ export async function POST(req: Request) {
       messages: [...prompt, ...messages.filter((message: Message) => message.role === 'user')]
     })
     // Convert the response into a friendly text-stream
-    const stream = OpenAIStream(response)
 
-    console.log(response)
+    console.log(response.statusText)
+
+
+    const stream = OpenAIStream(response)
+    
     // Respond with the stream
     return new StreamingTextResponse(stream)
   } catch (e) {

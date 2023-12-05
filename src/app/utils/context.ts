@@ -37,7 +37,7 @@ export const getContext = async (message: string, namespace: string, filter:stri
     const node_content = JSON.parse(metadata._node_content)
     const text = node_content.text
     text_array.push(text)
-    console.log(text_array)
+    // console.log(text_array)
   })
 
   const context_text = text_array.join("\n").substring(0, maxTokens)
