@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Pinecone - Vercel AI SDK Example",
-  description: "Pinecone - Vercel AI SDK Example",
+  title: "FastLegal - Supercharge your Legal Research.",
+  description: "AI-Powered & Chat-Based Seach Engine",
 };
 
 import "../global.css";
