@@ -1,4 +1,4 @@
-In this example, we'll build a full-stack application that uses Retrieval Augmented Generation (RAG) powered by [Pinecone](https://pinecone.io) to deliver accurate and contextually relevant responses in a chatbot.
+<!-- In this example, we'll build a full-stack application that uses Retrieval Augmented Generation (RAG) powered by [Pinecone](https://pinecone.io) to deliver accurate and contextually relevant responses in a chatbot.
 
 RAG is a powerful tool that combines the benefits of retrieval-based models and generative models. Unlike traditional chatbots that can struggle with maintaining up-to-date information or accessing domain-specific knowledge, a RAG-based chatbot uses a knowledge base created from crawled URLs to provide contextually relevant responses.
 
@@ -307,7 +307,12 @@ The helper methods fetchPage, parseHtml, and extractUrls respectively handle fet
 To tie things together, we'll create a seed function that will use the crawler to seed the knowledge base. In this portion of the code, we'll initialize the crawl and fetch a given URL, then split it's content into chunks, and finally embed and index the chunks in Pinecone.
 
 ```ts
-async function seed(url: string, limit: number, indexName: string, options: SeedOptions) {
+async function seed(
+  url: string,
+  limit: number,
+  indexName: string,
+  options: SeedOptions
+) {
   try {
     // Initialize the Pinecone client
     const pinecone = new Pinecone();
@@ -319,18 +324,22 @@ async function seed(url: string, limit: number, indexName: string, options: Seed
     const crawler = new Crawler(1, limit || 100);
 
     // Crawl the given URL and get the pages
-    const pages = await crawler.crawl(url) as Page[];
+    const pages = (await crawler.crawl(url)) as Page[];
 
     // Choose the appropriate document splitter based on the splitting method
-    const splitter: DocumentSplitter = splittingMethod === 'recursive' ?
-      new RecursiveCharacterTextSplitter({ chunkSize, chunkOverlap }) : new MarkdownTextSplitter({});
+    const splitter: DocumentSplitter =
+      splittingMethod === "recursive"
+        ? new RecursiveCharacterTextSplitter({ chunkSize, chunkOverlap })
+        : new MarkdownTextSplitter({});
 
     // Prepare documents by splitting the pages
-    const documents = await Promise.all(pages.map(page => prepareDocument(page, splitter)));
+    const documents = await Promise.all(
+      pages.map((page) => prepareDocument(page, splitter))
+    );
 
     // Create Pinecone index if it does not exist
     const indexList = await pinecone.listIndexes();
-    const indexExists = indexList.some(index => index.name === indexName)
+    const indexExists = indexList.some((index) => index.name === indexName);
     if (!indexExists) {
       await pinecone.createIndex({
         name: indexName,
@@ -339,13 +348,13 @@ async function seed(url: string, limit: number, indexName: string, options: Seed
       });
     }
 
-    const index = pinecone.Index(indexName)
+    const index = pinecone.Index(indexName);
 
     // Get the vector embeddings for the documents
     const vectors = await Promise.all(documents.flat().map(embedDocument));
 
     // Upsert vectors into the Pinecone index
-    await chunkedUpsert(index!, vectors, '', 10);
+    await chunkedUpsert(index!, vectors, "", 10);
 
     // Return the first document
     return documents[0];
@@ -389,26 +398,30 @@ Now our backend is able to crawl a given URL, embed the content and index the em
 To retrieve the most relevant documents from the index, we'll use the `query` function in the Pinecone SDK. This function takes a vector and returns the most similar vectors from the index. We'll use this function to retrieve the most relevant documents from the index, given some embeddings.
 
 ```ts
-const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string): Promise<ScoredPineconeRecord<Metadata>[]> => {
+const getMatchesFromEmbeddings = async (
+  embeddings: number[],
+  topK: number,
+  namespace: string
+): Promise<ScoredPineconeRecord<Metadata>[]> => {
   // Obtain a client for Pinecone
   const pinecone = new Pinecone();
 
-  const indexName: string = process.env.PINECONE_INDEX || '';
-  if (indexName === '') {
-    throw new Error('PINECONE_INDEX environment variable not set')
+  const indexName: string = process.env.PINECONE_INDEX || "";
+  if (indexName === "") {
+    throw new Error("PINECONE_INDEX environment variable not set");
   }
 
   // Retrieve the list of indexes to check if expected index exists
-  const indexes = await pinecone.listIndexes()
-  if (indexes.filter(i => i.name === indexName).length !== 1) {
-    throw new Error(`Index ${indexName} does not exist`)
+  const indexes = await pinecone.listIndexes();
+  if (indexes.filter((i) => i.name === indexName).length !== 1) {
+    throw new Error(`Index ${indexName} does not exist`);
   }
 
   // Get the Pinecone index
   const index = pinecone!.Index<Metadata>(indexName);
 
   // Get the namespace
-  const pineconeNamespace = index.namespace(namespace ?? '')
+  const pineconeNamespace = index.namespace(namespace ?? "");
 
   try {
     // Query the index with the defined request
@@ -416,14 +429,14 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
       vector: embeddings,
       topK,
       includeMetadata: true,
-    })
-    return queryResult.matches || []
+    });
+    return queryResult.matches || [];
   } catch (e) {
     // Log the error and throw it
-    console.log("Error querying embeddings: ", e)
-    throw new Error(`Error querying embeddings: ${e}`)
+    console.log("Error querying embeddings: ", e);
+    throw new Error(`Error querying embeddings: ${e}`);
   }
-}
+};
 ```
 
 The function takes in embeddings, a topK parameter, and a namespace, and returns the topK matches from the Pinecone index. It first gets a Pinecone client, checks if the desired index exists in the list of indexes, and throws an error if not. Then it gets the specific Pinecone index. The function then queries the Pinecone index with the defined request and returns the matches.
@@ -553,23 +566,25 @@ useEffect(() => {
 }, [messages, gotMessages]);
 ```
 
-## Running tests 
+## Running tests
 
-The pinecone-vercel-starter uses [Playwright](https://playwright.dev) for end to end testing. 
+The pinecone-vercel-starter uses [Playwright](https://playwright.dev) for end to end testing.
 
-To run all the tests: 
+To run all the tests:
 
 ```
 npm run test:e2e
 ```
 
-By default, when running locally, if errors are encountered, Playwright will open an HTML report showing which 
+By default, when running locally, if errors are encountered, Playwright will open an HTML report showing which
 tests failed and for which browser drivers.
 
-## Displaying test reports locally 
+## Displaying test reports locally
 
-To display the latest test report locally, run: 
+To display the latest test report locally, run:
+
 ```
 npm run test:show
 ```
 
+-->
