@@ -1,5 +1,3 @@
-// page.tsx
-
 "use client";
 
 import React, { useEffect, useRef, useState, FormEvent } from "react";
@@ -11,6 +9,8 @@ import { AiFillGithub, AiOutlineInfoCircle } from "react-icons/ai";
 import Search from "./components/Search";
 import dayjs from "dayjs";
 import { url } from "inspector";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { Button } from "@mui/material";
 
 interface search_result {
   raw_case_num: string;
@@ -40,6 +40,8 @@ const Page: React.FC = () => {
   const [sortOption, setSortOption] = useState("Relevance");
   const [filteredResults, setFilteredResults] = useState<search_result[]>([]);
   const [resultsShown, setResultsShown] = useState<number>(3);
+
+  const { user, isLoading, error } = useUser();
 
   const performSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -122,66 +124,78 @@ const Page: React.FC = () => {
   }
 
   console.log("Here is the filteredResults: ", filteredResults);
-  return (
-    <div className="flex flex-col justify-between h-screen bg-gray-800  mx-auto max-w-full">
-      <Header
-        filteredResults={filteredResults}
-        resultsShown={resultsShown}
-        setResultsShown={setResultsShown}
-      />
-      <div className="flex w-full flex-grow overflow-hidden relative">
-        <div className="w-1/4 min-w-[20%] p-2 border-r border-slate-400">
-          <Search
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedMinDate={selectedMinDate}
-            setSelectedMinDate={setSelectedMinDate}
-            selectedMaxDate={selectedMaxDate}
-            setSelectedMaxDate={setSelectedMaxDate}
-            cofa={cofa}
-            setCofa={setCofa}
-            coa={coa}
-            setCoa={setCoa}
-            coficivil={coficivil}
-            setcoficivil={setcoficivil}
-            coficriminal={coficriminal}
-            setCoficriminal={setCoficriminal}
-            cofiprobate={cofiprobate}
-            setCofiprobate={setCofiprobate}
-            ct={ct}
-            setCt={setCt}
-            dc={dc}
-            setDc={setDc}
-            fc={fc}
-            setFc={setFc}
-            lt={lt}
-            setLt={setLt}
-            others={others}
-            setOthers={setOthers}
-            sortOption={sortOption}
-            setSortOption={setSortOption}
-            performSearch={performSearch}
-          />
-        </div>
-        <div className="flex flex-row overflow-x-auto">
-          {filteredResults.slice(0, resultsShown).map((result, index) => (
-            <div
-              key={`${index}-${result.raw_case_num}`}
-              className="w-2/5 border border-slate-400 min-w-[33%]"
-            >
-              <Chat
-                raw_case_num={result.raw_case_num}
-                query={searchQuery}
-                case_date={dayjs(result.case_date).format("DD MMM, YYYY")}
-                case_action_no={result.case_action_no}
-                case_neutral_cit={result.case_neutral_cit}
-                url={result.url}
-                case_title={result.case_title}
-              />
-            </div>
-          ))}
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+
+  if (user)
+    return (
+      <div className="flex flex-col justify-between h-screen bg-gray-800  mx-auto max-w-full">
+        <Header
+          filteredResults={filteredResults}
+          resultsShown={resultsShown}
+          setResultsShown={setResultsShown}
+        />
+        <div className="flex w-full flex-grow overflow-hidden relative">
+          <div className="w-1/4 min-w-[20%] p-2 border-r border-slate-400">
+            <Search
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedMinDate={selectedMinDate}
+              setSelectedMinDate={setSelectedMinDate}
+              selectedMaxDate={selectedMaxDate}
+              setSelectedMaxDate={setSelectedMaxDate}
+              cofa={cofa}
+              setCofa={setCofa}
+              coa={coa}
+              setCoa={setCoa}
+              coficivil={coficivil}
+              setcoficivil={setcoficivil}
+              coficriminal={coficriminal}
+              setCoficriminal={setCoficriminal}
+              cofiprobate={cofiprobate}
+              setCofiprobate={setCofiprobate}
+              ct={ct}
+              setCt={setCt}
+              dc={dc}
+              setDc={setDc}
+              fc={fc}
+              setFc={setFc}
+              lt={lt}
+              setLt={setLt}
+              others={others}
+              setOthers={setOthers}
+              sortOption={sortOption}
+              setSortOption={setSortOption}
+              performSearch={performSearch}
+            />
+          </div>
+          <div className="flex flex-row overflow-x-auto">
+            {filteredResults.slice(0, resultsShown).map((result, index) => (
+              <div
+                key={`${index}-${result.raw_case_num}`}
+                className="w-2/5 border border-slate-400 min-w-[33%]"
+              >
+                <Chat
+                  raw_case_num={result.raw_case_num}
+                  query={searchQuery}
+                  case_date={dayjs(result.case_date).format("DD MMM, YYYY")}
+                  case_action_no={result.case_action_no}
+                  case_neutral_cit={result.case_neutral_cit}
+                  url={result.url}
+                  case_title={result.case_title}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+    );
+  return (
+    <div className="flex flex-col justify-center items-center h-screen">
+      <Button variant="contained" href="/api/auth/login">
+        Login to use FastLegal
+      </Button>
     </div>
   );
 };

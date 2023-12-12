@@ -110,7 +110,7 @@ export default function Header({
         </ThemeProvider>
 
         <Button variant="outlined" color="primary">
-          Login
+          <a href="/api/auth/logout">Logout</a>
         </Button>
       </div>
     </header>
