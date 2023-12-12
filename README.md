@@ -1,3 +1,5 @@
+hahahahha
+
 <!-- In this example, we'll build a full-stack application that uses Retrieval Augmented Generation (RAG) powered by [Pinecone](https://pinecone.io) to deliver accurate and contextually relevant responses in a chatbot.
 
 RAG is a powerful tool that combines the benefits of retrieval-based models and generative models. Unlike traditional chatbots that can struggle with maintaining up-to-date information or accessing domain-specific knowledge, a RAG-based chatbot uses a knowledge base created from crawled URLs to provide contextually relevant responses.
@@ -209,7 +211,7 @@ Here we deconstruct the messages from the post, and create our initial prompt. W
 
 <!-- Add snapshot of simple chat -->
 
-## Step 3. Adding Context
+<!-- ## Step 3. Adding Context
 
 As we dive into building our chatbot, it's important to understand the role of context. Adding context to our chatbot's responses is key for creating a more natural, conversational user experience. Without context, a chatbot's responses can feel disjointed or irrelevant. By understanding the context of a user's query, our chatbot will be able to provide more accurate, relevant, and engaging responses. Now, let's begin building with this goal in mind.
 
@@ -587,4 +589,4 @@ To display the latest test report locally, run:
 npm run test:show
 ```
 
--->
+--> -->
