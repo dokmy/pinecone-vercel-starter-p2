@@ -155,7 +155,7 @@ const Search: React.FC<SearchProps> = ({
   return (
     <div
       id="Search"
-      className="flex flex-col w-full bg-gray-800 space-y-4 overflow-y-scroll h-full p-2"
+      className="flex flex-col w-full bg-black space-y-4 overflow-y-scroll h-full p-2"
     >
       {/* start */}
 

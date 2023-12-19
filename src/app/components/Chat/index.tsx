@@ -55,15 +55,15 @@ const Chat: React.FC<Chat> = ({
 
   return (
     <div id="chat" className="flex flex-col w-full h-full lg:mx-0">
-      <div className="flex flex-col bg-gray-800 p-3 text-gray-200 border-b border-slate-400">
+      <div className="flex flex-col bg-black p-3 text-gray-200 border-b border-slate-400">
         <div>
           <Accordion
             expanded={expanded === "panel1"}
             onChange={handleChange("panel1")}
-            className="bg-gray-700 text-gray-200"
+            className="bg-black text-gray-200"
           >
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+              expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />}
               aria-controls="panel1bh-content"
               id="panel1bh-header"
             >
@@ -101,21 +101,22 @@ const Chat: React.FC<Chat> = ({
       </div>
 
       <>
-        <div className="">
+        <div>
           <form
             onSubmit={handleSubmit}
-            className="mt-1 mb-1 relative p-3 border-t border-slate-400"
+            className="mt-1 mb-1 relative p-3 border-t"
           >
-            <input
-              type="text"
-              className="input-glow appearance-none border rounded w-full py-2 px-3 text-gray-200 leading-tight focus:outline-none focus:shadow-outline pl-3 pr-10 bg-gray-800 border-gray-700 transition-shadow duration-200 h-16"
-              value={input}
-              onChange={handleInputChange}
-            />
+            <div className="flex-row space-x-2">
+              <textarea
+                className="resize-none overflow-auto max-h-24 border rounded w-full py-2 px-3  text-gray-200 leading-tight pl-3 bg-black border-gray-700 duration-200 h-24"
+                value={input}
+                onChange={handleInputChange}
+              />
 
-            <span className="absolute inset-y-0 right-3 flex items-center pr-3 pointer-events-none text-gray-400">
-              Press ⮐ to send
-            </span>
+              <span className="absolute inset-y-0 right-3 flex items-center pr-3 pointer-events-none text-gray-400">
+                <div className="h-3 w-3">⮐</div>
+              </span>
+            </div>
           </form>
         </div>
       </>

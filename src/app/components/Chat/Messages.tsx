@@ -29,12 +29,12 @@ export default function Messages({ messages }: { messages: Message[] }) {
         <div
           key={index}
           className={`group ${
-            msg.role === "assistant" ? "bg-gray-800" : "bg-gray-600"
+            msg.role === "assistant" ? "bg-[#18181A]" : "bg-[#18181A]"
           }  px-3 py-3 shadow-md hover:shadow-lg transition-shadow duration-200 flex slide-in-bottom border-b message-glow`}
         >
           <div
             className={`pr-3 border-r border-gray-500 flex items-center ${
-              msg.role === "assistant" ? "bg-gray-800" : "bg-gray-600"
+              msg.role === "assistant" ? "bg-[#18181A]" : "bg-[#18181A]"
             }`}
           >
             {msg.role === "assistant" ? "🤖" : "🧑‍💻"}
