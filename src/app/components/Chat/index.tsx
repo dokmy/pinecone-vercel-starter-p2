@@ -4,7 +4,6 @@ import React, { FormEvent, ChangeEvent } from "react";
 import Messages from "./Messages";
 import { useChat } from "ai/react";
 import { useEffect } from "react";
-import "src/app/globals.css";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -96,7 +95,7 @@ const Chat: React.FC<Chat> = ({
           </Accordion>
         </div>
       </div>
-      <div className="border-slate-400 bg-slate-800 overflow-y-auto">
+      <div className="border-slate-400 bg-[#18181A] overflow-auto">
         <Messages messages={messages} />
       </div>
 
@@ -108,12 +107,12 @@ const Chat: React.FC<Chat> = ({
           >
             <div className="flex-row space-x-2">
               <textarea
-                className="resize-none overflow-auto max-h-24 border rounded w-full py-2 px-3  text-gray-200 leading-tight pl-3 bg-black border-gray-700 duration-200 h-24"
+                className="resize-none overflow-auto max-h-24 border rounded w-full py-2 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-24"
                 value={input}
                 onChange={handleInputChange}
-              />
+              ></textarea>
 
-              <span className="absolute inset-y-0 right-3 flex items-center pr-3 pointer-events-none text-gray-400">
+              <span className="absolute inset-y-0 right-5 flex items-center pr-3 pointer-events-none text-gray-400">
                 <div className="h-3 w-3">⮐</div>
               </span>
             </div>

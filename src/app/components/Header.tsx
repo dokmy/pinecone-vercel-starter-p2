@@ -5,7 +5,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Box from "@mui/material/Box";
+import { UserButton } from "@clerk/nextjs";
 import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@mui/material/styles";
 
@@ -109,9 +109,9 @@ export default function Header({
           </FormControl>
         </ThemeProvider>
 
-        <Button variant="outlined" color="primary">
-          <a href="/api/auth/logout">Logout</a>
-        </Button>
+        <div className="ml-3">
+          <UserButton afterSignOutUrl="/" />
+        </div>
       </div>
     </header>
   );
