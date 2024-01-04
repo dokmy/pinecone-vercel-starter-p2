@@ -1,0 +1,59 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Search {
+  id            String         @id @default(uuid())
+  query         String
+  prefixFilters String
+  minDate       DateTime?
+  maxDate       DateTime?
+  createdAt     DateTime       @default(now())
+  searchResults SearchResult[]
+  userId        String
+
+  @@index([userId])
+}
+
+model SearchResult {
+  id             String   @id @default(uuid())
+  caseName       String
+  caseNeutralCit String
+  caseActionNo   String
+  caseDate       DateTime
+  caseUrl        String
+  createdAt      DateTime @default(now())
+  searchId       String
+  userId         String
+
+  search   Search    @relation(fields: [searchId], references: [id])
+  messages Message[]
+
+  @@index([searchId])
+  @@index([userId])
+}
+
+enum Role {
+  user
+  assistant
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  role           Role
+  content        String   @db.Text
+  createdAt      DateTime @default(now())
+  userId         String
+  searchResultId String
+
+  searchResult SearchResult @relation(fields: [searchResultId], references: [id])
+
+  @@index([searchResultId])
+  @@index([userId])
+}

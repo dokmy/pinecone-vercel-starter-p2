@@ -7,6 +7,7 @@ export const metadata = {
 };
 
 import "../global.css";
+import { ThemeProvider } from "./components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -14,10 +15,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider appearance={dark}>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ClerkProvider appearance={dark}>{children}</ClerkProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
