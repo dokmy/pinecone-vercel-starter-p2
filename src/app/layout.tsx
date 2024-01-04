@@ -23,7 +23,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ClerkProvider appearance={dark}>{children}</ClerkProvider>
+          <ClerkProvider
+            appearance={{
+              baseTheme: dark,
+            }}
+          >
+            {children}
+          </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>
