@@ -24,7 +24,7 @@ const Navbar = () => {
       </Link>
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
-        <Button className="bg-red-600">Upgrade</Button>
+        <Button className="destructive">Upgrade</Button>
         <ModeToggle />
         <UserButton afterSignOutUrl="/" />
       </div>
