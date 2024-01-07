@@ -1,8 +1,7 @@
 "use client";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import dayjs from "dayjs";
-import courtTypes from "src/app/lib/constants.ts";
+import courtTypes from "@/lib/constants";
 import CourtOptions from "@/components/court-options";
 import SearchQuery from "@/components/search-query";
 import SearchPeriod from "@/components/search-period";
