@@ -4,18 +4,24 @@ import React from "react";
 import Image from "next/image";
 import { UserButton } from "@clerk/nextjs";
 import FastLegalLogo from "../../../public/logo_rec.png";
+import FastLegalLogoWhite from "../../../public/logo_white_rec.jpeg";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useTheme } from "next-themes";
 
 const Navbar = () => {
+  const { theme } = useTheme();
+
+  const logo = theme === "light" ? FastLegalLogoWhite : FastLegalLogo;
+
   return (
-    <header className="flex items-center justify-between text-gray-200 text-2xl py-2 w-full border-b">
+    <header className="flex items-center justify-between text-gray-200 text-2xl py-2 w-full border-b h-16 bg-black">
       <Menu className="block md:hidden" />
       <Link href="/">
         <Image
-          src={FastLegalLogo}
+          src={logo}
           alt="fastlegal-logo"
           width="170"
           height="50"
@@ -25,7 +31,7 @@ const Navbar = () => {
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
         <Button className="destructive">Upgrade</Button>
-        <ModeToggle />
+        {/* <ModeToggle /> */}
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>

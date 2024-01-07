@@ -19,7 +19,7 @@ type metadata_filter = raw_case_num_filter | case_prefix_filter
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
 const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter?:metadata_filter): Promise<any[]> => {
-  console.log("pinecone.tx is called. Here is my filter: " + filter + "\n")
+  console.log("Pinecone.ts -  Here is my filter: " + filter + "\n")
   
   // Obtain a client for Pinecone
   const pinecone = new Pinecone();
