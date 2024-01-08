@@ -7,15 +7,15 @@ import { Pinecone, type ScoredPineconeRecord } from "@pinecone-database/pinecone
 //   hash: string
 // }
 
-interface raw_case_num_filter {
-  raw_case_num: string
+interface neutral_cit_filter {
+  neutral_cit: string
 }
 
 interface case_prefix_filter {
   case_prefix: { "$in": string[]}
 }
 
-type metadata_filter = raw_case_num_filter | case_prefix_filter
+type metadata_filter = neutral_cit_filter | case_prefix_filter
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
 const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter?:metadata_filter): Promise<any[]> => {
