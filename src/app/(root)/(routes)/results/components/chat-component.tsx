@@ -48,7 +48,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
           "Please first summarise this case for me and then explain why this case is relevant to my situation as follow: " +
           query,
       });
-      console.log(chatArgs);
     } else {
       console.log("Have messages. Adding initial messages.");
       const simplifiedMessages = dbMessages.map(({ role, content }) => ({
@@ -56,7 +55,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
         content,
       }));
       setChatArgs({ initialMessages: simplifiedMessages });
-      console.log(chatArgs);
     }
   }, [dbMessages, query]);
 
@@ -69,19 +67,21 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
     console.log("haha");
   }, [query]);
 
+  useEffect(() => {
+    console.log("chatArgs updated:", chatArgs);
+  }, [chatArgs]);
+
   console.log(chatArgs);
 
   const { messages, input, handleInputChange, handleSubmit } = useChat({
-    body: { filter: data.caseNeutralCit },
-    initialInput:
-      "Please first summarise this case for me and then explain why this case is relevant to my siutation as follow: " +
-      query,
+    ...chatArgs,
+    body: { filter: data.caseNeutralCit, searchResultId: data.id },
   });
 
   if (Object.keys(chatArgs).length == 0) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="flex flex-col w-full h-full">
       <ResultCard data={data} />
       <ChatMessages key={data.id} messages={messages} />
       <div>
@@ -90,11 +90,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
           className="mt-1 mb-1 relative p-3 border-t"
         >
           <div className="flex-row space-x-2">
-            <input
-              className="resize-none overflow-auto max-h-24 border rounded w-full py-2 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-24"
+            <textarea
+              className="resize-none overflow-auto max-h-24 border rounded w-full p-3 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-20"
               value={input}
               onChange={handleInputChange}
-            ></input>
+            ></textarea>
 
             <span className="absolute inset-y-0 right-5 flex items-center pr-3 pointer-events-none text-gray-400">
               <div className="h-3 w-3">⮐</div>

@@ -43,9 +43,9 @@ const resultsPage = async ({ params: { searchId } }: Props) => {
   });
 
   return (
-    <div className="flex overflow-x-auto h-screen">
+    <div className="flex overflow-x-auto h-full">
       {searchResults.map((result) => (
-        <div key={result.id} className="flex-none w-1/3 p-3 border-r">
+        <div key={result.id} className="flex-none w-1/3 border-r h-full">
           <ChatComponent
             key={result.id}
             data={result}

@@ -1,6 +1,10 @@
 import { Configuration, OpenAIApi } from 'openai-edge'
 import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import { getContext } from '@/utils/context'
+import prismadb from '../../../lib/prismadb'
+import { auth, currentUser } from "@clerk/nextjs";
+import { NextResponse } from 'next/server';
+import { Role } from '@prisma/client';
 
 // Create an OpenAI API client (that's edge friendly!)
 const config = new Configuration({
@@ -8,14 +12,19 @@ const config = new Configuration({
 })
 const openai = new OpenAIApi(config)
 
-// IMPORTANT! Set the runtime to edge
-export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
 
-    const { messages, filter} = await req.json()
+    const user = await currentUser();
+    if (!user || !user.id || !user.firstName) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { messages, filter, searchResultId } = await req.json()
     const lastMessage = messages[messages.length - 1]
+
+    console.log("here is last message: ", lastMessage)
 
     const context = await getContext(lastMessage.content, '', filter)
 
@@ -40,10 +49,33 @@ export async function POST(req: Request) {
     })
     
 
-    console.log(response.statusText)
 
-
-    const stream = OpenAIStream(response)
+    const stream = OpenAIStream(response, {
+      onStart: async () => {
+        // save user message into db
+        await prismadb.message.create({
+          data:{
+            role: Role.user,
+            content: lastMessage.content,
+            userId: user.id,
+            searchResultId: searchResultId
+          }
+          
+        });
+      },
+      onCompletion: async (completion) => {
+        // save ai message into db
+        await prismadb.message.create({
+          data:{
+            role: Role.assistant,
+            content: completion,
+            userId: user.id,
+            searchResultId: searchResultId
+          }
+          
+        });
+      },
+    });
     
     
     return new StreamingTextResponse(stream)

@@ -21,7 +21,7 @@ export default function Messages({ messages }: { messages: Message[] }) {
   };
 
   return (
-    <div className="flex flex-col bg-gray-700 leading-7">
+    <div className="flex flex-col bg-gray-700 leading-7 h-full overflow-y-auto ">
       {messages.map((msg, index) => (
         <div
           key={index}
@@ -49,9 +49,15 @@ export default function Messages({ messages }: { messages: Message[] }) {
             className="cursor-pointer"
           >
             {copiedIndices[index] ? (
-              <DoneIcon className="text-white text-lg" />
+              <DoneIcon
+                className="text-white text-lg"
+                style={{ fontSize: "16px" }}
+              />
             ) : (
-              <ContentCopyIcon className="text-white text-lg" />
+              <ContentCopyIcon
+                className="text-white text-lg"
+                style={{ fontSize: "16px" }}
+              />
             )}
           </div>
         </div>

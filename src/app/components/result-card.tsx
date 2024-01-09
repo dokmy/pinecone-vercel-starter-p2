@@ -23,27 +23,31 @@ interface ResultCardProps {
 
 const ResultCard: React.FC<ResultCardProps> = ({ data }) => {
   return (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>{data.caseName}</AccordionTrigger>
-        <AccordionContent>
-          <ul className="text-center">
-            <li>
-              <p>Action No: {data.caseActionNo}</p>
-            </li>
-            <li>
-              <p>Neutral Citation: {data.caseNeutralCit}</p>
-            </li>
-            <li>
-              <p>Date: {data.caseDate.toDateString()}</p>
-            </li>
-          </ul>
-          <div className="flex justify-center items-center mt-3">
-            <Button>Read the case</Button>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+    <div className="h-min p-3">
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="justify-center">
+            <div className="px-2">{data.caseName}</div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <ul className="text-center">
+              <li>
+                <p>Action No: {data.caseActionNo}</p>
+              </li>
+              <li>
+                <p>Neutral Citation: {data.caseNeutralCit}</p>
+              </li>
+              <li>
+                <p>Date: {data.caseDate.toDateString()}</p>
+              </li>
+            </ul>
+            <div className="flex justify-center items-center mt-3">
+              <Button>Read the case</Button>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   );
 };
 
