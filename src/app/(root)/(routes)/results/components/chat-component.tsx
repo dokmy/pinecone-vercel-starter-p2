@@ -22,51 +22,63 @@ interface ChatComponentProps {
 }
 
 const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
-  //   const [dbMessages, setDbMessages] = useState([]);
-  //   const [chatArgs, setChatArgs] = useState({});
+  const [dbMessages, setDbMessages] = useState([]);
+  const [chatArgs, setChatArgs] = useState({});
 
-  //   useEffect(() => {
-  //     const fetchDbMessages = async () => {
-  //       try {
-  //         const response = await axios.post(`/api/get-messages`, {
-  //           searchResultId: data.id,
-  //         });
-  //         setDbMessages(response.data);
-  //       } catch (error) {
-  //         console.error("Error fetching messages:", error);
-  //       }
-  //     };
+  useEffect(() => {
+    const fetchDbMessages = async () => {
+      try {
+        const response = await axios.post(`/api/get-messages`, {
+          searchResultId: data.id,
+        });
+        setDbMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
 
-  //     fetchDbMessages();
-  //   }, [data.id]);
+    fetchDbMessages();
+  }, [data.id]);
 
-  //   useEffect(() => {
-  //     if (dbMessages.length === 0) {
-  //       console.log("no messages. Adding initial input.");
-  //       setChatArgs({
-  //         initialInput:
-  //           "Please first summarise this case for me and then explain why this case is relevant to my situation as follow: " +
-  //           query,
-  //       });
-  //       console.log(chatArgs);
-  //     } else {
-  //       console.log("Have messages. Adding initial messages.");
-  //       const simplifiedMessages = dbMessages.map(({ role, content }) => ({
-  //         role,
-  //         content,
-  //       }));
-  //       setChatArgs({ initialMessages: simplifiedMessages });
-  //       console.log(chatArgs);
-  //     }
-  //   }, [dbMessages, query]);
+  useEffect(() => {
+    if (dbMessages.length === 0) {
+      console.log("no messages. Adding initial input.");
+      setChatArgs({
+        initialInput:
+          "Please first summarise this case for me and then explain why this case is relevant to my situation as follow: " +
+          query,
+      });
+      console.log(chatArgs);
+    } else {
+      console.log("Have messages. Adding initial messages.");
+      const simplifiedMessages = dbMessages.map(({ role, content }) => ({
+        role,
+        content,
+      }));
+      setChatArgs({ initialMessages: simplifiedMessages });
+      console.log(chatArgs);
+    }
+  }, [dbMessages, query]);
 
-  //   console.log(chatArgs);
+  useEffect(() => {
+    const mockEvent = {
+      preventDefault: () => {},
+      // Add other minimal properties and methods if needed
+    } as unknown as React.FormEvent<HTMLFormElement>;
+    handleSubmit(mockEvent);
+    console.log("haha");
+  }, [query]);
+
+  console.log(chatArgs);
+
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     body: { filter: data.caseNeutralCit },
     initialInput:
       "Please first summarise this case for me and then explain why this case is relevant to my siutation as follow: " +
       query,
   });
+
+  if (Object.keys(chatArgs).length == 0) return <div>Loading...</div>;
 
   return (
     <div>

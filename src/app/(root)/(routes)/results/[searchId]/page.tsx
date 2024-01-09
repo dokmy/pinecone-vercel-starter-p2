@@ -42,20 +42,6 @@ const resultsPage = async ({ params: { searchId } }: Props) => {
     },
   });
 
-  const chatInitiated = async (searchResult: SearchResult) => {
-    const dbMessages = await prismadb.message.findMany({
-      where: {
-        searchResultId: searchResult.id,
-      },
-    });
-
-    if (dbMessages.length === 0) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
   return (
     <div className="flex overflow-x-auto h-screen">
       {searchResults.map((result) => (
@@ -64,7 +50,6 @@ const resultsPage = async ({ params: { searchId } }: Props) => {
             key={result.id}
             data={result}
             query={search_metadata[0].query}
-            chatInitiated={() => chatInitiated(result)}
           />
         </div>
       ))}
