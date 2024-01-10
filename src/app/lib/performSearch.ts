@@ -39,7 +39,9 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
       const data = await response.json();
 
       const apiResults = data.filteredResults
+      const searchId = data.searchId
       
+      return {apiResults, searchId}
      
 
     } catch (error) {

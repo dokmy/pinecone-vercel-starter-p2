@@ -106,11 +106,11 @@ const Chat: React.FC<Chat> = ({
             className="mt-1 mb-1 relative p-3 border-t"
           >
             <div className="flex-row space-x-2">
-              <textarea
+              <input
                 className="resize-none overflow-auto max-h-24 border rounded w-full py-2 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-24"
                 value={input}
                 onChange={handleInputChange}
-              ></textarea>
+              ></input>
 
               <span className="absolute inset-y-0 right-5 flex items-center pr-3 pointer-events-none text-gray-400">
                 <div className="h-3 w-3">⮐</div>

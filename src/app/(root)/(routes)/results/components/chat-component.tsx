@@ -1,10 +1,9 @@
 "use client";
 import React from "react";
-import ResultCard from "@/components/result-card";
-import ChatMessages from "@/components/chat-messages";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useChat } from "ai/react";
+import ChatComponentReady from "./chat-component-ready";
+import { Message } from "ai";
 
 interface ChatComponentProps {
   data: {
@@ -21,9 +20,14 @@ interface ChatComponentProps {
   query: string;
 }
 
+interface chatArgs {
+  initialInput?: string;
+  initialMessages?: Message[];
+}
+
 const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
-  const [dbMessages, setDbMessages] = useState([]);
-  const [chatArgs, setChatArgs] = useState({});
+  const [dbMessages, setDbMessages] = useState<null | []>(null);
+  const [chatArgs, setChatArgs] = useState<null | chatArgs>(null);
 
   useEffect(() => {
     const fetchDbMessages = async () => {
@@ -41,6 +45,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
   }, [data.id]);
 
   useEffect(() => {
+    if (dbMessages == null) {
+      return;
+    }
     if (dbMessages.length === 0) {
       console.log("no messages. Adding initial input.");
       setChatArgs({
@@ -50,60 +57,22 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
       });
     } else {
       console.log("Have messages. Adding initial messages.");
-      const simplifiedMessages = dbMessages.map(({ role, content }) => ({
+      const simplifiedMessages = dbMessages.map(({ id, role, content }) => ({
+        id,
         role,
         content,
       }));
+      console.log("DBMESSAGES ARE HERE: ", dbMessages);
       setChatArgs({ initialMessages: simplifiedMessages });
+      // setInitialInput("");
     }
   }, [dbMessages, query]);
 
-  useEffect(() => {
-    const mockEvent = {
-      preventDefault: () => {},
-      // Add other minimal properties and methods if needed
-    } as unknown as React.FormEvent<HTMLFormElement>;
-    handleSubmit(mockEvent);
-    console.log("haha");
-  }, [query]);
+  if (chatArgs == null) {
+    return <div>Loading...</div>;
+  }
 
-  useEffect(() => {
-    console.log("chatArgs updated:", chatArgs);
-  }, [chatArgs]);
-
-  console.log(chatArgs);
-
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    ...chatArgs,
-    body: { filter: data.caseNeutralCit, searchResultId: data.id },
-  });
-
-  if (Object.keys(chatArgs).length == 0) return <div>Loading...</div>;
-
-  return (
-    <div className="flex flex-col w-full h-full">
-      <ResultCard data={data} />
-      <ChatMessages key={data.id} messages={messages} />
-      <div>
-        <form
-          onSubmit={handleSubmit}
-          className="mt-1 mb-1 relative p-3 border-t"
-        >
-          <div className="flex-row space-x-2">
-            <textarea
-              className="resize-none overflow-auto max-h-24 border rounded w-full p-3 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-20"
-              value={input}
-              onChange={handleInputChange}
-            ></textarea>
-
-            <span className="absolute inset-y-0 right-5 flex items-center pr-3 pointer-events-none text-gray-400">
-              <div className="h-3 w-3">⮐</div>
-            </span>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+  return <ChatComponentReady data={data} query={query} chatArgs={chatArgs} />;
 };
 
 export default ChatComponent;

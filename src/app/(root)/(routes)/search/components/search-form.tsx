@@ -131,10 +131,10 @@ const SearchForm = () => {
         selectedMinDate,
         selectedMaxDate,
         sortOption,
+      }).then(({ apiResults, searchId }) => {
+        router.refresh();
+        router.push(`/results/${searchId}`);
       });
-
-      router.refresh();
-      router.push("/");
     }
   };
 
