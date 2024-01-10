@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Header from "@/components/Header";
-import Chat from "@/components/Chat";
-import Search from "@/components/Search";
+import Chat from "@/OLD_CODES/Chat";
+import Search from "@/OLD_CODES/Search";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 
