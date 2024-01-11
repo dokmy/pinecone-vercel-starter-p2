@@ -9,6 +9,7 @@ import SortBy from "@/components/sort-by";
 import { Button } from "@mui/material";
 import { performSearch } from "@/lib/performSearch";
 import { useRouter } from "next/navigation";
+import MoonLoader from "react-spinners/MoonLoader";
 
 const SearchForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,6 +106,8 @@ const SearchForm = () => {
     event.preventDefault();
     console.log("here");
 
+    setIsLoading(true);
+
     let hasError = false;
 
     if (!searchQuery) {
@@ -131,14 +134,27 @@ const SearchForm = () => {
         selectedMinDate,
         selectedMaxDate,
         sortOption,
-      }).then(({ apiResults, searchId }) => {
-        router.refresh();
-        router.push(`/results/${searchId}`);
-      });
+      })
+        .then(({ apiResults, searchId, noCredits }) => {
+          if (noCredits) {
+            alert("Not enough credits. Please upgrade or buy more.");
+            router.push(`/settings`);
+          } else {
+            router.refresh();
+            router.push(`/results/${searchId}`);
+          }
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error during search:", error);
+          // Handle any errors that occurred during performSearch
+          setIsLoading(false);
+        });
     }
   };
 
   const [searchQueryError, setSearchQueryError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="w-full px-52 py-5 flex-col">
@@ -180,6 +196,7 @@ const SearchForm = () => {
           <Button
             variant="contained"
             size="large"
+            disabled={isLoading}
             sx={{
               bgcolor: "black",
               borderColor: "grey",
@@ -189,7 +206,17 @@ const SearchForm = () => {
             }}
             type="submit"
           >
-            Search
+            {isLoading ? (
+              <MoonLoader
+                color="#36d7b7"
+                loading={isLoading}
+                size={20} // Adjust size as needed
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+            ) : (
+              "Search"
+            )}
           </Button>
         </div>
       </form>

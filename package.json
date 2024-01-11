@@ -51,6 +51,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.10.1",
     "react-markdown": "^8.0.7",
+    "react-spinners": "^0.13.8",
     "sswr": "^2.0.0",
     "svelte": "^4.2.0",
     "tailwind-merge": "^2.1.0",

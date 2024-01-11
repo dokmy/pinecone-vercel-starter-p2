@@ -9,7 +9,11 @@ export const POST = async (req: Request) => {
         },
         orderBy: {
             createdAt: 'desc'
-        }
+        },
+        
+  include: {
+    searchResults: true,
+  },
       });
 
     return NextResponse.json(_searches);

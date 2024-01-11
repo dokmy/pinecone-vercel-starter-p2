@@ -7,11 +7,10 @@ import FastLegalLogo from "../../../public/logo_rec.png";
 import FastLegalLogoWhite from "../../../public/logo_white_rec.jpeg";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
 import { useTheme } from "next-themes";
+import SubscriptionButton from "./subcription-button";
 
-const Navbar = () => {
+const Navbar = ({ hasSubscription = false }: { hasSubscription: boolean }) => {
   const { theme } = useTheme();
 
   const logo = theme === "light" ? FastLegalLogoWhite : FastLegalLogo;
@@ -30,8 +29,7 @@ const Navbar = () => {
       </Link>
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
-        <Button className="destructive">Upgrade</Button>
-        {/* <ModeToggle /> */}
+        <SubscriptionButton hasSubscription={false} />
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>

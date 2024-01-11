@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 
 
+
 interface PerformSearchProps {
     filters: string[]
     searchQuery: string
@@ -20,8 +21,10 @@ interface search_result {
   }
 
 
+
 export async function performSearch({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption }: PerformSearchProps) {
     
+    let noCredits = false
 
     try {
       const response = await fetch("/api/search", {
@@ -32,8 +35,8 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
         body: JSON.stringify({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+      if (response.status === 403) {
+        throw new Error("NoCreditsError");
       }
 
       const data = await response.json();
@@ -41,10 +44,13 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
       const apiResults = data.filteredResults
       const searchId = data.searchId
       
-      return {apiResults, searchId}
+      return {apiResults, searchId, noCredits}
      
 
-    } catch (error) {
+    } catch (error:any) {
+      if (error.message === "NoCreditsError") {
+        return { noCredits: true };
+      } else
       console.error(
         "Error during API call:",
         error instanceof Error ? error.message : "An unknown error occurred"

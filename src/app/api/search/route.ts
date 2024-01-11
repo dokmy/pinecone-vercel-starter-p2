@@ -5,6 +5,9 @@ import dayjs from "dayjs";
 import prismadb from '../../../lib/prismadb';
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
+import { checkSubscription } from '@/lib/subscriptions';
+import { checkSearchCredits, deductSearchCredit, getSearchCreditCount, incrementSearchCredit } from '@/lib/searchCredits';
+
 
 
 
@@ -40,6 +43,36 @@ function convertToUrl(caseRef:string) {
 
 
 export async function POST(req: Request) {
+
+
+    const {userId} = auth()
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", {status: 401})
+    }
+
+    const inSearchCreditsDb = await checkSearchCredits()
+
+    if (!inSearchCreditsDb) {
+      incrementSearchCredit(5)
+    } 
+
+    const creditsLeft = await getSearchCreditCount()
+
+    if (creditsLeft == 0) {
+      return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
+    }
+
+    if (creditsLeft == false) {
+      return new NextResponse("Not inside credits database", {status: 401})
+    } 
+    
+    
+
+    if (creditsLeft > 0) {
+      deductSearchCredit()
+    }
+
 
     try {
       const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption } = await req.json()
