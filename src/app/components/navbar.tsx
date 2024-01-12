@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import SubscriptionButton from "./subcription-button";
 
-const Navbar = ({ hasSubscription = false }: { hasSubscription: boolean }) => {
+const Navbar = ({ hasSubscription }: { hasSubscription: boolean }) => {
   const { theme } = useTheme();
 
   const logo = theme === "light" ? FastLegalLogoWhite : FastLegalLogo;
@@ -29,7 +29,7 @@ const Navbar = ({ hasSubscription = false }: { hasSubscription: boolean }) => {
       </Link>
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
-        <SubscriptionButton hasSubscription={false} />
+        <SubscriptionButton hasSubscription={hasSubscription} />
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>

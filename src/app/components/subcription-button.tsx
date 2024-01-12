@@ -1,6 +1,7 @@
+"use client";
 import React from "react";
 import { Button } from "./ui/button";
-import Link from "next/link";
+import axios from "axios";
 
 interface SubscriptionProps {
   hasSubscription: boolean;
@@ -9,17 +10,26 @@ interface SubscriptionProps {
 const SubscriptionButton: React.FC<SubscriptionProps> = ({
   hasSubscription,
 }) => {
+  const onClick = async () => {
+    try {
+      const response = await axios.get("/api/stripe");
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (hasSubscription) {
     return (
-      <Link href="/">
-        <Button>Manage Subscription</Button>
-      </Link>
+      <Button size="sm" onClick={onClick}>
+        Manage Subscription
+      </Button>
     );
   }
   return (
-    <Link href="/">
-      <Button>Upgrade</Button>
-    </Link>
+    <Button size="sm" onClick={onClick}>
+      Upgrade
+    </Button>
   );
 };
 

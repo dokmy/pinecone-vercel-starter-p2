@@ -2,10 +2,9 @@ import { Configuration, OpenAIApi } from 'openai-edge'
 import { getEmbeddings } from '@/utils/embeddings'
 import { getMatchesFromEmbeddings } from '@/utils/pinecone'
 import dayjs from "dayjs";
-import prismadb from '../../../lib/prismadb';
+import prismadb from '../../lib/prismadb';
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
-import { checkSubscription } from '@/lib/subscriptions';
 import { checkSearchCredits, deductSearchCredit, getSearchCreditCount, incrementSearchCredit } from '@/lib/searchCredits';
 
 
@@ -51,13 +50,13 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", {status: 401})
     }
 
-    const inSearchCreditsDb = await checkSearchCredits()
+    const inSearchCreditsDb = await checkSearchCredits(userId)
 
     if (!inSearchCreditsDb) {
-      incrementSearchCredit(5)
+      incrementSearchCredit(userId, 5)
     } 
 
-    const creditsLeft = await getSearchCreditCount()
+    const creditsLeft = await getSearchCreditCount(userId)
 
     if (creditsLeft == 0) {
       return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
@@ -70,7 +69,7 @@ export async function POST(req: Request) {
     
 
     if (creditsLeft > 0) {
-      deductSearchCredit()
+      deductSearchCredit(userId)
     }
 
 

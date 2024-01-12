@@ -1,10 +1,9 @@
 import { auth } from "@clerk/nextjs";
 
-import prismadb from "../../lib/prismadb";
+import prismadb from "./prismadb";
 import { NextResponse } from "next/server";
 
-export const incrementSearchCredit = async (no_of_credits:number) => {
-  const { userId } = auth();
+export const incrementSearchCredit = async (userId: string, no_of_credits:number) => {
 
   if (!userId) {
     return;
@@ -26,8 +25,7 @@ export const incrementSearchCredit = async (no_of_credits:number) => {
   }
 };
 
-export const deductSearchCredit = async () => {
-  const { userId } = auth();
+export const deductSearchCredit = async (userId: string) => {
 
   if (!userId) {
     return;
@@ -49,8 +47,7 @@ export const deductSearchCredit = async () => {
 
 
 
-export const checkSearchCredits = async () => {
-  const { userId } = auth();
+export const checkSearchCredits = async (userId: string) => {
 
   if (!userId) {
     return false;
@@ -67,8 +64,7 @@ export const checkSearchCredits = async () => {
   }
 };
 
-export const getSearchCreditCount = async () => {
-  const { userId } = auth();
+export const getSearchCreditCount = async (userId: string) => {
 
   if (!userId) {
     return false;

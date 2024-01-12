@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import prismadb from "../../../../../lib/prismadb";
+import prismadb from "../../../../lib/prismadb";
 import ChatComponent from "../components/chat-component";
 
 type Props = {

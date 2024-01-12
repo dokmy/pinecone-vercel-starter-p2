@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from 'openai-edge'
 import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import { getContext } from '@/utils/context'
-import prismadb from '../../../lib/prismadb'
+import prismadb from '../../lib/prismadb'
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 import { Role } from '@prisma/client';

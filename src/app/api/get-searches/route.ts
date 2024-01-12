@@ -1,4 +1,4 @@
-import prismadb from "../../../lib/prismadb";
+import prismadb from "../../lib/prismadb";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
@@ -10,10 +10,9 @@ export const POST = async (req: Request) => {
         orderBy: {
             createdAt: 'desc'
         },
-        
-  include: {
-    searchResults: true,
-  },
+        include: {
+            searchResults: true,
+        },
       });
 
     return NextResponse.json(_searches);
