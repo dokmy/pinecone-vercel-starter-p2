@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import prismadb from "../../../../lib/prismadb";
-import ChatComponent from "../components/chat-component";
+import ChatComponentsWrapper from "../components/chat-components-wrapper";
 
 type Props = {
   params: {
@@ -43,17 +43,10 @@ const resultsPage = async ({ params: { searchId } }: Props) => {
   });
 
   return (
-    <div className="flex overflow-x-auto h-full">
-      {searchResults.map((result) => (
-        <div key={result.id} className="flex-none w-1/3 border-r h-full">
-          <ChatComponent
-            key={result.id}
-            data={result}
-            query={search_metadata[0].query}
-          />
-        </div>
-      ))}
-    </div>
+    <ChatComponentsWrapper
+      searchResults={searchResults}
+      searchMetadataQuery={search_metadata[0].query}
+    />
   );
 };
 

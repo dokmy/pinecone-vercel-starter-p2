@@ -19,11 +19,12 @@ interface ResultCardProps {
     searchId: string;
     userId: string;
   };
+  onReadCaseClick: () => void;
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ data }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ data, onReadCaseClick }) => {
   return (
-    <div className="h-min p-3">
+    <div className="">
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
           <AccordionTrigger className="justify-center">
@@ -42,7 +43,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ data }) => {
               </li>
             </ul>
             <div className="flex justify-center items-center mt-3">
-              <Button>Read the case</Button>
+              <Button onClick={onReadCaseClick}>Read the case</Button>
             </div>
           </AccordionContent>
         </AccordionItem>

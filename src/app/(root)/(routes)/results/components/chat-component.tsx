@@ -18,6 +18,8 @@ interface ChatComponentProps {
     userId: string;
   };
   query: string;
+  isIframeShown: boolean;
+  onToggleIframe: () => void;
 }
 
 interface chatArgs {
@@ -25,7 +27,12 @@ interface chatArgs {
   initialMessages?: Message[];
 }
 
-const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
+const ChatComponent: React.FC<ChatComponentProps> = ({
+  data,
+  query,
+  isIframeShown,
+  onToggleIframe,
+}) => {
   const [dbMessages, setDbMessages] = useState<null | []>(null);
   const [chatArgs, setChatArgs] = useState<null | chatArgs>(null);
 
@@ -72,7 +79,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ data, query }) => {
     return <div>Loading...</div>;
   }
 
-  return <ChatComponentReady data={data} query={query} chatArgs={chatArgs} />;
+  return (
+    <ChatComponentReady
+      data={data}
+      query={query}
+      chatArgs={chatArgs}
+      isIframeShown={isIframeShown}
+      onToggleIframe={onToggleIframe}
+    />
+  );
 };
 
 export default ChatComponent;
