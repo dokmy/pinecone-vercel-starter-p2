@@ -177,7 +177,7 @@ export async function POST(req: Request) {
 
       // -------Inserting search results to DB-------
       await Promise.all(filteredResults.map(result => {
-        return prisma?.searchResult.create({
+        return prismadb?.searchResult.create({
           data: {
             caseName: result.case_title,
             caseNeutralCit: result.case_neutral_cit,

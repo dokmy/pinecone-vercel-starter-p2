@@ -30,7 +30,7 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
     return redirect("/sign-in");
   }
 
-  const search_metadata = await prismadb.search.findMany({
+  const search_metadata = await prismadb.search.findUnique({
     where: {
       id: searchId,
     },
@@ -42,10 +42,14 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
     },
   });
 
+  if (!search_metadata) {
+    return <div>Cannot find this search in db.</div>;
+  }
+
   return (
     <ChatComponentsWrapper
       searchResults={searchResults}
-      searchMetadataQuery={search_metadata[0].query}
+      searchMetadataQuery={search_metadata.query}
     />
   );
 };
