@@ -78,7 +78,7 @@ const dashboardPage = () => {
   }
 
   return (
-    <div className="flex flex-row flex-wrap overflow-x-auto gap-5 p-5 justify-center">
+    <div className="flex flex-row flex-wrap gap-5 p-5 justify-center">
       {searches.map((search, index) => (
         <div key={index} className="w-96 space-3 h-full">
           <Card className="w-full max-w-sm mx-auto bg-gray-800 text-white">

@@ -48,28 +48,34 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
 
   return (
     <div
-      className={`flex w-full h-full ${
+      className={`flex ${
         isIframeShown ? "flex-row" : "flex-col"
-      }`}
+      } h-[calc(100vh-4rem)]`}
     >
       {isIframeShown && (
         <iframe
           src={data.caseUrl}
-          className="w-1/2 h-full"
+          className="w-1/2 h-full flex-none"
           title="Case Details"
         ></iframe>
       )}
 
       <div
-        className={`w-full h-full ${
+        className={`h-full overflow-y-scroll ${
           isIframeShown ? "w-1/2" : "w-full"
-        } overflow-y-auto`}
+        }`}
       >
-        <ResultCard data={data} onReadCaseClick={onToggleIframe} />
-        <ChatMessages key={data.id} messages={messages} />
-        <div className="mb-1 relative p-3 border-t flex-none">
+        <div className="w-full sticky top-0 bg-black">
+          <ResultCard data={data} onReadCaseClick={onToggleIframe} />
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          <ChatMessages key={data.id} messages={messages} />
+        </div>
+
+        <div className="w-full p-3 border-t bg-gray-900 sticky bottom-0">
           <form onSubmit={handleSubmit}>
-            <div className="flex-row space-x-2">
+            <div className="relative w-full">
               <input
                 className="resize-none overflow-auto max-h-24 border rounded w-full p-3 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-20"
                 value={input}

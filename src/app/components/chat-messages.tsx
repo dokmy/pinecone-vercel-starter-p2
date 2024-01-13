@@ -21,7 +21,7 @@ export default function Messages({ messages }: { messages: Message[] }) {
   };
 
   return (
-    <div className="flex flex-col bg-gray-700 leading-7 overflow-y-auto">
+    <div className="flex flex-col bg-gray-700 leading-7 h-full">
       {messages.map((msg, index) => (
         <div
           key={index}
