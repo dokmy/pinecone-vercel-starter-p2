@@ -52,7 +52,8 @@ export async function POST(req: Request) {
     const inSearchCreditsDb = await checkSearchCredits(userId)
 
     if (!inSearchCreditsDb) {
-      incrementSearchCredit(userId, 5)
+      await incrementSearchCredit(userId, 5)
+      console.log("First time searching. Added 5 credits.")
     } 
 
     const creditsLeft = await getSearchCreditCount(userId)
@@ -68,7 +69,8 @@ export async function POST(req: Request) {
     
 
     if (creditsLeft > 0) {
-      deductSearchCredit(userId)
+      await deductSearchCredit(userId)
+      console.log("Search is permitted. Deduct 1 credit.")
     }
 
 
