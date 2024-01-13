@@ -1,4 +1,3 @@
-import { Configuration, OpenAIApi } from 'openai-edge'
 import { getEmbeddings } from '@/utils/embeddings'
 import { getMatchesFromEmbeddings } from '@/utils/pinecone'
 import dayjs from "dayjs";
