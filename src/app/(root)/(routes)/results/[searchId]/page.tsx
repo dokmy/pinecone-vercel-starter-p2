@@ -23,7 +23,7 @@ interface SearchResult {
 
 interface SearchResultsArray extends Array<SearchResult> {}
 
-const resultsPage = async ({ params: { searchId } }: Props) => {
+const ResultsPage = async ({ params: { searchId } }: Props) => {
   const { userId } = await auth();
 
   if (!userId) {
@@ -50,4 +50,4 @@ const resultsPage = async ({ params: { searchId } }: Props) => {
   );
 };
 
-export default resultsPage;
+export default ResultsPage;

@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 
 type SearchWithResults = Search & { searchResults: SearchResult[] };
 
-const dashboardPage = () => {
+const DashboardPage = () => {
   const [searches, setSearches] = useState<null | SearchWithResults[]>(null);
   const { user } = useUser();
   useEffect(() => {
@@ -146,4 +146,4 @@ const dashboardPage = () => {
   );
 };
 
-export default dashboardPage;
+export default DashboardPage;

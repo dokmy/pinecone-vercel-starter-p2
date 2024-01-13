@@ -2,7 +2,7 @@ import React from "react";
 import SubscriptionButton from "@/components/subcription-button";
 import { checkSubscription } from "@/lib/subscriptions";
 
-const settingsPage = async () => {
+const SettingsPage = async () => {
   const hasSubscription = await checkSubscription();
 
   return (
@@ -20,4 +20,4 @@ const settingsPage = async () => {
   );
 };
 
-export default settingsPage;
+export default SettingsPage;

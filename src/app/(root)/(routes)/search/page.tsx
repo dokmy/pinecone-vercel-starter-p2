@@ -1,7 +1,7 @@
 import React from "react";
 import SearchForm from "./components/search-form";
 
-const searchPage = () => {
+const SearchPage = () => {
   return (
     <div>
       <SearchForm />
@@ -9,4 +9,4 @@ const searchPage = () => {
   );
 };
 
-export default searchPage;
+export default SearchPage;
