@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "playwright test",
-    "test:show": "playwright show-report"
+    "test:show": "playwright show-report",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
