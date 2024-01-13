@@ -176,8 +176,8 @@ export async function POST(req: Request) {
 
 
       // -------Inserting search results to DB-------
-      filteredResults.forEach(async (result) => {
-        await prisma?.searchResult.create({
+      await Promise.all(filteredResults.map(result => {
+        return prisma?.searchResult.create({
           data: {
             caseName: result.case_title,
             caseNeutralCit: result.case_neutral_cit,
@@ -188,7 +188,20 @@ export async function POST(req: Request) {
             userId: user.id
           }
         })
-      })
+      }))
+      // filteredResults.forEach(async (result) => {
+      //   await prisma?.searchResult.create({
+      //     data: {
+      //       caseName: result.case_title,
+      //       caseNeutralCit: result.case_neutral_cit,
+      //       caseActionNo: result.case_action_no,
+      //       caseDate: result.case_date,
+      //       caseUrl: result.url,
+      //       searchId: searchRecord.id,
+      //       userId: user.id
+      //     }
+      //   })
+      // })
 
       return new Response(JSON.stringify({filteredResults, searchId: searchRecord.id}), {
         headers: { 'Content-Type': 'application/json'}
