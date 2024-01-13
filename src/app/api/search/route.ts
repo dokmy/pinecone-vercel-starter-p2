@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import prismadb from '../../lib/prismadb';
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
-import { checkSearchCredits, deductSearchCredit, getSearchCreditCount, incrementSearchCredit } from '@/lib/searchCredits';
+import { checkSearchCredits, deductSearchCredit, getSearchCreditCount } from '@/lib/searchCredits';
 
 
 
@@ -52,8 +52,7 @@ export async function POST(req: Request) {
     const inSearchCreditsDb = await checkSearchCredits(userId)
 
     if (!inSearchCreditsDb) {
-      await incrementSearchCredit(userId, 5)
-      console.log("First time searching. Added 5 credits.")
+      return new NextResponse("Not inside credits database", {status: 401})
     } 
 
     const creditsLeft = await getSearchCreditCount(userId)
@@ -63,9 +62,8 @@ export async function POST(req: Request) {
     }
 
     if (creditsLeft == false) {
-      return new NextResponse("Not inside credits database", {status: 401})
+      return new NextResponse("Credits left is null.", {status: 401})
     } 
-    
     
 
     if (creditsLeft > 0) {
