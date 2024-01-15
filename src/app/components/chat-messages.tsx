@@ -3,7 +3,15 @@ import { useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DoneIcon from "@mui/icons-material/Done";
 
-export default function Messages({ messages }: { messages: Message[] }) {
+interface MessagesProps {
+  messages: Message[];
+  endOfMessagesRef: React.RefObject<HTMLDivElement>;
+}
+
+export default function Messages({
+  messages,
+  endOfMessagesRef,
+}: MessagesProps) {
   const [copiedIndices, setCopiedIndices] = useState<{
     [key: number]: boolean;
   }>({});
@@ -44,6 +52,7 @@ export default function Messages({ messages }: { messages: Message[] }) {
               </span>
             ))}
           </div>
+
           <div
             onClick={() => handleIconClick(msg.content, index)}
             className="cursor-pointer"
@@ -62,6 +71,7 @@ export default function Messages({ messages }: { messages: Message[] }) {
           </div>
         </div>
       ))}
+      <div ref={endOfMessagesRef} />
     </div>
   );
 }

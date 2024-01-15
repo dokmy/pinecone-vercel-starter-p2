@@ -4,7 +4,7 @@ import ResultCard from "@/components/result-card";
 import ChatMessages from "@/components/chat-messages";
 import { useChat } from "ai/react";
 import { Message } from "ai";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import MoonLoader from "react-spinners/MoonLoader";
 
 interface ChatComponentReadyProps {
@@ -33,6 +33,19 @@ interface chatArgs {
 const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
   const { data, query, chatArgs, isIframeShown, onToggleIframe } = props;
 
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    // if (endOfMessagesRef.current) {
+    //   const scrollContainer = endOfMessagesRef.current.parentElement;
+    //   if (scrollContainer) {
+    //     // Set the scrollTop to the bottom of the container
+    //     scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    //   }
+    // }
+    // endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   console.log("CCR is here. Here is the real chatArgs: ", chatArgs);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
@@ -47,6 +60,10 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
     } as unknown as React.FormEvent<HTMLFormElement>;
     handleSubmit(mockEvent);
   }, [query]);
+
+  useEffect(() => {
+    setTimeout(scrollToBottom, 100);
+  }, [messages]);
 
   return (
     <div
@@ -71,8 +88,12 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
           <ResultCard data={data} onReadCaseClick={onToggleIframe} />
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-          <ChatMessages key={data.id} messages={messages} />
+        <div className="flex-1">
+          <ChatMessages
+            key={data.id}
+            messages={messages}
+            endOfMessagesRef={endOfMessagesRef}
+          />
         </div>
 
         <div className="w-full p-3 border-t bg-gray-900 sticky bottom-0">
@@ -101,6 +122,7 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
             </div>
           </form>
         </div>
+        <div ref={endOfMessagesRef} />
       </div>
     </div>
   );
