@@ -5,6 +5,7 @@ import ChatMessages from "@/components/chat-messages";
 import { useChat } from "ai/react";
 import { Message } from "ai";
 import { useEffect, useState } from "react";
+import MoonLoader from "react-spinners/MoonLoader";
 
 interface ChatComponentReadyProps {
   data: {
@@ -34,10 +35,11 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
 
   console.log("CCR is here. Here is the real chatArgs: ", chatArgs);
 
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    ...chatArgs,
-    body: { filter: data.caseNeutralCit, searchResultId: data.id },
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      ...chatArgs,
+      body: { filter: data.caseNeutralCit, searchResultId: data.id },
+    });
 
   useEffect(() => {
     const mockEvent = {
@@ -80,10 +82,21 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
                 className="resize-none overflow-auto max-h-24 border rounded w-full p-3 pl-3 pr-20 text-gray-200 leading-tight bg-black border-gray-700 duration-200 h-20"
                 value={input}
                 onChange={handleInputChange}
+                disabled={isLoading}
               ></input>
 
               <span className="absolute inset-y-0 right-5 flex items-center pr-3 pointer-events-none text-gray-400">
-                <div className="h-3 w-3">⮐</div>
+                {isLoading ? (
+                  <MoonLoader
+                    color="#36d7b7"
+                    loading={isLoading}
+                    size={20} // Adjust size as needed
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
+                ) : (
+                  <div className="h-3 w-3">⮐</div>
+                )}
               </span>
             </div>
           </form>
