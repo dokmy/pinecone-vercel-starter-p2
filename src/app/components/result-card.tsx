@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "./ui/button";
+import { Switch } from "@/components/ui/switch";
 
 interface ResultCardProps {
   data: {
@@ -25,7 +26,7 @@ interface ResultCardProps {
 const ResultCard: React.FC<ResultCardProps> = ({ data, onReadCaseClick }) => {
   return (
     <div className="">
-      <Accordion type="single" collapsible>
+      <Accordion type="single" defaultValue="item-1" collapsible>
         <AccordionItem value="item-1">
           <AccordionTrigger className="justify-center">
             <div className="px-2">{data.caseName}</div>
@@ -43,7 +44,8 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, onReadCaseClick }) => {
               </li>
             </ul>
             <div className="flex justify-center items-center mt-3">
-              <Button onClick={onReadCaseClick}>Read the case</Button>
+              <div className="mr-2">Read the case</div>
+              <Switch onCheckedChange={onReadCaseClick}></Switch>
             </div>
           </AccordionContent>
         </AccordionItem>
