@@ -49,11 +49,11 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", {status: 401})
     }
 
-    const inSearchCreditsDb = await checkSearchCredits(userId)
+    // const inSearchCreditsDb = await checkSearchCredits(userId)
 
-    if (!inSearchCreditsDb) {
-      return new NextResponse("Not inside credits database", {status: 401})
-    } 
+    // if (!inSearchCreditsDb) {
+    //   return new NextResponse("Not inside credits database", {status: 401})
+    // } 
 
     const creditsLeft = await getSearchCreditCount(userId)
 
@@ -76,10 +76,10 @@ export async function POST(req: Request) {
       const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption } = await req.json()
 
       // -------Get User Info-------
-      const user = await currentUser();
-      if (!user || !user.id || !user.firstName) {
-        return new NextResponse("Unauthorized", { status: 401 });
-      }
+      // const user = await currentUser();
+      // if (!user || !user.id || !user.firstName) {
+      //   return new NextResponse("Unauthorized", { status: 401 });
+      // }
 
       // -------Check Subscription-------
 
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
           prefixFilters: JSON.stringify(filters),
           minDate: selectedMinDate,
           maxDate: selectedMaxDate,
-          userId: user.id
+          userId: userId
         }
       });
 
@@ -185,7 +185,7 @@ export async function POST(req: Request) {
             caseDate: result.case_date,
             caseUrl: result.url,
             searchId: searchRecord.id,
-            userId: user.id
+            userId: userId
           }
         })
       }))
