@@ -79,18 +79,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
   if (chatArgs == null) {
     return (
-      // <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <div className="animate-bounce justify-center items-center text-center">
+      <div className="flex flex-col mt-5 animate-bounce justify-center items-center text-center">
         <Image
           src={FastLegalLogo}
           alt="fastlegal-logo"
           width="170"
           height="50"
-          className="ml-3 my-1"
+          className="my-1"
         />
         Loading results...
       </div>
-      // </div>
     );
   }
 
