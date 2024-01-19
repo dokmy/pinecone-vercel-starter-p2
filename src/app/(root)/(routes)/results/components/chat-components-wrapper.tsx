@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatComponent from "./chat-component";
+import { toast } from "sonner";
 
 interface SearchResult {
   id: string;
@@ -26,6 +27,17 @@ const ChatComponentsWrapper = ({
   const toggleIframe = (chatId: any) => {
     setActiveChatId(activeChatId === chatId ? null : chatId);
   };
+
+  useEffect(() => {
+    if (searchResults.length > 3) {
+      toast("Swipe to the right for more results →", {
+        action: {
+          label: "Noted",
+          onClick: () => console.log("Action!"),
+        },
+      });
+    }
+  }, [searchResults.length]);
 
   return (
     <div className="flex overflow-x-auto h-full w-full">
