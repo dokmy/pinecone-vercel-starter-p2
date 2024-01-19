@@ -140,7 +140,7 @@ const SearchForm = () => {
             alert("Not enough credits. Please upgrade or buy more.");
             router.push(`/settings`);
           } else {
-            router.refresh();
+            // router.refresh();
             router.push(`/results/${searchId}`);
           }
           setIsLoading(false);

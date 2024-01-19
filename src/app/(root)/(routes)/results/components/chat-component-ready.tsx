@@ -36,13 +36,13 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    // if (endOfMessagesRef.current) {
-    //   const scrollContainer = endOfMessagesRef.current.parentElement;
-    //   if (scrollContainer) {
-    //     // Set the scrollTop to the bottom of the container
-    //     scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    //   }
-    // }
+    if (endOfMessagesRef.current) {
+      const scrollContainer = endOfMessagesRef.current.parentElement;
+      if (scrollContainer) {
+        // Set the scrollTop to the bottom of the container
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
     // endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 

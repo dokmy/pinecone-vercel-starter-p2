@@ -16,6 +16,8 @@ import { Search } from "@prisma/client";
 import { SearchResult } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import FastLegalLogo from "public/logo_rec.png";
 
 type SearchWithResults = Search & { searchResults: SearchResult[] };
 
@@ -70,7 +72,20 @@ const DashboardPage = () => {
   };
 
   if (searches == null) {
-    return <div>Loading searches...</div>;
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="animate-bounce justify-center items-center text-center">
+          <Image
+            src={FastLegalLogo}
+            alt="fastlegal-logo"
+            width="170"
+            height="50"
+            className="ml-3 my-1"
+          />
+          Loading searches...
+        </div>
+      </div>
+    );
   }
 
   if (searches.length == 0) {

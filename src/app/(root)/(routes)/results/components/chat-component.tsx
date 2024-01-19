@@ -4,6 +4,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ChatComponentReady from "./chat-component-ready";
 import { Message } from "ai";
+import Image from "next/image";
+import FastLegalLogo from "public/logo_rec.png";
 
 interface ChatComponentProps {
   data: {
@@ -76,7 +78,20 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   }, [dbMessages, query]);
 
   if (chatArgs == null) {
-    return <div>Loading...</div>;
+    return (
+      // <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="animate-bounce justify-center items-center text-center">
+        <Image
+          src={FastLegalLogo}
+          alt="fastlegal-logo"
+          width="170"
+          height="50"
+          className="ml-3 my-1"
+        />
+        Loading results...
+      </div>
+      // </div>
+    );
   }
 
   return (
