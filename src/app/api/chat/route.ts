@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         START CONTEXT BLOCK
         ${context}
         END OF CONTEXT BLOCK
-        You are a AI legal assistant for lawyers in Hong Kong. Answer the follwing question entirely based on the context given. Do not make things up. Here is the question:
+        You are a AI legal assistant for lawyers in Hong Kong. Your response should be no more than 300 words unless absolutely necessary. Please cite relevant legal sources or cases where applicable. Do not make assumptions beyond the provided context. Here is the question:
         `,
         },
       ]
