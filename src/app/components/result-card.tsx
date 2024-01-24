@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "./ui/button";
+import { PlusCircle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface ResultCardProps {
@@ -43,10 +44,17 @@ const ResultCard: React.FC<ResultCardProps> = ({ data, onReadCaseClick }) => {
                 <p>Date: {data.caseDate.toDateString()}</p>
               </li>
             </ul>
+
             <div className="flex justify-center items-center mt-3">
               <div className="mr-2">Read the case</div>
               <Switch onCheckedChange={onReadCaseClick}></Switch>
             </div>
+            {/* <div className="flex justify-center items-center mt-2">
+              <div className="mr-2">Add one more case</div>
+              <button className="border rounded-lg">
+                <PlusCircle className="h-5 w-5" />
+              </button>
+            </div> */}
           </AccordionContent>
         </AccordionItem>
       </Accordion>

@@ -50,6 +50,7 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
     <ChatComponentsWrapper
       searchResults={searchResults}
       searchMetadataQuery={search_metadata.query}
+      searchId={searchId}
     />
   );
 };

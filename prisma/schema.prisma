@@ -16,6 +16,7 @@ model Search {
   maxDate       DateTime?
   createdAt     DateTime       @default(now())
   searchResults SearchResult[]
+  resultsShown  Int            @default(3)
   userId        String
 
   @@index([userId])

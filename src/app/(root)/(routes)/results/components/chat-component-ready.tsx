@@ -6,6 +6,7 @@ import { useChat } from "ai/react";
 import { Message } from "ai";
 import { useEffect, useRef } from "react";
 import MoonLoader from "react-spinners/MoonLoader";
+import { Button } from "@/components/ui/button";
 
 interface ChatComponentReadyProps {
   data: {
@@ -69,7 +70,7 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
     <div
       className={`flex ${
         isIframeShown ? "flex-row" : "flex-col"
-      } h-[calc(100vh-4rem)]`}
+      } h-[calc(100vh-64px-73px)]`}
     >
       {isIframeShown && (
         <iframe
