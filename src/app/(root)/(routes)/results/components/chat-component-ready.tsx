@@ -62,9 +62,9 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
     handleSubmit(mockEvent);
   }, [query]);
 
-  useEffect(() => {
-    setTimeout(scrollToBottom, 100);
-  }, [messages]);
+  // useEffect(() => {
+  //   setTimeout(scrollToBottom, 100);
+  // }, [messages]);
 
   return (
     <div
@@ -123,7 +123,7 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
             </div>
           </form>
         </div>
-        <div ref={endOfMessagesRef} />
+        {/* <div ref={endOfMessagesRef} /> */}
       </div>
     </div>
   );
