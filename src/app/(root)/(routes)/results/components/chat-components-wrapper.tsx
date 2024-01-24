@@ -21,10 +21,16 @@ const ChatComponentsWrapper = ({
   searchResults,
   searchMetadataQuery,
   searchId,
+  searchFilters,
+  searchMinDate,
+  searchMaxDate,
 }: {
   searchResults: SearchResult[];
   searchMetadataQuery: string;
   searchId: string;
+  searchFilters: string[];
+  searchMinDate: Date;
+  searchMaxDate: Date;
 }) => {
   const [activeChatId, setActiveChatId] = useState(null);
   const [casesShown, setCasesShown] = useState(3);
@@ -83,8 +89,16 @@ const ChatComponentsWrapper = ({
       <div className="w-full flex flex-row border-b py-3 px-5 justify-between items-center text-center">
         <div>
           <h1>Query: </h1>
-          {searchMetadataQuery.substring(0, 3000)}
+          {searchMetadataQuery.substring(0, 70) + "..."}
         </div>
+        {/* <div>
+          <h1>Filters:</h1>
+          {searchFilters}
+        </div>
+        <div>
+          <h1>Period:</h1>
+          {formatDate(searchMinDate)} - {formatDate(searchMaxDate)}
+        </div> */}
         <div>
           <h1>Cases Retrieved:</h1>
           {searchResults.length}
