@@ -21,16 +21,10 @@ const ChatComponentsWrapper = ({
   searchResults,
   searchMetadataQuery,
   searchId,
-  searchFilters,
-  searchMinDate,
-  searchMaxDate,
 }: {
   searchResults: SearchResult[];
   searchMetadataQuery: string;
   searchId: string;
-  searchFilters: string[];
-  searchMinDate: Date;
-  searchMaxDate: Date;
 }) => {
   const [activeChatId, setActiveChatId] = useState(null);
   const [casesShown, setCasesShown] = useState(3);
