@@ -1,18 +1,21 @@
-import { Configuration, OpenAIApi } from 'openai-edge'
 import { getEmbeddings } from '@/utils/embeddings'
 import { getMatchesFromEmbeddings } from '@/utils/pinecone'
+import dayjs from "dayjs";
+import prismadb from '../../lib/prismadb';
+import { auth } from "@clerk/nextjs";
+import { NextResponse } from 'next/server';
+import { deductSearchCredit, getSearchCreditCount } from '@/lib/searchCredits';
 
-const config = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY
-  })
-  const openai = new OpenAIApi(config)
 
-export const runtime = 'edge'
-
-interface case_prefix_filter {
-    case_prefix: { "$in": string[]}
-  }
-
+interface search_result {
+  raw_case_num: string;
+  case_title: string;
+  case_date: string;
+  case_court: string;
+  case_neutral_cit: string;
+  case_action_no: string;
+  url: string;
+}
 
 
 function convertToUrl(caseRef:string) {
@@ -37,17 +40,69 @@ function convertToUrl(caseRef:string) {
 
 export async function POST(req: Request) {
 
+
+    const {userId} = auth()
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", {status: 401})
+    }
+
+    // const inSearchCreditsDb = await checkSearchCredits(userId)
+
+    // if (!inSearchCreditsDb) {
+    //   return new NextResponse("Not inside credits database", {status: 401})
+    // } 
+
+    const creditsLeft = await getSearchCreditCount(userId)
+
+    if (creditsLeft == 0) {
+      return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
+    }
+
+    if (creditsLeft == false) {
+      return new NextResponse("Credits left is null.", {status: 401})
+    } 
+    
+
+    if (creditsLeft > 0) {
+      await deductSearchCredit(userId)
+      console.log("Search is permitted. Deduct 1 credit.")
+    }
+
+
     try {
-      const { searchQuery, filters} = await req.json()
-      console.log("Search API is summoned. Here is the search query: \n")
-      console.log(searchQuery + "\n")
-      console.log("Search API is summoned. Here is the filters: \n")
-      console.log(filters + "\n")
+      const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption } = await req.json()
+
+      // -------Get User Info-------
+      // const user = await currentUser();
+      // if (!user || !user.id || !user.firstName) {
+      //   return new NextResponse("Unauthorized", { status: 401 });
+      // }
+
+      // -------Check Subscription-------
+
+
+
+      // -------Inserting the Search into DB-------
+      const searchRecord = await prismadb.search.create({
+        data: {
+          query: searchQuery,
+          prefixFilters: JSON.stringify(filters),
+          minDate: selectedMinDate,
+          maxDate: selectedMaxDate,
+          userId: userId
+        }
+      });
+
+
+      // -------Starting retrival-------
+      console.log("Search API - Here is the search query:",searchQuery, "\n")
+      console.log("Search API - Here is the filters:", filters, "\n")
 
       const embedding = await getEmbeddings(searchQuery)
 
       const case_prefix_filter = {case_prefix: { "$in": filters}}
-      console.log("Here is the case_prefix_filter: ", case_prefix_filter)
+      console.log("Search API - Here is the case_prefix_filter: ", case_prefix_filter)
 
       let matches
       if (filters.length===0){
@@ -56,10 +111,11 @@ export async function POST(req: Request) {
         matches = await getMatchesFromEmbeddings(embedding, 10, '', case_prefix_filter);
       }
       
+      console.log("Search API - Retrieval done.")
+      console.log("Search API - Number of matches BEFORE deduplication:", matches.length)
 
-      console.log("Here are the matches:")
-      console.log(matches.length)
 
+      // -------Starting deduplication-------
       const search_results = matches.map((match) => {
         const { raw_case_num, cases_title, date, db, neutral_cit, cases_act } = match.metadata;
     
@@ -76,11 +132,64 @@ export async function POST(req: Request) {
       
         const deduplicatedResults = Array.from(new Map(search_results.map(item => [item.raw_case_num, item])).values());
 
-      console.log(deduplicatedResults);
-      console.log(search_results.length)
-      console.log(deduplicatedResults.length)
+      
+      console.log("Search API - De-duplication done.")
+      console.log("Search API - Number of matches AFTER deduplication:", deduplicatedResults.length)
 
-      return new Response(JSON.stringify({deduplicatedResults}), {
+
+      // -------Starting search period filtering-------
+      const filteredResults = deduplicatedResults.filter(
+        (result: search_result) => {
+          const caseDate = dayjs(result.case_date);
+          return (
+            (caseDate.isSame(selectedMinDate) ||
+              caseDate.isAfter(selectedMinDate)) &&
+            (caseDate.isSame(selectedMaxDate) ||
+              caseDate.isBefore(selectedMaxDate))
+          );
+        }
+      );
+
+      console.log("Search API - Search Period filtering done.")
+      console.log("Search API - Number of matches AFTER search period filtering:", filteredResults.length)
+
+      
+
+      // -------Starting sorting-------
+
+      if (sortOption === "Recency") {
+        filteredResults.sort((a: search_result, b: search_result) => {
+          // Convert case_date strings to Day.js objects for comparison
+          const dateA = dayjs(a.case_date);
+          const dateB = dayjs(b.case_date);
+
+          // Sort in descending order
+          return dateB.diff(dateA);
+        });
+      }
+
+      console.log("Search API - Results sorting done.")
+      console.log("Search API - Number of matches AFTER sorting:", filteredResults.length)
+      console.log("Search API - Here are the final results to pass back and upload to db:", filteredResults)
+
+
+      // -------Inserting search results to DB-------
+      await Promise.all(filteredResults.map(result => {
+        return prismadb?.searchResult.create({
+          data: {
+            caseName: result.case_title,
+            caseNeutralCit: result.case_neutral_cit,
+            caseActionNo: result.case_action_no,
+            caseDate: result.case_date,
+            caseUrl: result.url,
+            searchId: searchRecord.id,
+            userId: userId
+          }
+        })
+      }))
+
+
+      return new Response(JSON.stringify({filteredResults, searchId: searchRecord.id}), {
         headers: { 'Content-Type': 'application/json'}
       })
 

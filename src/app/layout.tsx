@@ -1,9 +1,14 @@
-export const metadata = {
-  title: "FastLegal - Supercharge your Legal Research.",
-  description: "AI-Powered & Chat-Based Seach Engine",
-};
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "sonner";
 
-import "../global.css";
+import "./globals.css";
+
+export const metadata = {
+  title: "FastLegal",
+  description: "Supercharge your legal research",
+};
 
 export default function RootLayout({
   children,
@@ -11,8 +16,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <ClerkProvider
+        appearance={{
+          baseTheme: dark,
+        }}
+      >
+        <body>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </ClerkProvider>
     </html>
   );
 }
