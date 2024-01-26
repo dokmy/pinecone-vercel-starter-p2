@@ -5,13 +5,37 @@ import Link from "next/link";
 import Image from "next/image";
 import FastLegalLogo from "public/logo_rec.png";
 
+interface VideoPlayerProps {
+  src: string;
+  controls?: boolean;
+  autoPlay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+}
+
 export default async function Home() {
   const { userId } = await auth();
   const isAuth = !!userId;
 
+  const VideoPlayer: React.FC<VideoPlayerProps> = ({
+    src,
+    controls,
+    autoPlay,
+    muted,
+    loop,
+  }) => (
+    <video
+      src={src}
+      controls={controls}
+      autoPlay={autoPlay}
+      muted={muted}
+      loop={loop}
+    />
+  );
+
   return (
     <div className="w-screen min-h-screen bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="w-screen p-20">
         <div className="flex flex-col items-center text-center">
           <Image
             src={FastLegalLogo}
@@ -26,14 +50,12 @@ export default async function Home() {
             </h1>
             <UserButton afterSignOutUrl="/" />
           </div>
-
           <p className="max-w-xl mt-1 text-lg text-slate-600">
-            Shift from merely sharing your sales decks and presentations to
-            empowering them with AI that interacts and engages with your
-            audience.
+            Dive into a seamless research experience where AI understands the
+            context of your legal inquiries, providing precise, relevant
+            results. Discover the future of legal research with FastLegal.
           </p>
-
-          <div className="w-full mt-4">
+          <div className="w-full mt-4 mb-8">
             {isAuth ? (
               <Link href="/dashboard">
                 <Button variant="outlined">Go to Dashboard </Button>
@@ -46,6 +68,15 @@ export default async function Home() {
                 </Button>
               </Link>
             )}
+          </div>
+          <div className="w-5/6">
+            <VideoPlayer
+              src="/v2 - FastLegal demo video.mp4"
+              controls
+              autoPlay
+              muted
+              loop
+            />
           </div>
         </div>
       </div>
