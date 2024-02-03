@@ -21,7 +21,7 @@ export default async function Home() {
   console.log("here is the userId", userId);
 
   const user = await currentUser();
-  console.log("currentUser is ", currentUser);
+  console.log("currentUser is ", currentUser());
 
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
