@@ -1,5 +1,5 @@
 import Button from "@mui/material/Button";
-import { UserButton, auth } from "@clerk/nextjs";
+import { UserButton, auth, currentUser } from "@clerk/nextjs";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,6 +18,10 @@ export default async function Home() {
   const isAuth = !!userId;
 
   console.log("is the user logged in", isAuth);
+  console.log("here is the userId", userId);
+
+  const user = await currentUser();
+  console.log("currentUser is ", currentUser);
 
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
