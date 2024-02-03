@@ -17,7 +17,7 @@ export default async function Home() {
   const { userId } = await auth();
   const isAuth = !!userId;
 
-  alert(isAuth);
+  console.log("is the user logged in", isAuth);
 
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
