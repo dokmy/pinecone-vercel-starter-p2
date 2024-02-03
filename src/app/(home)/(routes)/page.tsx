@@ -23,6 +23,8 @@ export default async function Home() {
   const user = await currentUser();
   console.log("currentUser is ", user);
 
+  console.log("Clerk API Key:", process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
     controls,
