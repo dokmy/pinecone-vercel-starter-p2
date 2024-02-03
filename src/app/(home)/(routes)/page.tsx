@@ -62,7 +62,7 @@ export default async function Home() {
             results. Discover the future of legal research with FastLegal.
           </p>
           <div className="w-full mt-4 mb-8">
-            {isAuth ? (
+            {user ? (
               <Link href="/dashboard">
                 <Button variant="outlined">Go to Dashboard </Button>
               </Link>
