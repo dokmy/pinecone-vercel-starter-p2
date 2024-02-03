@@ -17,6 +17,8 @@ export default async function Home() {
   const { userId } = await auth();
   const isAuth = !!userId;
 
+  alert(isAuth);
+
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
     controls,
