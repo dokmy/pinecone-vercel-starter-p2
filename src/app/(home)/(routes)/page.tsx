@@ -51,12 +51,12 @@ export default async function Home() {
             className="ml-3 mb-5"
           />
           <div className="flex items-center">
-            <h1 className="mr-3 text-5xl mb-5 font-semibold">
+            <h1 className="mr-3 text-3xl mb-5 font-semibold sm:text-5xl">
               Supercharge Your Legal Research
             </h1>
             <UserButton afterSignOutUrl="/" />
           </div>
-          <p className="max-w-xl mt-1 text-lg text-slate-600">
+          <p className="max-w-xl mt-1 text-md text-slate-600 sm:text-lg">
             Dive into a seamless research experience where AI understands the
             context of your legal inquiries, providing precise, relevant
             results. Discover the future of legal research with FastLegal.
@@ -75,7 +75,7 @@ export default async function Home() {
               </Link>
             )}
           </div>
-          <div className="w-5/6">
+          <div className="w-full">
             <VideoPlayer
               src="/v2 - FastLegal demo video.mp4"
               controls

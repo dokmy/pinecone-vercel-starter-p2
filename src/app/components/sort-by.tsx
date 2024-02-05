@@ -15,8 +15,8 @@ const SortBy: React.FC<SortByProps> = ({ sortOption, setSortOption }) => {
     setSortOption(option);
   };
   return (
-    <div className="flex flex-row items-center">
-      <p>Sort the results by:</p>
+    <div className="flex flex-col lg:flex-row items-center">
+      <p className="hidden xl:block">Sort the results by:</p>
       <div id="sort-by" className="border border-gray-300 ml-3 rounded-sm h-13">
         <ToggleButtonGroup
           color="primary"

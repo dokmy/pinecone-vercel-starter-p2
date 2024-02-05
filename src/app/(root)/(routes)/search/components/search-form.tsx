@@ -157,7 +157,7 @@ const SearchForm = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="w-full px-52 py-5 flex-col">
+    <div className="px-12 lg:px-52 py-5 flex-col">
       <form onSubmit={checkRequired} noValidate autoComplete="off">
         <SearchQuery
           searchQueryError={searchQueryError}
