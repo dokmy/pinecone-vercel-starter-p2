@@ -41,22 +41,22 @@ export default async function Home() {
 
   return (
     <div className="w-screen min-h-screen bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white">
-      <div className="w-screen p-20">
+      <div className="w-screen p-5 sm:p-20">
         <div className="flex flex-col items-center text-center">
           <Image
             src={FastLegalLogo}
             alt="fastlegal-logo"
-            width="300"
-            height="50"
-            className="ml-3 mb-5"
+            width={300}
+            height={50}
+            className="w-44 sm:w-64 ml-3 mb-5"
           />
           <div className="flex items-center">
-            <h1 className="mr-3 text-3xl mb-5 font-semibold sm:text-5xl">
+            <h1 className="mr-3 mb-5 leading-normal font-semibold text-5xl">
               Supercharge Your Legal Research
             </h1>
-            <UserButton afterSignOutUrl="/" />
+            {/* <UserButton afterSignOutUrl="/" /> */}
           </div>
-          <p className="max-w-xl mt-1 text-md text-slate-600 sm:text-lg">
+          <p className="max-w-xl mt-1 text-sm text-slate-600 sm:text-lg">
             Dive into a seamless research experience where AI understands the
             context of your legal inquiries, providing precise, relevant
             results. Discover the future of legal research with FastLegal.
@@ -75,7 +75,7 @@ export default async function Home() {
               </Link>
             )}
           </div>
-          <div className="w-full">
+          <div className="-mx-5 sm:w-full">
             <VideoPlayer
               src="/v2 - FastLegal demo video.mp4"
               controls
