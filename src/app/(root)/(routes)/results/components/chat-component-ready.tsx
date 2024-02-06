@@ -69,20 +69,20 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
   return (
     <div
       className={`flex ${
-        isIframeShown ? "flex-row" : "flex-col"
+        isIframeShown ? "flex-col sm:flex-row" : "flex-col"
       } h-[calc(100vh-64px-73px)]`}
     >
       {isIframeShown && (
         <iframe
           src={data.caseUrl}
-          className="w-1/2 h-full flex-none"
+          className="w-screen h-1/2 sm:w-1/2 sm:h-full flex-none"
           title="Case Details"
         ></iframe>
       )}
 
       <div
         className={`h-full overflow-y-scroll ${
-          isIframeShown ? "w-1/2" : "w-full"
+          isIframeShown ? "w-full sm:w-1/2" : "w-full"
         }`}
       >
         <div className="w-full sticky top-0 bg-black">
