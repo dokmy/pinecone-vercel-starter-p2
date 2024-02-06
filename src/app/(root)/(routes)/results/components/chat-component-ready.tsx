@@ -70,7 +70,7 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
     <div
       className={`flex ${
         isIframeShown ? "flex-col sm:flex-row" : "flex-col"
-      } h-[calc(100vh-64px-73px)]`}
+      } sm:h-[calc(100vh-64px-73px)]`}
     >
       {isIframeShown && (
         <iframe
