@@ -12,27 +12,6 @@ import SubscriptionButton from "./subcription-button";
 import { useState } from "react";
 import { MobileSidebar } from "./mobile-sidebar";
 
-const routes = [
-  {
-    icon: Home,
-    href: "/dashboard",
-    label: "Dashboard",
-    pro: false,
-  },
-  {
-    icon: Search,
-    href: "/search",
-    label: "Search",
-    pro: true,
-  },
-  {
-    icon: Settings,
-    href: "/settings",
-    label: "Settings",
-    pro: false,
-  },
-];
-
 const Navbar = ({ hasSubscription }: { hasSubscription: boolean }) => {
   const { theme } = useTheme();
 

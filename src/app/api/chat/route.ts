@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   try {
 
     const user = await currentUser();
-    if (!user || !user.id || !user.firstName) {
+    if (!user || !user.id ) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

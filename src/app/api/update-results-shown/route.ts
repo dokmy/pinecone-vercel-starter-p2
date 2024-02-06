@@ -16,6 +16,10 @@ export const POST = async (req: Request) => {
 
         return new NextResponse("Update Success", { status: 200 })
     } catch (error) {
+        console.error(
+            "Error during API call:",
+            error instanceof Error ? error.message : "An unknown error occurred"
+        );
         return new NextResponse("Internal Error", { status: 500 })
     }
 

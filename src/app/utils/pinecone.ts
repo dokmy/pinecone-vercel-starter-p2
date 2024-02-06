@@ -55,7 +55,14 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
   try {
     // Query the index with the defined request
     const queryResult = await pineconeNamespace.query(queryObject)
-    // console.log("\nHere are the queryResults: " + queryResult.matches)
+
+    queryResult.matches.forEach(match => {
+      if (match.metadata && typeof match.metadata._node_content === 'string') {
+        const nodeContent = JSON.parse(match.metadata._node_content);
+        console.log("Match text: " + nodeContent.text + "\n");
+      }
+    });
+
     return queryResult.matches || []
   } catch (e) {
     // Log the error and throw it
