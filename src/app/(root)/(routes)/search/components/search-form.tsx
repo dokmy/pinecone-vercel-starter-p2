@@ -167,7 +167,7 @@ const SearchForm = () => {
 
         <div className="mt-4 flex flex-wrap justify-between">
           {autocompleteFields.map((field) => (
-            <div className="py-2 w-[49%]" key={field.id}>
+            <div className="py-2 w-full sm:w-[49%]" key={field.id}>
               <CourtOptions
                 key={field.id}
                 id={field.id}
@@ -180,7 +180,7 @@ const SearchForm = () => {
           ))}
         </div>
 
-        <div className="mt-4 flex flex-row justify-between">
+        <div className="mt-4 flex flex-col items-center py-2 w-full">
           <SearchPeriod
             selectedMinDate={selectedMinDate}
             selectedMaxDate={selectedMaxDate}
@@ -192,7 +192,7 @@ const SearchForm = () => {
           </div>
         </div>
 
-        <div className="flex flex-row justify-center w-full">
+        <div className="flex flex-row justify-center mt-4 w-full">
           <Button
             variant="contained"
             size="large"

@@ -80,7 +80,7 @@ const ChatComponentsWrapper = ({
 
   return (
     <div>
-      <div className="w-full flex flex-row border-b py-3 px-5 justify-between items-center text-center">
+      <div className="w-full flex flex-col text-sm space-y-2 md:flex-row border-b py-3 px-5 justify-between items-center text-center">
         <div>
           <h1>Query: </h1>
           {searchMetadataQuery.substring(0, 70) + "..."}
@@ -112,7 +112,7 @@ const ChatComponentsWrapper = ({
           <div
             key={result.id}
             className={`flex-none ${
-              activeChatId === result.id ? "w-full" : "w-1/3"
+              activeChatId === result.id ? "w-full" : "w-full sm:w-1/3"
             } border-r h-full ${
               activeChatId !== null && activeChatId !== result.id
                 ? "hidden"

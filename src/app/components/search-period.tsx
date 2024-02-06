@@ -21,8 +21,8 @@ const SearchPeriod: React.FC<SearchPeriodProps> = ({
   setSelectedMaxDate,
 }) => {
   return (
-    <div className="flex flex-row items-stretch space-x-5">
-      <div id="min-date" className="mb-4">
+    <div className="flex flex-row items-stretch space-x-5 w-full">
+      <div id="min-date" className="mb-4 flex-grow">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             disableFuture
@@ -30,6 +30,7 @@ const SearchPeriod: React.FC<SearchPeriodProps> = ({
             value={selectedMinDate}
             onChange={(newValue) => setSelectedMinDate(dayjs(newValue))}
             sx={{
+              width: "100%",
               bgcolor: "transparent",
               borderColor: "white",
               "& .MuiOutlinedInput-root": {
@@ -54,7 +55,7 @@ const SearchPeriod: React.FC<SearchPeriodProps> = ({
         </LocalizationProvider>
       </div>
 
-      <div id="max-date" className="mb-4">
+      <div id="max-date" className="mb-4 flex-grow">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             disableFuture
@@ -62,6 +63,7 @@ const SearchPeriod: React.FC<SearchPeriodProps> = ({
             value={selectedMaxDate}
             onChange={(newValue) => setSelectedMaxDate(dayjs(newValue))}
             sx={{
+              width: "100%",
               bgcolor: "transparent",
               borderColor: "white",
               "& .MuiOutlinedInput-root": {
