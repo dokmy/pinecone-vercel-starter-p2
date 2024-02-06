@@ -70,14 +70,14 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
     <div
       className={`flex ${
         isIframeShown
-          ? "flex-col sm:flex-row sm:h-[calc(100vh-64px-73px)]"
+          ? "flex-col-reverse sm:flex-row sm:h-[calc(100vh-64px-73px)]"
           : "flex-col h-[calc(100vh-64px-73px)]"
       } `}
     >
       {isIframeShown && (
         <iframe
           src={data.caseUrl}
-          className="w-screen h-3/4 sm:w-1/2 sm:h-full flex-none"
+          className="w-screen h-[65vh] sm:w-1/2 sm:h-full flex-none"
           title="Case Details"
         ></iframe>
       )}
