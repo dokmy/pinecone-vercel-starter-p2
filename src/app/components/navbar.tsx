@@ -1,20 +1,22 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
-import { UserButton } from "@clerk/nextjs";
+import { currentUser, UserButton } from "@clerk/nextjs";
 import FastLegalLogo from "../../../public/logo_rec.png";
 import FastLegalLogoWhite from "../../../public/logo_white_rec.jpeg";
-import { Menu, Home, Search, Settings } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import SubscriptionButton from "./subcription-button";
-import { useState } from "react";
 import { MobileSidebar } from "./mobile-sidebar";
 
-const Navbar = ({ hasSubscription }: { hasSubscription: boolean }) => {
+const Navbar = ({
+  hasSubscription,
+  isHomePage,
+}: {
+  hasSubscription: boolean;
+  isHomePage: boolean;
+}) => {
   const { theme } = useTheme();
-
   const logo = theme === "light" ? FastLegalLogoWhite : FastLegalLogo;
 
   return (
@@ -32,7 +34,9 @@ const Navbar = ({ hasSubscription }: { hasSubscription: boolean }) => {
       </Link>
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
-        <SubscriptionButton hasSubscription={hasSubscription} />
+        {!isHomePage && (
+          <SubscriptionButton hasSubscription={hasSubscription} />
+        )}
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>

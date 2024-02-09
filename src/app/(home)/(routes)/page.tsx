@@ -4,6 +4,8 @@ import { LogIn } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import FastLegalLogo from "public/logo_rec.png";
+import Navbar from "@/components/navbar";
+import { MobileSidebar } from "@/components/mobile-sidebar";
 
 interface VideoPlayerProps {
   src: string;
@@ -40,28 +42,22 @@ export default async function Home() {
   );
 
   return (
-    <div className="w-screen min-h-screen bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white">
-      <div className="w-screen p-5 sm:p-20">
+    <div className="min-h-min w-screen ">
+      <Navbar hasSubscription={false} isHomePage={true} />
+      <div className="p-5 sm:p-10">
         <div className="flex flex-col items-center text-center">
-          <Image
-            src={FastLegalLogo}
-            alt="fastlegal-logo"
-            width={300}
-            height={50}
-            className="w-44 sm:w-64 ml-3 mb-5"
-          />
           <div className="flex items-center">
-            <h1 className="mr-3 mb-5 leading-normal font-semibold text-5xl">
+            <h1 className="mb-5 leading-normal font-semibold text-6xl sm:text-8xl">
               Supercharge Your Legal Research
             </h1>
             {/* <UserButton afterSignOutUrl="/" /> */}
           </div>
-          <p className="max-w-xl mt-1 text-sm text-slate-600 sm:text-lg">
+          <p className="max-w-xl mt-1 text-base text-slate-600 sm:text-lg">
             Dive into a seamless research experience where AI understands the
             context of your legal inquiries, providing precise, relevant
             results. Discover the future of legal research with FastLegal.
           </p>
-          <div className="w-full mt-4 mb-8">
+          <div className="w-full mt-8 mb-10">
             {user ? (
               <Link href="/dashboard">
                 <Button variant="outlined">Go to Dashboard </Button>
@@ -75,15 +71,35 @@ export default async function Home() {
               </Link>
             )}
           </div>
-          <div className="-mx-5 sm:w-full">
-            <VideoPlayer
-              src="/v2 - FastLegal demo video.mp4"
-              controls
-              autoPlay
-              muted
-              loop
-            />
+          <div className="flex flex-col justify-center items-center w-full h-5/6 p-6 sm:w-4/5 my-10">
+            <div className="card">
+              <span className="glow"></span>
+              <div className="inner z-20">
+                <VideoPlayer
+                  src="/v2 - FastLegal demo video.mp4"
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                />
+              </div>
+            </div>
           </div>
+          {/* <div className="mx-auto mt-20 grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-28">
+            <div className="flex flex-col justify-center space-y-4">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-8xl font-bold tracking-tighter sm:text-6xl slide-in-left">
+                    Collaboration
+                  </h3>
+                  <p className="max-w-[600px] text-gray-500/1.25 md:text-xl/1.5 lg:text-base/1.5 xl:text-xl/1.25 dark:text-gray-400/1.25">
+                    Make collaboration seamless with built-in code review tools.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <span className="w-full aspect-video object-cover object-center slide-in-left rounded-md bg-muted" />
+          </div> */}
         </div>
       </div>
     </div>
