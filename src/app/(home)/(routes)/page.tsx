@@ -47,8 +47,11 @@ export default async function Home() {
       <div className="p-5 sm:p-10">
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center">
-            <h1 className="mb-5 leading-normal font-semibold text-6xl sm:text-8xl">
-              Supercharge Your Legal Research
+            <h1 className="mb-5 leading-normal font-semibold text-6xl sm:text-8xl ">
+              <div className="leading-normal bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+                Supercharge{" "}
+              </div>
+              Your Legal Research
             </h1>
             {/* <UserButton afterSignOutUrl="/" /> */}
           </div>
@@ -71,10 +74,10 @@ export default async function Home() {
               </Link>
             )}
           </div>
-          <div className="flex flex-col justify-center items-center w-full h-5/6 p-6 sm:w-4/5 my-10">
-            <div className="card">
+          <div className="flex flex-col justify-center items-center w-full h-5/6 p-6 sm:w-4/5 my-10 ">
+            <div className="card w-full">
               <span className="glow"></span>
-              <div className="inner z-20">
+              <div className="inner z-10">
                 <VideoPlayer
                   src="/v2 - FastLegal demo video.mp4"
                   controls

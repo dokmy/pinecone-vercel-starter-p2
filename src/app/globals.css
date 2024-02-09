@@ -188,7 +188,7 @@ body,
 }  */
 
 .card {
-	width: var(--card-width);
+	/* width: var(--card-width); */
   width: 100%;
 	aspect-ratio: 1.6/1;
 	color: white;
@@ -200,6 +200,12 @@ body,
 	z-index: 2;
 	border-radius: var(--card-radius);
 	cursor: pointer;
+}
+
+@media (max-width: 640px) { /* Adjust 600px to the breakpoint you need */
+  .card {
+      width: 120%;
+  }
 }
 
 .card:hover>div {
