@@ -40,7 +40,7 @@ export default async function Home() {
       loop={loop}
     />
   );
-
+  // try again
   return (
     <div className="min-h-min w-screen">
       <Navbar hasSubscription={false} isHomePage={true} />
