@@ -42,7 +42,7 @@ export default async function Home() {
   );
 
   return (
-    <div className="min-h-min w-screen ">
+    <div className="min-h-min w-screen">
       <Navbar hasSubscription={false} isHomePage={true} />
       <div className="p-5 sm:p-10">
         <div className="flex flex-col items-center text-center">
