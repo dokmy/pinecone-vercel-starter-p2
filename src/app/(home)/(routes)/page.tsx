@@ -48,7 +48,7 @@ export default async function Home() {
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center">
             <h1 className="mb-5 leading-normal font-semibold text-6xl sm:text-8xl ">
-              <div className="leading-normal bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
+              <div className="leading-normal bg-gradient-to-r from-cyan-500 to-indigo-500 bg-clip-text text-transparent">
                 Supercharge{" "}
               </div>
               Your Legal Research
