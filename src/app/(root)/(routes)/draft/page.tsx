@@ -157,18 +157,18 @@ const DraftPage = () => {
                     onmessage,
                     onerror,
                   }
-                )
-                  .then(async (response) => {
-                    if (response && !response.ok) {
-                      const data = await response.json();
-                      if (data.error) {
-                        throw new Error(
-                          `${data.error.type}: ${data.error.message}`
-                        );
-                      }
-                    }
-                  })
-                  .catch(onerror);
+                );
+                // .then(async (response) => {
+                //   if (response && !response.ok) {
+                //     const data = await response.json();
+                //     if (data.error) {
+                //       throw new Error(
+                //         `${data.error.type}: ${data.error.message}`
+                //       );
+                //     }
+                //   }
+                // })
+                // .catch(onerror);
               });
             },
           }}
