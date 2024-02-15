@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Search, Settings } from "lucide-react";
+import { Home, Search, Settings, PencilLine } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,12 @@ export const Sidebar = () => {
       href: "/search",
       label: "Search",
       pro: true,
+    },
+    {
+      icon: PencilLine,
+      href: "/draft",
+      label: "Draft",
+      pro: false,
     },
     {
       icon: Settings,
