@@ -2,7 +2,7 @@ import { getEmbeddings } from '@/utils/embeddings'
 import { getMatchesFromEmbeddings } from '@/utils/pinecone'
 import dayjs from "dayjs";
 import prismadb from '../../lib/prismadb';
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 import { deductSearchCredit, getSearchCreditCount } from '@/lib/searchCredits';
 
@@ -42,6 +42,7 @@ export async function POST(req: Request) {
 
 
     const {userId} = auth()
+    
 
     if (!userId) {
       return new NextResponse("Unauthorized", {status: 401})
@@ -73,14 +74,10 @@ export async function POST(req: Request) {
     try {
       const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption } = await req.json()
 
-      // -------Get User Info-------
-      // const user = await currentUser();
-      // if (!user || !user.id || !user.firstName) {
-      //   return new NextResponse("Unauthorized", { status: 401 });
-      // }
-
-      // -------Check Subscription-------
-
+      
+      const user = await currentUser();
+      const userName = user?.firstName + " " + user?.lastName;
+      const userEmail = user?.emailAddresses[0].emailAddress;
 
 
       // -------Inserting the Search into DB-------
@@ -90,7 +87,9 @@ export async function POST(req: Request) {
           prefixFilters: JSON.stringify(filters),
           minDate: selectedMinDate,
           maxDate: selectedMaxDate,
-          userId: userId
+          userId: userId,
+          userName: userName,
+          userEmail: userEmail
         }
       });
 
@@ -183,7 +182,9 @@ export async function POST(req: Request) {
             caseDate: result.case_date,
             caseUrl: result.url,
             searchId: searchRecord.id,
-            userId: userId
+            userId: userId,
+            userName: userName,
+            userEmail: userEmail
           }
         })
       }))

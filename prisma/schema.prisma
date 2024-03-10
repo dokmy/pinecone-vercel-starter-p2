@@ -9,27 +9,31 @@ generator client {
 }
 
 model Search {
-  id            String         @id @default(uuid())
+  createdAt     DateTime       @default(now())
+  userName      String?
+  userEmail     String?
   query         String
+  userId        String
   prefixFilters String
   minDate       DateTime?
   maxDate       DateTime?
-  createdAt     DateTime       @default(now())
+  id            String         @id @default(uuid())
   searchResults SearchResult[]
   resultsShown  Int            @default(3)
-  userId        String
 
   @@index([userId])
 }
 
 model SearchResult {
-  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  userName       String?
+  userEmail      String?
   caseName       String
   caseNeutralCit String
   caseActionNo   String
   caseDate       DateTime
   caseUrl        String
-  createdAt      DateTime @default(now())
+  id             String   @id @default(uuid())
   searchId       String
   userId         String
 
@@ -46,10 +50,12 @@ enum Role {
 }
 
 model Message {
+  createdAt      DateTime @default(now())
+  userName       String?
+  userEmail      String?
   id             String   @id @default(uuid())
   role           Role
   content        String   @db.Text
-  createdAt      DateTime @default(now())
   userId         String
   searchResultId String
 

@@ -22,6 +22,9 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const userName = user?.firstName + " " + user?.lastName;
+    const userEmail = user?.emailAddresses[0].emailAddress;
+
     const { messages, filter, searchResultId } = await req.json()
     const lastMessage = messages[messages.length - 1]
 
@@ -60,7 +63,9 @@ export async function POST(req: Request) {
             role: Role.user,
             content: lastMessage.content,
             userId: user.id,
-            searchResultId: searchResultId
+            searchResultId: searchResultId,
+            userName: userName,
+            userEmail: userEmail
           }
           
         });
@@ -72,7 +77,9 @@ export async function POST(req: Request) {
             role: Role.assistant,
             content: completion,
             userId: user.id,
-            searchResultId: searchResultId
+            searchResultId: searchResultId,
+            userName: userName,
+            userEmail: userEmail
           }
           
         });

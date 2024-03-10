@@ -23,7 +23,13 @@ export default async function Home() {
   console.log("here is the userId", userId);
 
   const user = await currentUser();
-  console.log("currentUser is ", user);
+  if (user) {
+    console.log("currentUser is ", user?.firstName + " " + user?.lastName);
+    console.log(
+      "currentUser's email address is ",
+      user?.emailAddresses[0].emailAddress
+    );
+  }
 
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
