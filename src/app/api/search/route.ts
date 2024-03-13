@@ -5,6 +5,7 @@ import prismadb from '../../lib/prismadb';
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 import { deductSearchCredit, getSearchCreditCount } from '@/lib/searchCredits';
+import { getHypotheticalAnswer } from '@/utils/hyde';
 
 
 interface search_result {
@@ -95,13 +96,19 @@ export async function POST(req: Request) {
 
 
       // -------Starting retrival-------
-      console.log("Search API - Here is the search query:",searchQuery, "\n")
-      console.log("Search API - Here is the filters:", filters, "\n")
+      console.log("[Search API] - Here is the search query:",searchQuery, "\n")
+      console.log("[Search API] - Here is the filters:", filters)
 
+      
+      // normal way - passing the query for embedding directly
       const embedding = await getEmbeddings(searchQuery)
 
+      // rewrite the searchQuery for retrieval. Call the Openai api
+      // const hypotheticalAnswer = await getHypotheticalAnswer(searchQuery)
+      // const embedding = await getEmbeddings(hypotheticalAnswer)
+
       const case_prefix_filter = {case_prefix: { "$in": filters}}
-      console.log("Search API - Here is the case_prefix_filter: ", case_prefix_filter)
+      console.log("[Search API] - Here is the case_prefix_filter: ", case_prefix_filter)
 
       let matches
       if (filters.length===0){
@@ -110,21 +117,24 @@ export async function POST(req: Request) {
         matches = await getMatchesFromEmbeddings(embedding, 10, '', case_prefix_filter);
       }
       
-      console.log("Search API - Retrieval done.")
-      console.log("Search API - Number of matches BEFORE deduplication:", matches.length)
+      console.log("[Search API] - Retrieval done.")
+      console.log("[Search API] - Number of matches BEFORE deduplication:", matches.length)
 
 
       // -------Starting deduplication-------
       const search_results = matches.map((match) => {
-        const { raw_case_num, cases_title, date, db, neutral_cit, cases_act } = match.metadata;
+        // const { raw_case_num, cases_title, date, db, neutral_cit, cases_act } = match.metadata;
+
+        const {act_no1, case_db, case_lang, case_prefix, date, neutral, path, raw_case_num, title1} = match.metadata;
+
     
         return {
-        raw_case_num,
-        case_title: cases_title,
+        raw_case_num: raw_case_num,
+        case_title: title1,
         case_date: date,
-        case_court: db,
-        case_neutral_cit: neutral_cit,
-        case_action_no: cases_act,
+        case_court: case_db,
+        case_neutral_cit: neutral,
+        case_action_no: act_no1,
         url: convertToUrl(raw_case_num)
         };
         });
@@ -132,8 +142,8 @@ export async function POST(req: Request) {
         const deduplicatedResults = Array.from(new Map(search_results.map(item => [item.raw_case_num, item])).values());
 
       
-      console.log("Search API - De-duplication done.")
-      console.log("Search API - Number of matches AFTER deduplication:", deduplicatedResults.length)
+      console.log("[Search API] - De-duplication done.")
+      console.log("[Search API] - Number of matches AFTER deduplication:", deduplicatedResults.length)
 
 
       // -------Starting search period filtering-------
@@ -149,8 +159,8 @@ export async function POST(req: Request) {
         }
       );
 
-      console.log("Search API - Search Period filtering done.")
-      console.log("Search API - Number of matches AFTER search period filtering:", filteredResults.length)
+      console.log("[Search API] - Search Period filtering done.")
+      console.log("[Search API] - Number of matches AFTER search period filtering:", filteredResults.length)
 
       
 
@@ -167,9 +177,9 @@ export async function POST(req: Request) {
         });
       }
 
-      console.log("Search API - Results sorting done.")
-      console.log("Search API - Number of matches AFTER sorting:", filteredResults.length)
-      console.log("Search API - Here are the final results to pass back and upload to db:", filteredResults)
+      console.log("[Search API] - Results sorting done.")
+      console.log("[Search API] - Number of matches AFTER sorting:", filteredResults.length)
+      console.log("[Search API] - Here are the final results to pass back and upload to db:", filteredResults)
 
 
       // -------Inserting search results to DB-------

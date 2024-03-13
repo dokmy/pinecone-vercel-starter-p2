@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 
 import prismadb from "./prismadb";
 import { NextResponse } from "next/server";
@@ -8,6 +8,10 @@ export const incrementSearchCredit = async (userId: string, no_of_credits:number
   if (!userId) {
     return;
   }
+
+  const user = await currentUser();
+  const userName = user?.firstName + " " + user?.lastName;
+  const userEmail = user?.emailAddresses[0].emailAddress;
 
   const userSearchCredit = await prismadb.userSearchCredit.findUnique({
     where: { userId: userId },
@@ -20,7 +24,7 @@ export const incrementSearchCredit = async (userId: string, no_of_credits:number
     });
   } else {
     await prismadb.userSearchCredit.create({
-      data: { userId: userId, count: no_of_credits },
+      data: { userId: userId, count: no_of_credits, userName: userName, userEmail: userEmail },
     });
   }
 };

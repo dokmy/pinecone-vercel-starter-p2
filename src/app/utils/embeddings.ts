@@ -11,7 +11,7 @@ export const runtime = 'edge';
 export async function getEmbeddings(input: string) {
   try {
     const response = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
+      model: "text-embedding-3-small",
       input: input.replace(/\n/g, ' ')
     })
 

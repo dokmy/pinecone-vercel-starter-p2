@@ -1,4 +1,3 @@
-import { ScoredVector } from "@pinecone-database/pinecone";
 import { getMatchesFromEmbeddings } from "./pinecone";
 import { getEmbeddings } from './embeddings'
 import { filter } from "cheerio/lib/api/traversing";
@@ -10,18 +9,18 @@ import { filter } from "cheerio/lib/api/traversing";
 // }
 
 interface neutral_cit_filter {
-  neutral_cit: string
+  "neutral": string
 }
 
 // The function `getContext` is used to retrieve the context of a given message
-export const getContext = async (message: string, namespace: string, filter:string, maxTokens = 3000, minScore = 0.7, getOnlyText = true): Promise<any> => {
+export const getContext = async (message: string, namespace: string, filter:string, maxTokens = 1000, minScore = 0.7, getOnlyText = true): Promise<any> => {
 
   // Get the embeddings of the input message
   const embedding = await getEmbeddings(message);
 
-  console.log("context.tx is called. Here is my filter: " + filter + "\n")
-  const neutral_cit_filter = {"neutral_cit": filter}
-  console.log(neutral_cit_filter)
+  console.log("[Context.ts - getContext] - Here is my filter: " + filter)
+  const neutral_cit_filter = {"neutral": filter}
+  console.log("[Context.ts - getContext] - Here is my neutral_cit_filter_object: " + neutral_cit_filter)
 
   // Retrieve the matches for the embeddings from the specified namespace
   const matches = await getMatchesFromEmbeddings(embedding, 5, namespace, neutral_cit_filter);
@@ -34,13 +33,14 @@ export const getContext = async (message: string, namespace: string, filter:stri
   let text_array: any[] = []
   matches.map((match) => {
     const metadata = match.metadata
-    const node_content = JSON.parse(metadata._node_content)
-    const text = node_content.text
-    text_array.push(text)
+    const node_text = metadata.chunk_text
+    // console.log("[Context.ts - getContext] - Here is the node_text: " + node_text)
+    // const text = node_content.text
+    text_array.push(node_text)
     // console.log(text_array)
   })
 
   const context_text = text_array.join("\n").substring(0, maxTokens)
-  // console.log("End of context.ts. Here is the context text that I will send back to the API:\n" + context_text)
+
   return context_text
 }

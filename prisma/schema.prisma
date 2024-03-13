@@ -77,6 +77,8 @@ model UserSubscription {
 model UserSearchCredit {
   id        String   @id @default(cuid())
   userId    String   @unique
+  userName  String?
+  userEmail String?
   count     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
