@@ -18,7 +18,6 @@ import { toast } from "sonner";
 const examples = [
   "My client has a personal injury during lunch time at work. Is he eligbale for compensation from his employer?",
   "In personal injuries cases, is there any obligation or duty for the defendant to disclose the information of its insurer? ",
-  "A fraudster misfiled a document to change the directors of my company. What should I do? must i join the fraudster as a respondent?",
   "Plaintiff suffered vertebral fracture, please estimate the PSLA figure for me based on past cases.",
 ];
 
@@ -34,7 +33,7 @@ export default function Chat() {
   const disabled = isLoading || input.length === 0;
 
   return (
-    <main className="flex flex-col items-center justify-between pb-40 h-[calc(100vh-80px)] overflow-y-auto">
+    <main className="flex flex-col items-center justify-between pb-40 h-[calc(100vh-60px)]">
       <div className="flex-1">
         {messages.length > 0 ? (
           messages.map((message, i) => (
@@ -127,12 +126,18 @@ export default function Chat() {
             </div>
           ))
         ) : (
-          <div className="mx-5 mt-20 max-w-screen-md rounded-md border border-gray-200 sm:mx-0 sm:w-full">
+          <div className="mx-5 mt-5 max-w-screen-md rounded-md border border-gray-200 sm:mx-0 sm:w-full">
             <div className="flex flex-col space-y-4 p-7 sm:p-10">
               <h1 className="text-lg font-semibold text-white">
                 Welcome to Chat!
               </h1>
-              <p className="text-gray-500">This is a legal chatbot.</p>
+              <p className="text-gray-500">
+                This is a legal chatbot. I can trained on the Hong Kong Law
+                Database. I will try my best to answer your questions. Please
+                note that answers might be wrong or inaccurate. Please use this
+                chatbot for informational purposes only. Below are some sample
+                questions or you can come up with your own in the chatbox.
+              </p>
             </div>
             <div className="flex flex-col space-y-4 border-t border-gray-200 bg-gray-50 p-7 sm:p-10">
               {examples.map((example, i) => (

@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     - "cap_number": The formatted chapter and section number (e.g., "CAP 347 - Section 27").
     - "legis_url": The full URL of the legislation (e.g., "https://www.hklii.hk/en/legis/ord/347/s27").
 
-    When citing the legislation by mentioning both the "cap_number" and "title", you MUST make the "cap_number" a clickable link to the "legis_url" using Markdown syntax (e.g., "[CAP 347 - Section 27](https://www.hklii.hk/en/legis/ord/347/s27) 'Time limit for personal injuries'").
+    When citing the legislation by mentioning both the "cap_number" or "title", you MUST make the it a clickable link to the "legis_url" using Markdown syntax (e.g., "[CAP 347 - Section 27](https://www.hklii.hk/en/legis/ord/347/s27) 'Time limit for personal injuries'").
     
     When a user asks a legal question, your goal is to provide a comprehensive and accurate answer by referring to the relevant legislation in the provided context. Follow these steps:
     
