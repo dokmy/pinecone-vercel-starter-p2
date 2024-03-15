@@ -35,6 +35,9 @@ export const getLegisText = async (path: string): Promise<any> => {
         // Create the cap_number by combining the cap and subpath
         const sectionNumber = subpath.slice(1).replace(/^0+/, '');
         const cap_number = `CAP ${cap} - Section ${sectionNumber}`;
+        
+        // Derive the url from the path
+        const legis_url = `https://www.hklii.hk${data2.path}`;
 
         // Build a case text object with the data2 object plus the textContent and the cap 
         const legisTextObj = {
@@ -42,6 +45,7 @@ export const getLegisText = async (path: string): Promise<any> => {
             textContent,
             cap,
             cap_number,
+            legis_url
         };
 
         // console.log("[getLegisText.ts] legisText: " + JSON.stringify(legisTextObj, null, 2))

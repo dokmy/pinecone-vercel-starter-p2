@@ -16,6 +16,7 @@ import Textarea from "react-textarea-autosize";
 import { toast } from "sonner";
 
 const examples = [
+  "My client has a personal injury during lunch time at work. Is he eligbale for compensation from his employer?",
   "In personal injuries cases, is there any obligation or duty for the defendant to disclose the information of its insurer? ",
   "A fraudster misfiled a document to change the directors of my company. What should I do? must i join the fraudster as a respondent?",
   "Plaintiff suffered vertebral fracture, please estimate the PSLA figure for me based on past cases.",
@@ -63,7 +64,15 @@ export default function Chat() {
                   components={{
                     // open links in new tab
                     a: (props) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" />
+                      <a
+                        {...props}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "#007bff",
+                          textDecoration: "underline",
+                        }}
+                      />
                     ),
                     p: (props) => (
                       <p {...props} style={{ marginBottom: "1rem" }} />
@@ -71,22 +80,44 @@ export default function Chat() {
 
                     // add margin bottom to headings
                     h1: (props) => (
-                      <h1 {...props} style={{ marginBottom: "1rem" }} />
+                      <h1
+                        {...props}
+                        style={{
+                          marginBottom: "1rem",
+                          fontSize: "1.5rem",
+                          fontWeight: "bold",
+                        }}
+                      />
                     ),
                     h2: (props) => (
-                      <h2 {...props} style={{ marginBottom: "1rem" }} />
+                      <h2
+                        {...props}
+                        style={{ marginBottom: "1rem", fontSize: "1.25rem" }}
+                      />
                     ),
                     h3: (props) => (
-                      <h3 {...props} style={{ marginBottom: "1rem" }} />
+                      <h3
+                        {...props}
+                        style={{ marginBottom: "1rem", fontSize: "1rem" }}
+                      />
                     ),
                     h4: (props) => (
-                      <h4 {...props} style={{ marginBottom: "1rem" }} />
+                      <h4
+                        {...props}
+                        style={{ marginBottom: "1rem", fontSize: "0.875rem" }}
+                      />
                     ),
                     h5: (props) => (
-                      <h5 {...props} style={{ marginBottom: "1rem" }} />
+                      <h5
+                        {...props}
+                        style={{ marginBottom: "1rem", fontSize: "0.75rem" }}
+                      />
                     ),
                     h6: (props) => (
-                      <h6 {...props} style={{ marginBottom: "1rem" }} />
+                      <h6
+                        {...props}
+                        style={{ marginBottom: "1rem", fontSize: "0.75rem" }}
+                      />
                     ),
                   }}
                 >

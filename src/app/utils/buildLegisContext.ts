@@ -10,10 +10,11 @@ export async function buildLegisContext(paths: string[]): Promise<any[]> {
       try {
         const legisText = await getLegisText(path);
   
-        const { cap, abbr, title, subpath, textContent, cap_number } = legisText;
+        const { cap, abbr, title, subpath, textContent, cap_number, legis_url } = legisText;
   
         const newObj = {
           cap_number,
+          legis_url,
           path,
           cap,
           abbr,
@@ -27,7 +28,7 @@ export async function buildLegisContext(paths: string[]): Promise<any[]> {
   
         context.push(newObj);
   
-        if (totalWords > 50000) {
+        if (totalWords > 100000) {
           break;
         }
       } catch (error) {
