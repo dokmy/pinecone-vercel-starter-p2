@@ -15,7 +15,7 @@ export const getRelevantLegis = async (keywords: string): Promise<string[]> => {
         const paths = data.results
             .map((result:any) => result.path)
             .filter((path:string) => !path.includes("/cases"))
-            .slice(0, 30);
+            .slice(0, 10);
         
         console.log("[getRelevantLegis.ts] paths: " + paths)
         

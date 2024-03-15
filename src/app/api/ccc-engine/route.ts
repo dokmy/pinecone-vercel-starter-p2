@@ -7,7 +7,9 @@ import { last } from 'cheerio/lib/api/traversing';
  
 // Create an OpenAI API client (that's edge friendly!)
 const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
+//   apiKey: process.env.GROQ_API_KEY,
+//   basePath: "https://api.groq.com/openai/v1"
 });
 
 const openai = new OpenAIApi(config)
@@ -78,13 +80,17 @@ export async function POST(req: Request) {
  
   // Ask OpenAI for a streaming chat completion given the prompt
   const response = await openai.createChatCompletion({
-    model: 'gpt-4-1106-preview',
+    // model: 'mixtral-8x7b-32768',
+    model: 'gpt-4-0125-preview',
     stream: true,
-    messages: [...prompt, ...messages]
+    messages: [...prompt, ...messages],
+    temperature: 0
   });
- 
+
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
+
+  console.log("[ccc-engine.ts] stream: " + stream)
   // Respond with the stream
   return new StreamingTextResponse(stream);
 }
