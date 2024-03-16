@@ -40,7 +40,7 @@ export default function Chat() {
 
   return (
     <main className="flex flex-col items-center justify-between pb-40 bg-transparent">
-      <div className="flex-1 overflow-y-auto p-5 w-2/3">
+      <div className="flex-1 overflow-y-auto sm:p-5 w-full sm:w-2/3">
         {messages.length > 0 ? (
           messages.map((message, i) => (
             <div
@@ -48,7 +48,7 @@ export default function Chat() {
               className={clsx(
                 "flex w-full items-center justify-center border-b border-gray-200 py-8",
                 message.role === "user"
-                  ? "bg-transparent text-2xl font-semibold"
+                  ? "bg-transparent text-xl sm:text-2xl font-semibold"
                   : "bg-transparent"
               )}
             >
@@ -165,7 +165,7 @@ export default function Chat() {
         )}
       </div>
 
-      <div className="fixed bottom-0 flex w-2/3 flex-col items-center p-5 pb-3 space-y-3 sm:px-0 bg-black">
+      <div className="fixed bottom-0 flex w-full pb-3 sm:w-2/3 flex-col items-center p-2 space-y-3 sm:px-0 bg-black">
         <form
           ref={formRef}
           onSubmit={helperHandleSumbit}
