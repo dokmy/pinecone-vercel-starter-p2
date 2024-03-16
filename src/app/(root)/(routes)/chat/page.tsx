@@ -33,7 +33,7 @@ export default function Chat() {
   const disabled = isLoading || input.length === 0;
 
   return (
-    <main className="flex flex-col items-center justify-between pb-40 overflow-y-auto">
+    <main className="flex flex-col items-center justify-between pb-40 overflow-y-auto h-[calc(100vh-64px-73px)]">
       <div className="flex-1">
         {messages.length > 0 ? (
           messages.map((message, i) => (
