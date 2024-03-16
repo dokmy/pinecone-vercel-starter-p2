@@ -139,14 +139,14 @@ export default function Chat() {
           <div className="mt-5 rounded-md border border-gray-200">
             <div className="flex flex-col space-y-4 p-7 sm:p-10">
               <h1 className="text-lg font-semibold text-white">
-                Welcome to Chat!
+                Welcome to FastAsk!
               </h1>
               <p className="text-gray-500">
-                This is a legal chatbot. I am trained on the Hong Kong
+                FastAsk is a legal Q&A Engine. I am trained on the Hong Kong
                 Legislation and Judgment Database. Please note that answers
-                might be wrong or inaccurate. Please use this chatbot for
+                might be wrong or inaccurate. Please use this engine for
                 informational purposes only. Below are some sample questions or
-                you can come up with your own in the chatbox.
+                you can come up with your own in the textbox.
               </p>
             </div>
             <div className="flex flex-col space-y-4 border-t border-gray-200 bg-gray-50 p-7 sm:p-10">
@@ -213,7 +213,7 @@ export default function Chat() {
           </button>
         </form>
         <p className="text-center text-xs text-gray-400">
-          Answers might be wrong or inaccurate. Please use this chatbot for
+          Answers might be wrong or inaccurate. Please use this q&a engine for
           informational purposes only.
         </p>
       </div>
