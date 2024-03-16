@@ -107,6 +107,8 @@ export async function POST(req: Request) {
     temperature: 0
   });
 
+//   console.log('\x1b[31m%s\x1b[0m', "[ccc-engine.ts] response: " + response.usage)
+
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
 
