@@ -142,11 +142,11 @@ export default function Chat() {
                 Welcome to Chat!
               </h1>
               <p className="text-gray-500">
-                This is a legal chatbot. I can trained on the Hong Kong
-                Legislation Database. Please note that answers might be wrong or
-                inaccurate. Please use this chatbot for informational purposes
-                only. Below are some sample questions or you can come up with
-                your own in the chatbox.
+                This is a legal chatbot. I am trained on the Hong Kong
+                Legislation and Judgment Database. Please note that answers
+                might be wrong or inaccurate. Please use this chatbot for
+                informational purposes only. Below are some sample questions or
+                you can come up with your own in the chatbox.
               </p>
             </div>
             <div className="flex flex-col space-y-4 border-t border-gray-200 bg-gray-50 p-7 sm:p-10">
