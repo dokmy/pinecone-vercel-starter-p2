@@ -36,6 +36,6 @@ export async function buildLegisContext(paths: string[]): Promise<any[]> {
       }
     }
   
-    console.log("[buildLegisContext.ts] context: ", context);
+    // console.log("[buildLegisContext.ts] context: ", context);
     return context;
   }

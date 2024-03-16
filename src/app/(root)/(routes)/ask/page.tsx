@@ -13,7 +13,6 @@ import {
 import { Bot, User } from "lucide-react";
 import remarkGfm from "remark-gfm";
 import Textarea from "react-textarea-autosize";
-import { toast } from "sonner";
 
 const examples = [
   "My client has a personal injury during lunch time at work. Is he eligbale for compensation from his employer?",
@@ -22,26 +21,35 @@ const examples = [
 ];
 
 export default function Chat() {
-  const { messages, input, setInput, handleSubmit, isLoading } = useChat({
-    api: "/api/ccc-engine",
-  });
-
-  const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  const [isIframeShown, setIsIframeShown] = useState(false);
+  // create a sources array with useState hook
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const { messages, input, setInput, handleSubmit, isLoading, setMessages } =
+    useChat({
+      api: "/api/ccc-engine",
+    });
+
   const disabled = isLoading || input.length === 0;
 
+  const helperHandleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setMessages([]);
+    handleSubmit(e);
+  };
+
   return (
-    <main className="flex flex-col items-center justify-between pb-40 bg-red-500 ">
-      <div className="flex-1 overflow-y-auto p-5">
+    <main className="flex flex-col items-center justify-between pb-40 bg-transparent">
+      <div className="flex-1 overflow-y-auto p-5 w-2/3">
         {messages.length > 0 ? (
           messages.map((message, i) => (
             <div
               key={i}
               className={clsx(
                 "flex w-full items-center justify-center border-b border-gray-200 py-8",
-                message.role === "user" ? "bg-transparent" : "bg-transparent"
+                message.role === "user"
+                  ? "bg-transparent text-2xl font-semibold"
+                  : "bg-transparent"
               )}
             >
               <div className="flex w-full max-w-screen-md items-start space-x-4 px-5 sm:px-0">
@@ -157,10 +165,10 @@ export default function Chat() {
         )}
       </div>
 
-      <div className="fixed bottom-0 flex w-2/3 flex-col items-center p-5 pb-3 space-y-3 sm:px-0 bg-blue-500">
+      <div className="fixed bottom-0 flex w-2/3 flex-col items-center p-5 pb-3 space-y-3 sm:px-0 bg-black">
         <form
           ref={formRef}
-          onSubmit={handleSubmit}
+          onSubmit={helperHandleSumbit}
           className="relative w-full max-w-screen-md rounded-xl border px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4 bg-black"
         >
           <Textarea

@@ -1,9 +1,8 @@
 import { Configuration, OpenAIApi } from 'openai-edge'
-import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { OpenAIStream, StreamingTextResponse, experimental_StreamData } from 'ai';
 import { getSearchKeywords } from '../../utils/getSearchKeywords'
 import { getRelevantLegis } from '../../utils/getRelevantLegis'
 import { buildLegisContext } from '../../utils/buildLegisContext'
-import { last } from 'cheerio/lib/api/traversing';
  
 // Create an OpenAI API client (that's edge friendly!)
 const config = new Configuration({
@@ -28,6 +27,8 @@ export async function POST(req: Request) {
 
   // pass the relevantLegis to buildLegisContext
   const context = await buildLegisContext(relevantLegis)
+
+  
 
 //   console.log("[ccc-engine.ts] context: ", JSON.stringify(context, null, 2))
 
@@ -70,6 +71,8 @@ export async function POST(req: Request) {
     5. Use clear and concise language in your responses, and structure your answers in a logical and easy-to-follow manner. Break down complex legal concepts into simpler terms when necessary.
     
     6. Your responses will be rendered using ReactMarkdown, so feel free to use Markdown syntax for formatting, such as headings, bullet points, and bold/italic text.
+
+    7. Always include a "**Sources**: ..." section in your response, which will contain a list of the sources you used to generate your answer at the end of your response. Use point form in markdown format to list the sources.
     
     Remember, your primary goal is to assist the user in understanding and applying Hong Kong law to their specific situation. Always prioritize accuracy, clarity, and relevance in your responses. Use the legislation provided in the context as much as possible, but if the context is not directly applicable, you can supplement your answer with your own knowledge of Hong Kong law.
     

@@ -27,8 +27,8 @@ export const Sidebar = () => {
     },
     {
       icon: Bot,
-      href: "/chat",
-      label: "chat",
+      href: "/ask",
+      label: "Ask",
       pro: true,
     },
     {
