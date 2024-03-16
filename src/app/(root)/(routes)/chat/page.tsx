@@ -33,8 +33,8 @@ export default function Chat() {
   const disabled = isLoading || input.length === 0;
 
   return (
-    <main className="flex flex-col items-center justify-between pb-40 overflow-y-auto h-[calc(100vh-64px-73px)]">
-      <div className="flex-1">
+    <main className="flex flex-col items-center justify-between pb-40 bg-red-500 ">
+      <div className="flex-1 overflow-y-auto p-5">
         {messages.length > 0 ? (
           messages.map((message, i) => (
             <div
@@ -157,7 +157,7 @@ export default function Chat() {
         )}
       </div>
 
-      <div className="fixed bottom-0 flex w-2/3 flex-col items-center p-5 pb-3 space-y-3 sm:px-0 bg-black">
+      <div className="fixed bottom-0 flex w-2/3 flex-col items-center p-5 pb-3 space-y-3 sm:px-0 bg-blue-500">
         <form
           ref={formRef}
           onSubmit={handleSubmit}
