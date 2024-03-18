@@ -21,6 +21,7 @@ const legislationExamples = [
   "My client has a personal injury during lunch time at work. Is he eligbale for compensation from his employer?",
   "If I receive writ today, when do I have to file acknowledgment of service?",
   "In personal injuries cases, is there any obligation or duty for the defendant to disclose the information of its insurer? ",
+  "what is the legal difference of having sexual intercourse with someone under 13, 16 and 18",
 ];
 
 export default function Chat() {

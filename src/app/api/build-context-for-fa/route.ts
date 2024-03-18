@@ -17,13 +17,13 @@ export async function POST(request: Request) {
 
   let systemPrompt = []
   if (database === "judgement") {
-    const searchKeywords = await getSearchKeywords(message)
+    const searchKeywords = await getSearchKeywords(message, database)
     const relevantCases = await getRelevantCases(searchKeywords)
     systemPrompt = await buildCaseContext(relevantCases)
   }
 
   if (database === "legislation") {
-    const searchKeywords = await getSearchKeywords(message)
+    const searchKeywords = await getSearchKeywords(message, database)
     const relevantLegis = await getRelevantLegis(searchKeywords)
     systemPrompt = await buildLegisContext(relevantLegis)
   }

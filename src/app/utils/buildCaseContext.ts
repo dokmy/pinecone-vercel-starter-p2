@@ -29,7 +29,7 @@ export const buildCaseContext = async (raw_case_nums: string[]): Promise<any[]> 
 
         totalTextLength += textContent.length;
 
-        if (totalTextLength <= 80000) {
+        if (totalTextLength <= 100000) {
             caseContext.push(case_obj);
         } else {
             break;
