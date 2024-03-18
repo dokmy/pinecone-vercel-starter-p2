@@ -11,11 +11,16 @@ import Textarea from "react-textarea-autosize";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const examples = [
+const judgementExamples = [
+  "Find me personal injury cases where the plaintiff suffered got injured during meal time at work. Let me know the verdict.",
+  "My estate executor refused to transfer a property to me after the deceased died a year ago. Find me similar cases and let me know what are some grounds to transfer the property.",
+  "Find me cases where the plaintiff suffered vertebral fracture and let me know the PSLA figure",
+];
+
+const legislationExamples = [
   "My client has a personal injury during lunch time at work. Is he eligbale for compensation from his employer?",
   "If I receive writ today, when do I have to file acknowledgment of service?",
   "In personal injuries cases, is there any obligation or duty for the defendant to disclose the information of its insurer? ",
-  "Find me cases where the plaintiff suffered vertebral fracture and let me know the PSLA figure",
 ];
 
 export default function Chat() {
@@ -199,7 +204,10 @@ export default function Chat() {
               </p>
             </div>
             <div className="flex flex-col space-y-4 border-t border-gray-200 bg-gray-50 p-7 sm:p-10">
-              {examples.map((example, i) => (
+              {(database === "judgement"
+                ? judgementExamples
+                : legislationExamples
+              ).map((example, i) => (
                 <button
                   key={i}
                   className="rounded-md border border-gray-200 bg-white px-5 py-3 text-left text-sm text-gray-500 transition-all duration-75 hover:border-black hover:text-gray-700 active:bg-gray-50"
