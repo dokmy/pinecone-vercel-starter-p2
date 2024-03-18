@@ -1,11 +1,11 @@
-export const getRelevantLegis = async (keywords: string): Promise<string[]> => {
-    console.log("[getRelevantLegis.ts] I am called. Here is the keywords: " + keywords);
+export const getRelevantLegis = async (searchKeywords: string): Promise<string[]> => {
+    console.log('\x1b[36m%s\x1b[0m',"[getRelevantLegis.ts] I am called. Here is the searchKeywords: " + searchKeywords);
     
     try {
 
-        const fetch_url = `https://www.hklii.hk/api/advancedsearch?searchType=advanced&anyword=${keywords}&dbs=27,29,31,33,35,37,39,41,51`
+        const fetch_url = `https://www.hklii.hk/api/advancedsearch?searchType=advanced&anyword=${searchKeywords}&dbs=27,29,31,33,35,37,39,41,51`
         
-        console.log("[getRelevantLegis.ts] fetch_url: " + fetch_url)
+        console.log('\x1b[36m%s\x1b[0m',"[getRelevantLegis.ts] fetch_url: " + fetch_url)
 
         const response = await fetch(fetch_url);
 
@@ -17,7 +17,7 @@ export const getRelevantLegis = async (keywords: string): Promise<string[]> => {
             .filter((path:string) => !path.includes("/cases"))
             .slice(0, 10);
         
-        console.log("[getRelevantLegis.ts] paths: " + paths)
+        console.log('\x1b[36m%s\x1b[0m',"[getRelevantLegis.ts] paths: " + paths)
         
         return paths;
     } catch (error) {

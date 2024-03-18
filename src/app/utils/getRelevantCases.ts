@@ -1,22 +1,13 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { getEmbeddings } from './embeddings'
-import { getSearchKeywords } from "./getSearchKeywords";
-import { getRelevantLegis } from "./getRelevantLegis";
 
-export const getRelevantCases = async (message: string): Promise<any> => {
+export const getRelevantCases = async (searchKeywords: string): Promise<any> => {
 
-    console.log("[getRelevantCases.ts] I am called. Here is the message: " + message)
+    console.log('\x1b[34m%s\x1b[0m',"[getRelevantCases.ts] I am called. Here is the searchKeywords: " + searchKeywords)
 
-    // Get hypothetical answers from the user's query
-    const searchKeywords = await getSearchKeywords(message)
-    console.log("[getRelevantCases.ts] searchKeywords: " + searchKeywords)
-
-    // Get the embeddings of the input message
+    // Get the embeddings of the searchKeywords
     const embeddings = await getEmbeddings(searchKeywords);
 
-    // Perform search on HKLII API to retrieve relevant laws   
-    const relevantLegis = await getRelevantLegis(searchKeywords)
-  
     // Initialize the Pinecone client and retrieve the matches for the embeddings from the specified namespace
     
     const pinecone = new Pinecone();
@@ -26,7 +17,7 @@ export const getRelevantCases = async (message: string): Promise<any> => {
       throw new Error('PINECONE_INDEX environment variable not set')
     }
 
-    console.log("[getRelevantCases.ts] indexName: " + indexName)
+    console.log('\x1b[34m%s\x1b[0m',"[getRelevantCases.ts] indexName: " + indexName)
 
     const index = pinecone!.Index(indexName);
 
@@ -48,7 +39,7 @@ export const getRelevantCases = async (message: string): Promise<any> => {
 
     // Deduplicate the raw_case_nums array
     raw_case_nums = [...new Set(raw_case_nums)]
-    console.log("[getRelevantCases.ts] raw_case_nums: " + raw_case_nums)
+    console.log('\x1b[34m%s\x1b[0m',"[getRelevantCases.ts] raw_case_nums: " + raw_case_nums)
 
     return raw_case_nums
     
