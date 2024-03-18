@@ -28,7 +28,7 @@ export async function buildLegisContext(paths: string[]): Promise<any[]> {
   
         context.push(newObj);
   
-        if (totalWords > 20000) {
+        if (totalWords > 80000) {
           break;
         }
       } catch (error) {

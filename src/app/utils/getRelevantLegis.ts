@@ -3,7 +3,7 @@ export const getRelevantLegis = async (searchKeywords: string): Promise<string[]
     
     try {
 
-        const fetch_url = `https://www.hklii.hk/api/advancedsearch?searchType=advanced&anyword=${searchKeywords}&dbs=27,29,31,33,35,37,39,41,51`
+        const fetch_url = `https://www.hklii.hk/api/advancedsearch?searchType=advanced&text=${searchKeywords}&dbs=27,29,31,33,35,37,39,41,51`
         
         console.log('\x1b[36m%s\x1b[0m',"[getRelevantLegis.ts] fetch_url: " + fetch_url)
 
@@ -15,9 +15,9 @@ export const getRelevantLegis = async (searchKeywords: string): Promise<string[]
         const paths = data.results
             .map((result:any) => result.path)
             .filter((path:string) => !path.includes("/cases"))
-            .slice(0, 10);
+            .slice(0, 20);
         
-        console.log('\x1b[36m%s\x1b[0m',"[getRelevantLegis.ts] paths: " + paths)
+        console.log('\x1b[36m%s\x1b[0m',"[getRelevantLegis.ts] Number of paths to send out: " + paths.length)
         
         return paths;
     } catch (error) {
