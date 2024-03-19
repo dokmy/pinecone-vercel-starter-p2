@@ -145,7 +145,7 @@ export default function Chat() {
                           // rel="noopener noreferrer"
                           onClick={(e) => {
                             e.preventDefault();
-                            setClickedUrl(props.href);
+                            setClickedUrl(props.href ?? "");
                           }}
                           style={{
                             color: "#007bff",
