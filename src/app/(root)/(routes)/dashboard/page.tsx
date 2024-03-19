@@ -177,7 +177,7 @@ const DashboardPage = () => {
   return (
     <div className="flex flex-col flex-wrap gap-5 px-20 py-10 justify-center">
       <div>
-        <h1 className="text-6xl bg-gradient-to-r from-sky-400 to-indigo-600 bg-clip-text text-transparent">
+        <h1 className="text-6xl bg-gradient-to-r from-sky-400 to-indigo-600 bg-clip-text text-transparent h-[70px]">
           Hi {user?.firstName}.
         </h1>
         <ExampleComponent />
