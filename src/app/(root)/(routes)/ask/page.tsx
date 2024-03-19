@@ -10,6 +10,14 @@ import remarkGfm from "remark-gfm";
 import Textarea from "react-textarea-autosize";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const judgementExamples = [
   "Find me personal injury cases where the plaintiff suffered got injured during meal time at work. Let me know the verdict.",
@@ -43,8 +51,11 @@ export default function Chat() {
 
   const disabled = isLoading || input.length === 0 || isSearching;
 
+  const [clickedUrl, setClickedUrl] = useState<string | null>(null);
+
   const helperHandleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setClickedUrl(null);
     setIsSearching(true);
     console.log("1. [page.tsx] database is", database);
     const response = await fetch("/api/build-context-for-fa", {
@@ -130,11 +141,16 @@ export default function Chat() {
                       a: (props) => (
                         <a
                           {...props}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          // target="_blank"
+                          // rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setClickedUrl(props.href);
+                          }}
                           style={{
                             color: "#007bff",
                             textDecoration: "underline",
+                            cursor: "pointer",
                           }}
                         />
                       ),
@@ -275,6 +291,24 @@ export default function Chat() {
           informational purposes only.
         </p>
       </div>
+      {clickedUrl && (
+        <Sheet open={true} onOpenChange={() => setClickedUrl(null)}>
+          <SheetContent
+            className="h-full space-y-3"
+            style={{ maxWidth: "600px" }}
+          >
+            <SheetHeader>
+              <SheetTitle>Reference</SheetTitle>
+              {/* <SheetDescription>Reference</SheetDescription> */}
+            </SheetHeader>
+            <iframe
+              src={clickedUrl}
+              className="w-full h-full border-none"
+              title="Clicked URL"
+            />
+          </SheetContent>
+        </Sheet>
+      )}
     </main>
   );
 }
