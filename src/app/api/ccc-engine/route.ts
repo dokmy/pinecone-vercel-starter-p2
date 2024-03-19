@@ -1,9 +1,13 @@
 import { Configuration, OpenAIApi } from 'openai-edge'
 import { AnthropicStream, OpenAIStream, StreamingTextResponse } from 'ai';
 import Anthropic from '@anthropic-ai/sdk';
-import { experimental_buildAnthropicPrompt } from 'ai/prompts';
-import { first } from 'cheerio/lib/api/traversing';
- 
+import { auth, currentUser } from '@clerk/nextjs';
+import { NextResponse } from 'next/server';
+import prismadb from '@/lib/prismadb';
+import { Role } from '@prisma/client';
+import { checkMessageCredits, deductMessageCredit, getMessageCreditCount } from '@/lib/messageCredits';
+
+
 // Create an Anthropic API client (that's edge friendly)
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
@@ -19,9 +23,48 @@ const config = new Configuration({
 const openai = new OpenAIApi(config)
  
 // Set the runtime to edge for best performance
-export const runtime = 'edge';
+// export const runtime = 'edge';
  
 export async function POST(req: Request) {
+
+  const {userId} = auth()
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", {status: 401})
+    }
+
+  const user = await currentUser();
+    if (!user || !user.id ) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+  const userName = user?.firstName + " " + user?.lastName;
+  const userEmail = user?.emailAddresses[0].emailAddress;
+
+
+  // Check if the user has credits record in the database
+  const inMessageCreditsDb = await checkMessageCredits(userId);
+
+  if (!inMessageCreditsDb) {
+    return new NextResponse("Not inside credits database", {status: 401})
+  } 
+
+  const creditsLeft = await getMessageCreditCount(userId)
+
+  if (creditsLeft == 0) {
+    return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
+  }
+
+  if (creditsLeft == false) {
+    return new NextResponse("Credits left is null.", {status: 401})
+  } 
+  
+
+  if (creditsLeft > 0) {
+    await deductMessageCredit(userId)
+    console.log("Message is permitted. Deduct 1 credit.")
+  }
+    
 
   const { messages } = await req.json();
 
@@ -38,7 +81,34 @@ export async function POST(req: Request) {
       });
   
   // Convert the response into a friendly text-stream
-  const stream = OpenAIStream(response);
+  const stream = OpenAIStream(response, {
+    onStart: async () => {
+      // save user message into db
+      await prismadb.fastAskMessage.create({
+        data:{
+          role: Role.user,
+          content: lastMessage.content,
+          userId: user.id,
+          userName: userName,
+          userEmail: userEmail
+        }
+        
+      });
+    },
+    onCompletion: async (completion) => {
+      // save ai message into db
+      await prismadb.fastAskMessage.create({
+        data:{
+          role: Role.assistant,
+          content: completion,
+          userId: user.id,
+          userName: userName,
+          userEmail: userEmail
+        }
+        
+      });
+    }
+  });
 
   // Respond with the stream
   return new StreamingTextResponse(stream);

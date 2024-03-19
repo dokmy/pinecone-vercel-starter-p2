@@ -1,11 +1,10 @@
+"use client";
 import Button from "@mui/material/Button";
-import { UserButton, auth, currentUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import FastLegalLogo from "public/logo_rec.png";
 import Navbar from "@/components/navbar";
-import { MobileSidebar } from "@/components/mobile-sidebar";
+import { TypeAnimation } from "react-type-animation";
 
 interface VideoPlayerProps {
   src: string;
@@ -15,15 +14,42 @@ interface VideoPlayerProps {
   loop?: boolean;
 }
 
-export default async function Home() {
-  const { userId } = await auth();
-  const isAuth = !!userId;
+const ExampleComponent = () => {
+  return (
+    <TypeAnimation
+      speed={90}
+      deletionSpeed={90}
+      sequence={[
+        "Find cases where the plaintiff suffered vertebral fracture and let me know the PSLA figure",
+        2000, // Waits 1s
+        "My estate executor refused to transfer a property to me after the deceased died a year ago. Find me similar cases and let me know what are some grounds to transfer the property.",
+        2000, // Waits 2s
+        "What is the legal difference of having sexual intercourse with someone under 13, 16 and 18?",
+        2000,
+        "What are the procedures for divorce in Hong Kong?",
+        2000,
+        "If I receive writ today, when do I have to file acknowledgment of service?",
+        2000,
+        () => {
+          console.log("Sequence completed");
+        },
+      ]}
+      wrapper="span"
+      cursor={true}
+      repeat={Infinity}
+      style={{
+        fontSize: "1.5em",
+        display: "inline-block",
+        lineHeight: "1.5",
+        fontFamily: "monospace",
+      }}
+      className="w-full sm:w-1/2"
+    />
+  );
+};
 
-  console.log("is the user logged in", isAuth);
-  console.log("here is the userId", userId);
-
-  const user = await currentUser();
-  console.log("currentUser is ", user);
+export default function Home() {
+  const { user } = useUser();
 
   const VideoPlayer: React.FC<VideoPlayerProps> = ({
     src,
@@ -55,11 +81,12 @@ export default async function Home() {
             </h1>
             {/* <UserButton afterSignOutUrl="/" /> */}
           </div>
-          <p className="max-w-xl mt-1 text-base text-slate-600 sm:text-lg">
+          <p className="max-w-xl mt-1 text-base text-slate-600 sm:text-lg mb-5">
             Dive into a seamless research experience where AI understands the
             context of your legal inquiries, providing precise, relevant
             results. Discover the future of legal research with FastLegal.
           </p>
+          <ExampleComponent />
           <div className="w-full mt-8 mb-10">
             {user ? (
               <Link href="/dashboard">

@@ -7,7 +7,7 @@ export const buildCaseContext = async (raw_case_nums: string[]): Promise<any[]> 
     let totalTextLength = 0;
 
     for (const raw_case_num of raw_case_nums) {
-        const abbr = raw_case_num.split('_')[1];
+        const abbr = raw_case_num.split('_')[1].toLowerCase();
         const year = raw_case_num.split('_')[0];
         const case_num = raw_case_num.split('_')[2];
 

@@ -2,6 +2,8 @@ import { Message } from "ai";
 import { useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DoneIcon from "@mui/icons-material/Done";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MessagesProps {
   messages: Message[];
@@ -45,12 +47,76 @@ export default function Messages({
             {msg.role === "assistant" ? "🤖" : "🧑‍💻"}
           </div>
           <div className="ml-4 flex flex-col items-center text-gray-200 pr-7">
-            {msg.content.split("\n").map((line, i) => (
+            {/* {msg.content.split("\n").map((line, i) => (
               <span key={i}>
                 {line}
                 <br></br>
               </span>
-            ))}
+            ))} */}
+            <ReactMarkdown
+              className="prose mt-1 w-full break-words prose-p:leading-relaxed"
+              remarkPlugins={[remarkGfm]}
+              components={{
+                // open links in new tab
+                a: (props) => (
+                  <a
+                    {...props}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#007bff",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                  />
+                ),
+                p: (props) => <p {...props} style={{ marginBottom: "1rem" }} />,
+
+                // add margin bottom to headings
+                h1: (props) => (
+                  <h1
+                    {...props}
+                    style={{
+                      marginBottom: "1rem",
+                      fontSize: "1.5rem",
+                      fontWeight: "bold",
+                    }}
+                  />
+                ),
+                h2: (props) => (
+                  <h2
+                    {...props}
+                    style={{ marginBottom: "1rem", fontSize: "1.25rem" }}
+                  />
+                ),
+                h3: (props) => (
+                  <h3
+                    {...props}
+                    style={{ marginBottom: "1rem", fontSize: "1rem" }}
+                  />
+                ),
+                h4: (props) => (
+                  <h4
+                    {...props}
+                    style={{ marginBottom: "1rem", fontSize: "0.875rem" }}
+                  />
+                ),
+                h5: (props) => (
+                  <h5
+                    {...props}
+                    style={{ marginBottom: "1rem", fontSize: "0.75rem" }}
+                  />
+                ),
+                h6: (props) => (
+                  <h6
+                    {...props}
+                    style={{ marginBottom: "1rem", fontSize: "0.75rem" }}
+                  />
+                ),
+              }}
+            >
+              {msg.content}
+            </ReactMarkdown>
           </div>
 
           <div

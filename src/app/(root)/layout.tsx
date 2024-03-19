@@ -2,6 +2,10 @@ import Navbar from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
 import { checkSubscription } from "@/lib/subscriptions";
 import { incrementSearchCredit, checkSearchCredits } from "@/lib/searchCredits";
+import {
+  incrementMessageCredit,
+  checkMessageCredits,
+} from "@/lib/messageCredits";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
@@ -17,6 +21,13 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   if (!inSearchCreditsDb) {
     await incrementSearchCredit(userId, 5);
     console.log("First time logging in. 5 credits are given.");
+  }
+
+  const inMessageCreditsDb = await checkMessageCredits(userId);
+
+  if (!inMessageCreditsDb) {
+    await incrementMessageCredit(userId, 50);
+    console.log("First time logging in. 50 credits are given.");
   }
 
   return (

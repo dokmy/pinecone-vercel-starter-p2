@@ -2,7 +2,7 @@ import { getEmbeddings } from '@/utils/embeddings'
 import { getMatchesFromEmbeddings } from '@/utils/pinecone'
 import dayjs from "dayjs";
 import prismadb from '../../lib/prismadb';
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 import { deductSearchCredit, getSearchCreditCount } from '@/lib/searchCredits';
 
@@ -53,34 +53,29 @@ export async function POST(req: Request) {
     //   return new NextResponse("Not inside credits database", {status: 401})
     // } 
 
-    const creditsLeft = await getSearchCreditCount(userId)
+    // const creditsLeft = await getSearchCreditCount(userId)
 
-    if (creditsLeft == 0) {
-      return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
-    }
+    // if (creditsLeft == 0) {
+    //   return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
+    // }
 
-    if (creditsLeft == false) {
-      return new NextResponse("Credits left is null.", {status: 401})
-    } 
+    // if (creditsLeft == false) {
+    //   return new NextResponse("Credits left is null.", {status: 401})
+    // } 
     
 
-    if (creditsLeft > 0) {
-      await deductSearchCredit(userId)
-      console.log("Search is permitted. Deduct 1 credit.")
-    }
+    // if (creditsLeft > 0) {
+    //   await deductSearchCredit(userId)
+    //   console.log("Search is permitted. Deduct 1 credit.")
+    // }
 
 
     try {
       const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption } = await req.json()
 
-      // -------Get User Info-------
-      // const user = await currentUser();
-      // if (!user || !user.id || !user.firstName) {
-      //   return new NextResponse("Unauthorized", { status: 401 });
-      // }
-
-      // -------Check Subscription-------
-
+      const user = await currentUser();
+      const userName = user?.firstName + " " + user?.lastName;
+      const userEmail = user?.emailAddresses[0].emailAddress;
 
 
       // -------Inserting the Search into DB-------
@@ -90,7 +85,9 @@ export async function POST(req: Request) {
           prefixFilters: JSON.stringify(filters),
           minDate: selectedMinDate,
           maxDate: selectedMaxDate,
-          userId: userId
+          userId: userId,
+          userName: userName,
+          userEmail: userEmail
         }
       });
 
@@ -183,7 +180,9 @@ export async function POST(req: Request) {
             caseDate: result.case_date,
             caseUrl: result.url,
             searchId: searchRecord.id,
-            userId: userId
+            userId: userId,
+            userName: userName,
+            userEmail: userEmail
           }
         })
       }))

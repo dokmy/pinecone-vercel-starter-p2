@@ -60,7 +60,7 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
       queryResult.matches.forEach(match => {
         if (match.metadata && typeof match.metadata._node_content === 'string') {
           const nodeContent = JSON.parse(match.metadata._node_content);
-          console.log("Match text: " + nodeContent.text + "\n");
+          // console.log("Match text: " + nodeContent.text + "\n");
         }
       });
     }
