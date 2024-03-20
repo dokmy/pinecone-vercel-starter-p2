@@ -52,8 +52,8 @@ export async function POST(req: Request) {
   
 
   if (creditsLeft > 0) {
-    await deductMessageCredit(userId)
-    console.log("Message is permitted. Deduct 1 credit.")
+    // await deductMessageCredit(userId)
+    console.log("Message is permitted. Deduct 1 credit after completion.")
   }
 
     const { messages, filter, searchResultId } = await req.json()
@@ -119,6 +119,7 @@ export async function POST(req: Request) {
           }
           
         });
+        await deductMessageCredit(userId)
       },
     });
     
