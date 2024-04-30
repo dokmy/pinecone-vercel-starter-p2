@@ -40,34 +40,16 @@ const DashboardOverlay = () => {
                     <strong className="font-bold">FastLegal</strong> are
                     intended to assist legal professionals in their research
                     efforts by identifying potentially relevant past judgments
-                    and case law. However, the software's output should{" "}
+                    and case law. However, the software&apos;s output should{" "}
                     <strong className="font-bold">not</strong> be considered a
                     substitute for professional legal analysis, advice, or
                     services.
                   </p>
-                  <p className="text-base mb-4">
-                    The AI system powering FastLegal has been trained on a vast
-                    corpus of legal data, but its knowledge is based on the
-                    information available at the time of training. Court
-                    rulings, legislation, and legal interpretations are subject
-                    to change over time, and the relevance and applicability of
-                    the results should be carefully evaluated by qualified legal
-                    professionals.
-                  </p>
-                  <p className="text-base mb-4">
-                    While every effort has been made to ensure the accuracy of
-                    the information presented, neither the developers nor the
-                    providers of FastLegal can guarantee the completeness,
-                    correctness, or suitability of the results for any specific
-                    legal matter or situation. Users are solely responsible for
-                    verifying the information and seeking appropriate legal
-                    counsel.
-                  </p>
                   <p className="text-base text-red-600 italic mt-6">
                     <strong className="font-bold">
-                      FastLegal is provided "as is" without warranty of any
-                      kind, either expressed or implied, including, but not
-                      limited to, the implied warranties of merchantability,
+                      FastLegal is provided &quot;as is&quot; without warranty
+                      of any kind, either expressed or implied, including, but
+                      not limited to, the implied warranties of merchantability,
                       fitness for a particular purpose, or non-infringement.
                     </strong>
                   </p>
