@@ -34,9 +34,9 @@ const Navbar = ({
       </Link>
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
-        {!isHomePage && (
+        {/* {!isHomePage && (
           <SubscriptionButton hasSubscription={hasSubscription} />
-        )}
+        )} */}
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>

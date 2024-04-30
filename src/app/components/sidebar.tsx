@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Search, Settings, Bot } from "lucide-react";
+import { Home, Search, Settings, Bot, History } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,12 @@ export const Sidebar = () => {
       href: "/ask",
       label: "Ask",
       pro: true,
+    },
+    {
+      icon: History,
+      href: "/history",
+      label: "History",
+      pro: false,
     },
     {
       icon: Settings,
