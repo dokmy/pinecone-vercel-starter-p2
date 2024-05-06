@@ -170,8 +170,26 @@ export async function POST(req: Request) {
       console.log("Search API - Here are the final results to pass back and upload to db:", filteredResults)
 
 
+      // -------If action no or case title is an array, then just get the first one-------
+      const processedResults = filteredResults.map(result => {
+        const processedResult = { ...result };
+      
+        if (Array.isArray(processedResult.case_title)) {
+          processedResult.case_title = processedResult.case_title[0];
+        }
+      
+        if (Array.isArray(processedResult.case_action_no)) {
+          processedResult.case_action_no = processedResult.case_action_no[0];
+        }
+      
+        return processedResult;
+      });
+      
+      console.log("Search API - Here are the final results to pass back and upload to db:", processedResults)
+
+
       // -------Inserting search results to DB-------
-      await Promise.all(filteredResults.map(result => {
+      await Promise.all(processedResults.map(result => {
         return prismadb?.searchResult.create({
           data: {
             caseName: result.case_title,
@@ -188,7 +206,7 @@ export async function POST(req: Request) {
       }))
 
 
-      return new Response(JSON.stringify({filteredResults, searchId: searchRecord.id}), {
+      return new Response(JSON.stringify({processedResults, searchId: searchRecord.id}), {
         headers: { 'Content-Type': 'application/json'}
       })
 
