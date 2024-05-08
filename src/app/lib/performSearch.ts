@@ -8,6 +8,7 @@ interface PerformSearchProps {
     selectedMinDate: dayjs.Dayjs
     selectedMaxDate: dayjs.Dayjs
     sortOption: string
+    countryOption: string
 }
 
 interface search_result {
@@ -22,7 +23,7 @@ interface search_result {
 
 
 
-export async function performSearch({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption }: PerformSearchProps) {
+export async function performSearch({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }: PerformSearchProps) {
     
     let noCredits = false
 
@@ -32,7 +33,7 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption }),
+        body: JSON.stringify({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }),
       });
 
       if (response.status === 403) {
@@ -41,7 +42,7 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
 
       const data = await response.json();
 
-      const apiResults = data.filteredResults
+      const apiResults = data.processedResults
       const searchId = data.searchId
       
       return {apiResults, searchId, noCredits}

@@ -6,10 +6,12 @@ import CourtOptions from "@/components/court-options";
 import SearchQuery from "@/components/search-query";
 import SearchPeriod from "@/components/search-period";
 import SortBy from "@/components/sort-by";
+import ChooseCountry from "@/components/choose-country";
 import { Button } from "@mui/material";
 import { performSearch } from "@/lib/performSearch";
 import { useRouter } from "next/navigation";
 import MoonLoader from "react-spinners/MoonLoader";
+import { Hammer } from "lucide-react";
 
 const SearchForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,8 +28,9 @@ const SearchForm = () => {
   const [lt, setLt] = useState<string[]>([]);
   const [others, setOthers] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("Relevance");
+  const [countryOption, setCountryOption] = useState("hk");
 
-  const autocompleteFields = [
+  const hk_autocompleteFields = [
     {
       id: "courtOfFinalAppeal",
       label: "Court of Final Appeal",
@@ -100,6 +103,37 @@ const SearchForm = () => {
     },
   ];
 
+  const uk_autocompleteFields = [
+    {
+      id: "courtOfFinalAppeal",
+      label: "Court of Final Appeal",
+      options: courtTypes.court_of_final_appeal,
+      state: cofa,
+      setState: setCofa,
+    },
+    {
+      id: "courtOfAppeal",
+      label: "Court of Appeal",
+      options: courtTypes.court_of_appeal,
+      state: coa,
+      setState: setCoa,
+    },
+    {
+      id: "courtOfFirstInstanceCivil",
+      label: "Court of First Instance - Civil",
+      options: courtTypes.court_of_first_instance_civil,
+      state: coficivil,
+      setState: setcoficivil,
+    },
+    {
+      id: "courtOfFirstInstanceCriminal",
+      label: "Court of First Instance - Criminal",
+      options: courtTypes.court_of_first_instance_criminal,
+      state: coficriminal,
+      setState: setCoficriminal,
+    },
+  ];
+
   const router = useRouter();
 
   const checkRequired = (event: React.FormEvent<HTMLFormElement>) => {
@@ -134,6 +168,7 @@ const SearchForm = () => {
         selectedMinDate,
         selectedMaxDate,
         sortOption,
+        countryOption,
       })
         .then(({ apiResults, searchId, noCredits }) => {
           if (noCredits) {
@@ -165,19 +200,35 @@ const SearchForm = () => {
           setSearchQuery={setSearchQuery}
         />
 
+        <div className="mt-4 flex flex-col items-center w-full">
+          <ChooseCountry
+            countryOption={countryOption}
+            setCountryOption={setCountryOption}
+          />
+        </div>
+
         <div className="mt-4 flex flex-wrap justify-between">
-          {autocompleteFields.map((field) => (
-            <div className="py-2 w-full sm:w-[49%]" key={field.id}>
-              <CourtOptions
-                key={field.id}
-                id={field.id}
-                label={field.label}
-                options={field.options}
-                state={field.state}
-                setState={field.setState}
-              />
+          {countryOption === "hk" ? (
+            hk_autocompleteFields.map((field) => (
+              <div className="py-2 w-full sm:w-[49%]" key={field.id}>
+                <CourtOptions
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  options={field.options}
+                  state={field.state}
+                  setState={field.setState}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="flex flex-col justify-center items-center w-full space-y-2">
+              <Hammer className="h-1/4 w-1/4" />
+              <p className="italic text-lg">
+                Court Filtering for UK cases coming soon!
+              </p>
             </div>
-          ))}
+          )}
         </div>
 
         <div className="mt-4 flex flex-col items-center py-2 w-full">
@@ -187,9 +238,7 @@ const SearchForm = () => {
             setSelectedMinDate={setSelectedMinDate}
             setSelectedMaxDate={setSelectedMaxDate}
           />
-          <div>
-            <SortBy sortOption={sortOption} setSortOption={setSortOption} />
-          </div>
+          <SortBy sortOption={sortOption} setSortOption={setSortOption} />
         </div>
 
         <div className="flex flex-row justify-center mt-4 w-full">

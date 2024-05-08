@@ -1,11 +1,4 @@
-import { Pinecone, type ScoredPineconeRecord } from "@pinecone-database/pinecone";
-
-// export type Metadata = {
-//   url: string,
-//   text: string,
-//   chunk: string,
-//   hash: string
-// }
+import { Pinecone } from "@pinecone-database/pinecone";
 
 interface neutral_cit_filter {
   neutral_cit: string
@@ -18,25 +11,43 @@ interface case_prefix_filter {
 type metadata_filter = neutral_cit_filter | case_prefix_filter
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
-const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, filter?:metadata_filter): Promise<any[]> => {
+const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, countryOption: string, filter?:metadata_filter): Promise<any[]> => {
   console.log("Pinecone.ts -  Here is my filter: " + filter + "\n")
   
   // Obtain a client for Pinecone
   const pinecone = new Pinecone();
 
-  const indexName: string = process.env.PINECONE_INDEX || '';
-  if (indexName === '') {
-    throw new Error('PINECONE_INDEX environment variable not set')
+  let indexName: string;
+
+  if (countryOption === "hk") {
+    indexName = process.env.PINECONE_INDEX_HK || '';
+    if (indexName === '') {
+      throw new Error('PINECONE_INDEX_HK environment variable not set')
+    }
+  } else {
+    indexName = process.env.PINECONE_INDEX_UK || '';
+    if (indexName === '') {
+      throw new Error('PINECONE_INDEX_UK environment variable not set')
+    }
   }
 
+
   // Retrieve the list of indexes to check if expected index exists
-  const indexes = await pinecone.listIndexes()
-  if (indexes.filter(i => i.name === indexName).length !== 1) {
+  const data = await pinecone.listIndexes()
+
+  const extractNames = (indexes:any[]): { name: string }[] => {
+    return indexes.map((index) => ({
+      name: index.name,
+    }));
+  };
+
+  const indexNames = data.indexes ? extractNames(data.indexes) : [];
+
+  if (indexNames.filter((i) => i.name === indexName).length !== 1) {
     throw new Error(`Index ${indexName} does not exist`)
   }
 
   // Get the Pinecone index
-  // const index = pinecone!.Index<Metadata>(indexName);
   const index = pinecone!.Index(indexName);
 
   // Get the namespace

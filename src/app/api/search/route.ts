@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import prismadb from '../../lib/prismadb';
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
-import { deductSearchCredit, getSearchCreditCount } from '@/lib/searchCredits';
 
 
 interface search_result {
@@ -47,31 +46,9 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", {status: 401})
     }
 
-    // const inSearchCreditsDb = await checkSearchCredits(userId)
-
-    // if (!inSearchCreditsDb) {
-    //   return new NextResponse("Not inside credits database", {status: 401})
-    // } 
-
-    // const creditsLeft = await getSearchCreditCount(userId)
-
-    // if (creditsLeft == 0) {
-    //   return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
-    // }
-
-    // if (creditsLeft == false) {
-    //   return new NextResponse("Credits left is null.", {status: 401})
-    // } 
-    
-
-    // if (creditsLeft > 0) {
-    //   await deductSearchCredit(userId)
-    //   console.log("Search is permitted. Deduct 1 credit.")
-    // }
-
 
     try {
-      const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption } = await req.json()
+      const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption } = await req.json()
 
       const user = await currentUser();
       const userName = user?.firstName + " " + user?.lastName;
@@ -103,9 +80,9 @@ export async function POST(req: Request) {
 
       let matches
       if (filters.length===0){
-        matches = await getMatchesFromEmbeddings(embedding, 10, '');
+        matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption);
       } else {
-        matches = await getMatchesFromEmbeddings(embedding, 10, '', case_prefix_filter);
+        matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption, case_prefix_filter);
       }
       
       console.log("Search API - Retrieval done.")
@@ -184,6 +161,14 @@ export async function POST(req: Request) {
       
         return processedResult;
       });
+
+
+      // -------If case_action_no is undefined, then replace it with "N/A"-------
+      processedResults.map(result => {
+        if (result.case_action_no === undefined) {
+          result.case_action_no = "N/A";
+        }
+      });
       
       console.log("Search API - Here are the final results to pass back and upload to db:", processedResults)
 
@@ -195,7 +180,7 @@ export async function POST(req: Request) {
             caseName: result.case_title,
             caseNeutralCit: result.case_neutral_cit,
             caseActionNo: result.case_action_no,
-            caseDate: result.case_date,
+            caseDate: dayjs(result.case_date).toISOString(),
             caseUrl: result.url,
             searchId: searchRecord.id,
             userId: userId,
