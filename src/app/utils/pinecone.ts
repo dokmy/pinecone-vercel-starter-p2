@@ -12,7 +12,9 @@ type metadata_filter = neutral_cit_filter | case_prefix_filter
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
 const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, countryOption: string, filter?:metadata_filter): Promise<any[]> => {
-  console.log("Pinecone.ts -  Here is my filter: " + filter + "\n")
+  
+  console.log("Pinecone.ts -  Here is my countryOption: " + countryOption)
+  console.log("Pinecone.ts -  Here is my filter: " + JSON.stringify(filter))
   
   // Obtain a client for Pinecone
   const pinecone = new Pinecone();
@@ -30,6 +32,8 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
       throw new Error('PINECONE_INDEX_UK environment variable not set')
     }
   }
+
+  console.log("Pinecone.ts -  Here is my indexName: " + indexName + "\n")
 
 
   // Retrieve the list of indexes to check if expected index exists

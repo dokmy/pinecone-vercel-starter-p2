@@ -15,9 +15,10 @@ model Search {
   query         String
   userId        String
   prefixFilters String
+  countryOption String         @default("hk")
+  id            String         @id @default(uuid())
   minDate       DateTime?
   maxDate       DateTime?
-  id            String         @id @default(uuid())
   searchResults SearchResult[]
   resultsShown  Int            @default(3)
 

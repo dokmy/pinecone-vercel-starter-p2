@@ -19,6 +19,7 @@ interface SearchResult {
   createdAt: Date; // or string, for ISO date strings
   searchId: string;
   userId: string;
+  countryOption: string;
 }
 
 interface SearchResultsArray extends Array<SearchResult> {}
@@ -51,6 +52,7 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
       searchResults={searchResults}
       searchMetadataQuery={search_metadata.query}
       searchId={searchId}
+      searchCountryOption={search_metadata.countryOption}
     />
   );
 };

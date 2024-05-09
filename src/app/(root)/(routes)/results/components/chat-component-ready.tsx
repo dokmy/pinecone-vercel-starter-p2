@@ -22,6 +22,7 @@ interface ChatComponentReadyProps {
   };
   query: string;
   chatArgs: chatArgs;
+  countryOption: string;
   isIframeShown: boolean;
   onToggleIframe: () => void;
 }
@@ -32,7 +33,14 @@ interface chatArgs {
 }
 
 const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
-  const { data, query, chatArgs, isIframeShown, onToggleIframe } = props;
+  const {
+    data,
+    query,
+    chatArgs,
+    countryOption,
+    isIframeShown,
+    onToggleIframe,
+  } = props;
 
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +60,11 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       ...chatArgs,
-      body: { filter: data.caseNeutralCit, searchResultId: data.id },
+      body: {
+        filter: data.caseNeutralCit,
+        searchResultId: data.id,
+        countryOption: countryOption,
+      },
     });
 
   useEffect(() => {

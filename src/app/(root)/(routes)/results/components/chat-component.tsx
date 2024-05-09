@@ -20,6 +20,7 @@ interface ChatComponentProps {
     userId: string;
   };
   query: string;
+  countryOption: string;
   isIframeShown: boolean;
   onToggleIframe: () => void;
 }
@@ -32,6 +33,7 @@ interface chatArgs {
 const ChatComponent: React.FC<ChatComponentProps> = ({
   data,
   query,
+  countryOption,
   isIframeShown,
   onToggleIframe,
 }) => {
@@ -97,6 +99,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       data={data}
       query={query}
       chatArgs={chatArgs}
+      countryOption={countryOption}
       isIframeShown={isIframeShown}
       onToggleIframe={onToggleIframe}
     />

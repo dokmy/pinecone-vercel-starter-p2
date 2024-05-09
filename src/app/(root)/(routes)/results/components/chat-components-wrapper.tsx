@@ -4,6 +4,7 @@ import ChatComponent from "./chat-component";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import axios from "axios";
+import { count } from "console";
 
 interface SearchResult {
   id: string;
@@ -21,10 +22,12 @@ const ChatComponentsWrapper = ({
   searchResults,
   searchMetadataQuery,
   searchId,
+  searchCountryOption,
 }: {
   searchResults: SearchResult[];
   searchMetadataQuery: string;
   searchId: string;
+  searchCountryOption: string;
 }) => {
   const [activeChatId, setActiveChatId] = useState(null);
   const [casesShown, setCasesShown] = useState(3);
@@ -123,6 +126,7 @@ const ChatComponentsWrapper = ({
               key={result.id}
               data={result}
               query={searchMetadataQuery}
+              countryOption={searchCountryOption}
               isIframeShown={activeChatId === result.id}
               onToggleIframe={() => toggleIframe(result.id)}
             />

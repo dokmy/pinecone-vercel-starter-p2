@@ -56,12 +56,12 @@ export async function POST(req: Request) {
     console.log("Message is permitted. Deduct 1 credit after completion.")
   }
 
-    const { messages, filter, searchResultId } = await req.json()
+    const { messages, filter, searchResultId, countryOption } = await req.json()
     const lastMessage = messages[messages.length - 1]
 
     console.log("here is last message: ", lastMessage)
 
-    const context = await getContext(lastMessage.content, '', filter)
+    const context = await getContext(lastMessage.content, '', filter, countryOption)
 
     let prompt = [
         {

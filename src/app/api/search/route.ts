@@ -17,23 +17,31 @@ interface search_result {
 }
 
 
-function convertToUrl(caseRef:string) {
-    // Split the case reference into parts
-    const parts = caseRef.split('_');
-  
-    // Check if the parts array has the expected length
-    if (parts.length === 3) {
-      const year = parts[0];
-      const court = parts[1].toLowerCase(); // Convert to lower case
-      const caseNumber = parts[2];
-  
-      // Construct the URL
-      const url = `https://www.hklii.hk/en/cases/${court}/${year}/${caseNumber}`;
-      return url;
+function convertToUrl(caseRef:string, countryOption:string) {
+
+    if (countryOption === "hk") {
+      // Split the case reference into parts
+      const parts = caseRef.split('_');
+    
+      // Check if the parts array has the expected length
+      if (parts.length === 3) {
+        const year = parts[0];
+        const court = parts[1].toLowerCase(); // Convert to lower case
+        const caseNumber = parts[2];
+    
+        // Construct the URL
+        const url = `https://www.hklii.hk/en/cases/${court}/${year}/${caseNumber}`;
+        return url;
+      } else {
+        // Return an error message or handle the error as needed
+        return 'Invalid case reference format';
+      }
     } else {
-      // Return an error message or handle the error as needed
-      return 'Invalid case reference format';
+      
+      const url = `https://www.bailii.org/uk/cases${caseRef}`
+      return url;
     }
+    
   }
 
 
@@ -64,7 +72,8 @@ export async function POST(req: Request) {
           maxDate: selectedMaxDate,
           userId: userId,
           userName: userName,
-          userEmail: userEmail
+          userEmail: userEmail,
+          countryOption: countryOption
         }
       });
 
@@ -91,7 +100,18 @@ export async function POST(req: Request) {
 
       // -------Starting deduplication-------
       const search_results = matches.map((match) => {
-        const { raw_case_num, cases_title, date, db, neutral_cit, cases_act } = match.metadata;
+        console.log("Search API -  Here is the match: " + JSON.stringify(match))
+        const { raw_case_num, cases_title, date, db, neutral_cit, cases_act, case_path = '' } = match.metadata;
+
+        let caseRef = ''
+
+        if (countryOption === "hk") {
+          caseRef = raw_case_num
+        } else {
+          caseRef = case_path
+        }
+        // Generate url from raw_case_num and countryOption
+        const url = convertToUrl(caseRef, countryOption)
     
         return {
         raw_case_num,
@@ -100,7 +120,7 @@ export async function POST(req: Request) {
         case_court: db,
         case_neutral_cit: neutral_cit,
         case_action_no: cases_act,
-        url: convertToUrl(raw_case_num)
+        url: url
         };
         });
       
@@ -144,7 +164,7 @@ export async function POST(req: Request) {
 
       console.log("Search API - Results sorting done.")
       console.log("Search API - Number of matches AFTER sorting:", filteredResults.length)
-      console.log("Search API - Here are the final results to pass back and upload to db:", filteredResults)
+      // console.log("Search API - Here are the final results to pass back and upload to db:", filteredResults)
 
 
       // -------If action no or case title is an array, then just get the first one-------
