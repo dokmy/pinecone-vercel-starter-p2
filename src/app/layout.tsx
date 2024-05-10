@@ -22,6 +22,9 @@ export default function RootLayout({
           baseTheme: dark,
         }}
       >
+        <head>
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+        </head>
         <body>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             {children}

@@ -25,12 +25,12 @@ export const Sidebar = () => {
       label: "Search",
       pro: true,
     },
-    {
-      icon: Bot,
-      href: "/ask",
-      label: "Ask",
-      pro: true,
-    },
+    // {
+    //   icon: Bot,
+    //   href: "/ask",
+    //   label: "Ask",
+    //   pro: true,
+    // },
     {
       icon: History,
       href: "/history",

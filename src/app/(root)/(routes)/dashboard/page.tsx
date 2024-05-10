@@ -43,14 +43,14 @@ const features = [
       "I have a client situation and I need to find similar cases and understand them in depth.",
     pro: true,
   },
-  {
-    icon: Bot,
-    href: "/ask",
-    label: "FastAsk",
-    description:
-      "I have a legal question and I just need a quick answer with sources.",
-    pro: true,
-  },
+  // {
+  //   icon: Bot,
+  //   href: "/ask",
+  //   label: "FastAsk",
+  //   description:
+  //     "I have a legal question and I just need a quick answer with sources.",
+  //   pro: true,
+  // },
   {
     icon: History,
     href: "/history",

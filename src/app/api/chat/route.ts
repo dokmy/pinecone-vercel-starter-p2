@@ -1,19 +1,17 @@
-import { Configuration, OpenAIApi } from 'openai-edge'
-import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import { getContext } from '@/utils/context'
 import prismadb from '../../lib/prismadb'
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 import { Role } from '@prisma/client';
 import { checkMessageCredits, deductMessageCredit, getMessageCreditCount } from '@/lib/messageCredits';
+import { streamText, StreamingTextResponse } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 
-// Create an OpenAI API client (that's edge friendly!)
-const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
-})
-const openai = new OpenAIApi(config)
-
-
+const fireworks = createOpenAI({
+  apiKey: process.env.FIREWORKS_API_KEY ?? '',
+  baseURL: 'https://api.fireworks.ai/inference/v1',
+});
 
 export async function POST(req: Request) {
   try {
@@ -57,43 +55,41 @@ export async function POST(req: Request) {
   }
 
     const { messages, filter, searchResultId, countryOption } = await req.json()
-    const lastMessage = messages[messages.length - 1]
 
-    console.log("here is last message: ", lastMessage)
+    const lastMessage = messages[messages.length - 1]
 
     const context = await getContext(lastMessage.content, '', filter, countryOption)
 
-    let prompt = [
+    let initialPrompt = [
         {
-          role: 'system',
+          role: 'user',
           content: `Here are the context information:
         START CONTEXT BLOCK
         ${context}
         END OF CONTEXT BLOCK
         You are a AI legal assistant for lawyers in Hong Kong. Please cite relevant legal sources or cases where applicable. Do not make assumptions beyond the provided context. 
         
-        Your responses will be rendered using ReactMarkdown, so pleaseuse Markdown syntax for formatting as much as possible to make your responses more readable. If necessary, use bullet points, h1, h2, h3 to structure your responses. Also, use bold and italics to emphasize key points.
+        Your responses will be rendered using ReactMarkdown, so please use Markdown syntax for formatting as much as possible to make your responses more readable. If necessary, use bullet points, h1, h2, h3 to structure your responses. Also, use bold and italics to emphasize key points.
         
         Here is the question:
         `,
         },
       ]
-    
 
-    // Ask OpenAI for a streaming chat completion given the prompt
-    const response = await openai.createChatCompletion({
-      model: 'gpt-4-0125-preview',
-      // model: 'gpt-3.5-turbo-0125',
-      stream: true,
-      // messages: [...prompt, ...messages.filter((message: Message) => message.role === 'user')],
-      messages: [...prompt, ...messages]
+
+    const model = fireworks('accounts/fireworks/models/llama-v3-70b-instruct');
+
+    // new AI SDK
+    const result = await streamText({
+      // model: openai('gpt-4-0125-preview'),
+      model: model,
+      system: initialPrompt[0].content,
+      messages: messages,
+      maxTokens: 1000
     })
-    
 
-
-    const stream = OpenAIStream(response, {
-      onStart: async () => {
-        // save user message into db
+    const stream = result.toAIStream({
+      async onStart()  {
         await prismadb.message.create({
           data:{
             role: Role.user,
@@ -103,11 +99,10 @@ export async function POST(req: Request) {
             userName: userName,
             userEmail: userEmail
           }
-          
         });
       },
-      onCompletion: async (completion) => {
-        // save ai message into db
+      async onCompletion(completion: string) {
+        console.log("Chat API - completion: ", completion)
         await prismadb.message.create({
           data:{
             role: Role.assistant,
@@ -117,14 +112,13 @@ export async function POST(req: Request) {
             userName: userName,
             userEmail: userEmail
           }
-          
         });
         await deductMessageCredit(userId)
-      },
-    });
-    
-    
+      }
+    })
+
     return new StreamingTextResponse(stream)
+
   } catch (e) {
     throw (e)
   }
