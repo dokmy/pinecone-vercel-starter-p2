@@ -41,7 +41,7 @@ export const columns: ColumnDef<SearchWithResults>[] = [
     accessorKey: "searchResults",
     header: "Results",
     cell: (row) => {
-      const searchResults: SearchResult[] = row.getValue();
+      const searchResults = row.getValue() as SearchResult[];
       const results_list = searchResults.map((result) => result.caseNeutralCit);
       const first_three = results_list.slice(0, 3);
       return first_three.map((result) => (
