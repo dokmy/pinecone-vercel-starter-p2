@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
-
-
+import { toast } from "sonner";
 
 interface PerformSearchProps {
     filters: string[]
@@ -37,6 +36,7 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
       });
 
       if (response.status === 403) {
+        console.log("403")
         throw new Error("NoCreditsError");
       }
 

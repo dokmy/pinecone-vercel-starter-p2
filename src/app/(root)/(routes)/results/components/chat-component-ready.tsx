@@ -6,7 +6,8 @@ import { useChat } from "ai/react";
 import { Message } from "ai";
 import { useEffect, useRef } from "react";
 import MoonLoader from "react-spinners/MoonLoader";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ChatComponentReadyProps {
   data: {
@@ -42,6 +43,8 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
     onToggleIframe,
   } = props;
 
+  const router = useRouter();
+
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
   // const scrollToBottom = () => {
@@ -64,6 +67,14 @@ const ChatComponentReady: React.FC<ChatComponentReadyProps> = (props) => {
         filter: data.caseNeutralCit,
         searchResultId: data.id,
         countryOption: countryOption,
+      },
+      onResponse: (response) => {
+        console.log(response.status);
+        if (response.status === 403) {
+          // alert("Not enough credits. Please upgrade or buy more.");
+          toast("Not enough credits. Please upgrade or buy more.");
+          router.push(`/settings`);
+        }
       },
     });
 

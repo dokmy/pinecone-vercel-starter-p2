@@ -22,7 +22,7 @@ interface SearchResult {
   countryOption: string;
 }
 
-interface SearchResultsArray extends Array<SearchResult> {}
+// interface SearchResultsArray extends Array<SearchResult> {}
 
 const ResultsPage = async ({ params: { searchId } }: Props) => {
   const { userId } = await auth();

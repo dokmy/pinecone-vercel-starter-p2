@@ -40,14 +40,9 @@ export async function POST(req: Request) {
 
   const creditsLeft = await getMessageCreditCount(userId)
 
-  if (creditsLeft == 0) {
-    return new NextResponse("No more credits. Please upgrade or buy more credits." , {status:403})
+  if (creditsLeft ==0 || creditsLeft == false || creditsLeft < 0) {
+    return new NextResponse("No more credits. Please upgrade or buy more credits.", {status: 403})
   }
-
-  if (creditsLeft == false) {
-    return new NextResponse("Credits left is null.", {status: 401})
-  } 
-  
 
   if (creditsLeft > 0) {
     // await deductMessageCredit(userId)
@@ -102,7 +97,7 @@ export async function POST(req: Request) {
         });
       },
       async onCompletion(completion: string) {
-        console.log("Chat API - completion: ", completion)
+        // console.log("Chat API - completion: ", completion)
         await prismadb.message.create({
           data:{
             role: Role.assistant,

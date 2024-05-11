@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import prismadb from '../../lib/prismadb';
 import { auth, currentUser } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
+import { getMessageCreditCount } from '@/lib/messageCredits';
 
 
 interface search_result {
@@ -54,6 +55,11 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", {status: 401})
     }
 
+    const creditsLeft = await getMessageCreditCount(userId)
+
+    if (creditsLeft ==0 || creditsLeft == false || creditsLeft < 0) {
+      return new NextResponse("No more credits. Please upgrade or buy more credits.", {status: 403})
+    }
 
     try {
       const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption } = await req.json()

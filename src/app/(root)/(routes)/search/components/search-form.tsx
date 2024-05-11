@@ -12,6 +12,7 @@ import { performSearch } from "@/lib/performSearch";
 import { useRouter } from "next/navigation";
 import MoonLoader from "react-spinners/MoonLoader";
 import { Hammer } from "lucide-react";
+import { toast } from "sonner";
 
 const SearchForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -172,7 +173,7 @@ const SearchForm = () => {
       })
         .then(({ apiResults, searchId, noCredits }) => {
           if (noCredits) {
-            alert("Not enough credits. Please upgrade or buy more.");
+            toast("Not enough credits. Please upgrade or buy more.");
             router.push(`/settings`);
           } else {
             // router.refresh();

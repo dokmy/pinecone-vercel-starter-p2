@@ -17,6 +17,8 @@ import Image from "next/image";
 import FastLegalLogo from "public/logo_rec.png";
 import Link from "next/link";
 import axios from "axios";
+import { DataTable } from "../search/data-table";
+import { columns } from "../search/columns";
 
 type SearchWithResults = Search & { searchResults: SearchResult[] };
 
@@ -92,9 +94,31 @@ const HistoryPage = () => {
     return <div>No searches yet</div>;
   }
 
+  let data: any[] = [];
+  if (searches.length > 0) {
+    data = searches.map((search) => {
+      // process each createdAt, minDate, maxDate with formatDate function and process prefixFilters with formatPrefixFilters function. Lastly return the array of objects with the processed data
+      return {
+        query: search.query,
+        url: search.id,
+        createdAt: formatDate(search.createdAt),
+        minDate: formatDate(search.minDate),
+        maxDate: formatDate(search.maxDate),
+        prefixFilters: formatPrefixFilters(search.prefixFilters),
+        countryOption: search.countryOption,
+        searchResults: search.searchResults,
+        // searchResults: search.searchResults.map(
+        //   (result) => result.caseNeutralCit
+        // ),
+      };
+    });
+  }
+
   return (
     <div className="flex flex-row flex-wrap gap-5 px-10 py-10 justify-center">
-      {searches.map((search, index) => (
+      <DataTable columns={columns} data={data} />
+
+      {/* {searches.map((search, index) => (
         <div key={index} className="w-96 space-3 h-full">
           <Card className="w-full max-w-sm mx-auto bg-gray-800 text-white">
             <CardHeader>
@@ -156,7 +180,7 @@ const HistoryPage = () => {
             </div>
           </Card>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 };
