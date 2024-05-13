@@ -23,6 +23,8 @@ interface search_result {
 
 
 export async function performSearch({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }: PerformSearchProps) {
+
+    console.log("performSearch.ts - Here is the filters: ", filters)
     
     let noCredits = false
 

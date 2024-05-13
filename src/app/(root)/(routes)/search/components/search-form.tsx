@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import MoonLoader from "react-spinners/MoonLoader";
 import { Hammer } from "lucide-react";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SearchForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,6 +31,7 @@ const SearchForm = () => {
   const [others, setOthers] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState("Relevance");
   const [countryOption, setCountryOption] = useState("hk");
+  const [ukCourts, setUkCourts] = useState<string[]>([]);
 
   const hk_autocompleteFields = [
     {
@@ -104,34 +106,89 @@ const SearchForm = () => {
     },
   ];
 
-  const uk_autocompleteFields = [
+  const ukCourtOptions = [
     {
-      id: "courtOfFinalAppeal",
-      label: "Court of Final Appeal",
-      options: courtTypes.court_of_final_appeal,
-      state: cofa,
-      setState: setCofa,
+      id: "Upper Tribunal (Administrative Appeals Chamber)",
+      label: "Upper Tribunal (Administrative Appeals Chamber)",
     },
     {
-      id: "courtOfAppeal",
-      label: "Court of Appeal",
-      options: courtTypes.court_of_appeal,
-      state: coa,
-      setState: setCoa,
+      id: "United Kingdom Upper Tribunal (Tax and Chancery Chamber)",
+      label: "United Kingdom Upper Tribunal (Tax and Chancery Chamber)",
     },
     {
-      id: "courtOfFirstInstanceCivil",
-      label: "Court of First Instance - Civil",
-      options: courtTypes.court_of_first_instance_civil,
-      state: coficivil,
-      setState: setcoficivil,
+      id: "Upper Tribunal (Immigration and Asylum Chamber)",
+      label: "Upper Tribunal (Immigration and Asylum Chamber)",
     },
     {
-      id: "courtOfFirstInstanceCriminal",
-      label: "Court of First Instance - Criminal",
-      options: courtTypes.court_of_first_instance_criminal,
-      state: coficriminal,
-      setState: setCoficriminal,
+      id: "United Kingdom Upper Tribunal (Lands Chamber)",
+      label: "United Kingdom Upper Tribunal (Lands Chamber)",
+    },
+    {
+      id: "First-tier Tribunal (General Regulatory Chamber)",
+      label: "First-tier Tribunal (General Regulatory Chamber)",
+    },
+    {
+      id: "First-tier Tribunal (Health Education and Social Care Chamber)",
+      label: "First-tier Tribunal (Health Education and Social Care Chamber)",
+    },
+    {
+      id: "First-tier Tribunal (Property Chamber)",
+      label: "First-tier Tribunal (Property Chamber)",
+    },
+    {
+      id: "First-tier Tribunal (Tax)",
+      label: "First-tier Tribunal (Tax)",
+    },
+    {
+      id: "United Kingdom Competition Appeals Tribunal",
+      label: "United Kingdom Competition Appeals Tribunal",
+    },
+    {
+      id: "Nominet UK Dispute Resolution Service",
+      label: "Nominet UK Dispute Resolution Service",
+    },
+    {
+      id: "Special Immigrations Appeals Commission",
+      label: "Special Immigrations Appeals Commission",
+    },
+    {
+      id: "United Kingdom Employment Appeal Tribunal",
+      label: "United Kingdom Employment Appeal Tribunal",
+    },
+    {
+      id: "United Kingdom Employment Tribunal",
+      label: "United Kingdom Employment Tribunal",
+    },
+    {
+      id: "United Kingdom Financial Services and Markets Tribunals Decisions",
+      label:
+        "United Kingdom Financial Services and Markets Tribunals Decisions",
+    },
+    {
+      id: "United Kingdom Asylum and Immigration Tribunal",
+      label: "United Kingdom Asylum and Immigration Tribunal",
+    },
+    {
+      id: "United Kingdom Immigration and Asylum (AIT/IAC) Unreported Judgments",
+      label:
+        "United Kingdom Immigration and Asylum (AIT/IAC) Unreported Judgments",
+    },
+    {
+      id: "United Kingdom Information Tribunal including the National Security Appeals Panel",
+      label:
+        "United Kingdom Information Tribunal including the National Security Appeals Panel",
+    },
+    {
+      id: "United Kingdom Special Commissioners of Income Tax Decisions",
+      label: "United Kingdom Special Commissioners of Income Tax Decisions",
+    },
+    {
+      id: "UK Social Security and Child Support Commissioners' Decisions",
+      label: "UK Social Security and Child Support Commissioners' Decisions",
+    },
+    {
+      id: "United Kingdom VAT & Duties Tribunals Decisions",
+      label: "United Kingdom VAT & Duties Tribunals Decisions",
     },
   ];
 
@@ -162,6 +219,7 @@ const SearchForm = () => {
         ...fc,
         ...lt,
         ...others,
+        ...ukCourts,
       ];
       performSearch({
         filters,
@@ -209,27 +267,45 @@ const SearchForm = () => {
         </div>
 
         <div className="mt-4 flex flex-wrap justify-between">
-          {countryOption === "hk" ? (
-            hk_autocompleteFields.map((field) => (
-              <div className="py-2 w-full sm:w-[49%]" key={field.id}>
-                <CourtOptions
+          {countryOption === "hk"
+            ? hk_autocompleteFields.map((field) => (
+                <div className="py-2 w-full sm:w-[49%]" key={field.id}>
+                  <CourtOptions
+                    key={field.id}
+                    id={field.id}
+                    label={field.label}
+                    options={field.options}
+                    state={field.state}
+                    setState={field.setState}
+                  />
+                </div>
+              ))
+            : ukCourtOptions.map((field) => (
+                <div
+                  className="py-2 flex flex-row space-x-2 w-full sm:w-[49%]"
                   key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  options={field.options}
-                  state={field.state}
-                  setState={field.setState}
-                />
-              </div>
-            ))
-          ) : (
-            <div className="flex flex-col justify-center items-center w-full space-y-2">
-              <Hammer className="h-1/4 w-1/4" />
-              <p className="italic text-lg">
-                Court Filtering for UK cases coming soon!
-              </p>
-            </div>
-          )}
+                >
+                  <Checkbox
+                    id={field.id}
+                    checked={ukCourts.includes(field.id)}
+                    onCheckedChange={(checked) =>
+                      setUkCourts((prevCourts) =>
+                        checked
+                          ? [...prevCourts, field.id]
+                          : prevCourts.filter((court) => court !== field.id)
+                      )
+                    }
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor={field.id}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {field.label}
+                    </label>
+                  </div>
+                </div>
+              ))}
         </div>
 
         <div className="mt-4 flex flex-col items-center py-2 w-full">

@@ -8,13 +8,17 @@ interface case_prefix_filter {
   case_prefix: { "$in": string[]}
 }
 
-type metadata_filter = neutral_cit_filter | case_prefix_filter
+interface db_filter {
+  db: { "$in": string[]}
+}
+
+type metadata_filter = neutral_cit_filter | case_prefix_filter | db_filter
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
 const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, countryOption: string, filter?:metadata_filter): Promise<any[]> => {
   
   console.log("Pinecone.ts -  Here is my countryOption: " + countryOption)
-  console.log("Pinecone.ts -  Here is my filter: " + JSON.stringify(filter))
+  console.log("Pinecone.ts -  Here is the filter I received from search API: " + JSON.stringify(filter))
   
   // Obtain a client for Pinecone
   const pinecone = new Pinecone();
@@ -33,7 +37,7 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
     }
   }
 
-  console.log("Pinecone.ts -  Here is my indexName: " + indexName + "\n")
+  console.log("Pinecone.ts -  Here is my indexName: " + indexName)
 
 
   // Retrieve the list of indexes to check if expected index exists
@@ -63,9 +67,30 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
     includeMetadata: true
   };
 
+  // if (filter){
+  //   if (filter as neutral_cit_filter === undefined){
+  //     console.log("Pinecone.ts -  HEREHRE", filter)
+  //     queryObject.filter = filter
+  //   } else if (countryOption === "hk"){
+  //     console.log("Pinecone.ts -  HK!!!!")
+  //     queryObject.filter = { case_prefix: { "$in": filter} }
+  //   } else if (countryOption === "uk"){
+  //     queryObject.filter = { db: { "$in": filter}}
+  //   }
+  // }
+  
   if (filter){
-    queryObject.filter = filter
+    if ("neutral_cit" in filter){
+      queryObject.filter = filter
+    } else if (countryOption === "hk"){
+      console.log("Pinecone.ts -  HK!!!!", filter)
+      queryObject.filter = { case_prefix: { "$in": filter} }
+    } else if (countryOption === "uk"){
+      queryObject.filter = { db: { "$in": filter}}
+    }
   }
+
+  console.log("Pinecone.ts -  Here is the filter I will send to Pinecone.ts: ", queryObject.filter)
 
   try {
     // Query the index with the defined request

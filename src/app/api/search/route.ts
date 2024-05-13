@@ -90,14 +90,20 @@ export async function POST(req: Request) {
 
       const embedding = await getEmbeddings(searchQuery)
 
-      const case_prefix_filter = {case_prefix: { "$in": filters}}
-      console.log("Search API - Here is the case_prefix_filter: ", case_prefix_filter)
+      // let search_filters = []
+
+      // if (countryOption === "=hk") {
+      //   search_filters = {case_prefix: { "$in": filters}}
+      // } else if (countryOption === "=uk") {
+      //   search_filters = {db: { "$in": filters}}
+      // }
+      // console.log("Search API - Here is the filters that I will send to Pinecone.ts: ", search_filters)
 
       let matches
-      if (filters.length===0){
+      if (filters.length === 0){
         matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption);
       } else {
-        matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption, case_prefix_filter);
+        matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption, filters);
       }
       
       console.log("Search API - Retrieval done.")
@@ -106,7 +112,7 @@ export async function POST(req: Request) {
 
       // -------Starting deduplication-------
       const search_results = matches.map((match) => {
-        console.log("Search API -  Here is the match: " + JSON.stringify(match))
+        // console.log("Search API -  Here is the match: " + JSON.stringify(match))
         const { raw_case_num, cases_title, date, db, neutral_cit, cases_act, case_path = '' } = match.metadata;
 
         let caseRef = ''
