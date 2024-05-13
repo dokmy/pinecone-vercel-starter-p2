@@ -59,14 +59,14 @@ const features = [
       "Historical searches and results so you don't have to start from scratch.",
     pro: true,
   },
-  {
-    icon: Hammer,
-    href: "/dashboard",
-    label: "Coming soon...",
-    description:
-      "New features will be added to the dashboard. Stay tuned for updates.",
-    pro: true,
-  },
+  // {
+  //   icon: Hammer,
+  //   href: "/dashboard",
+  //   label: "Coming soon...",
+  //   description:
+  //     "New features will be added to the dashboard. Stay tuned for updates.",
+  //   pro: true,
+  // },
 ];
 
 const FeatureCard = ({
