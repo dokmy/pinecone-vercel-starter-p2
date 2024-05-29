@@ -12,7 +12,7 @@ model Search {
   createdAt     DateTime       @default(now())
   userName      String?
   userEmail     String?
-  query         String
+  query         String         @db.Text
   userId        String
   prefixFilters String
   countryOption String         @default("hk")
