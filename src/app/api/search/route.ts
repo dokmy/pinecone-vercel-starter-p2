@@ -101,9 +101,9 @@ export async function POST(req: Request) {
 
       let matches
       if (filters.length === 0){
-        matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption);
+        matches = await getMatchesFromEmbeddings(embedding, 50, '', countryOption);
       } else {
-        matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption, filters);
+        matches = await getMatchesFromEmbeddings(embedding, 50, '', countryOption, filters);
       }
       
       console.log("Search API - Retrieval done.")
@@ -144,9 +144,11 @@ export async function POST(req: Request) {
 
 
       // -------Starting search period filtering-------
+      console.log("Search API - Search period filtering started. The search period is from", selectedMinDate, "to", selectedMaxDate)
       const filteredResults = deduplicatedResults.filter(
         (result: search_result) => {
           const caseDate = dayjs(result.case_date);
+          console.log("Search API - Here is the case date:", caseDate)
           return (
             (caseDate.isSame(selectedMinDate) ||
               caseDate.isAfter(selectedMinDate)) &&
@@ -156,6 +158,7 @@ export async function POST(req: Request) {
         }
       );
 
+      
       console.log("Search API - Search Period filtering done.")
       console.log("Search API - Number of matches AFTER search period filtering:", filteredResults.length)
 
