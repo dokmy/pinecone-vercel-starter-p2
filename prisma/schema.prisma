@@ -29,7 +29,7 @@ model SearchResult {
   createdAt      DateTime @default(now())
   userName       String?
   userEmail      String?
-  caseName       String
+  caseName       String   @db.Text
   caseNeutralCit String
   caseActionNo   String
   caseDate       DateTime

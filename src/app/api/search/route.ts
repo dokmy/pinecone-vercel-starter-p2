@@ -62,18 +62,31 @@ export async function POST(req: Request) {
     }
 
     try {
-      const {  filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption } = await req.json()
+      const { prefixFilters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption } = await req.json()
 
       const user = await currentUser();
       const userName = user?.firstName + " " + user?.lastName;
       const userEmail = user?.emailAddresses[0].emailAddress;
+      
+      // Convert selectedMinDate and selectedMaxDate to unix timestamp
+      const selectedMinDateUnix = dayjs(selectedMinDate).unix()
+      const selectedMaxDateUnix = dayjs(selectedMaxDate).unix()
+
+      console.log("Search API - Here is the search query:",searchQuery, "\n")
+      console.log("Search API - Here is the prefixFilters:", prefixFilters, "\n")
+
+      console.log("Search API - Here is the selectedMinDate: ", selectedMinDate)
+      console.log("Search API - Here is the selectedMaxDate: ", selectedMaxDate)
+
+      console.log("Search API - Here is the selectedMinDateUnix: ", selectedMinDateUnix)
+      console.log("Search API - Here is the selectedMaxDateUnix: ", selectedMaxDateUnix)
 
 
       // -------Inserting the Search into DB-------
       const searchRecord = await prismadb.search.create({
         data: {
           query: searchQuery,
-          prefixFilters: JSON.stringify(filters),
+          prefixFilters: JSON.stringify(prefixFilters),
           minDate: selectedMinDate,
           maxDate: selectedMaxDate,
           userId: userId,
@@ -85,26 +98,60 @@ export async function POST(req: Request) {
 
 
       // -------Starting retrival-------
-      console.log("Search API - Here is the search query:",searchQuery, "\n")
-      console.log("Search API - Here is the filters:", filters, "\n")
+      
 
       const embedding = await getEmbeddings(searchQuery)
 
-      // let search_filters = []
+      // let filters;
 
-      // if (countryOption === "=hk") {
-      //   search_filters = {case_prefix: { "$in": filters}}
-      // } else if (countryOption === "=uk") {
-      //   search_filters = {db: { "$in": filters}}
+      // if (countryOption === "hk") {
+      //   filters = {
+      //     "$and": [
+      //       { "unix_timestamp": { "$gte": selectedMinDateUnix } }, 
+      //       { "unix_timestamp": { "$lte": selectedMaxDateUnix } }
+      //     ]
+      //   };
+
+      // if (prefixFilters.length > 0) {
+      //     filters["$and"].push({ "case_prefix": { "$in": prefixFilters } });
+      //   }
+      // } else {  
+      //   filters = {
+      //     "$and": [
+      //       { "unix_timestamp": { "$gte": selectedMinDateUnix } }, 
+      //       { "unix_timestamp": { "$lte": selectedMaxDateUnix } }
+      //     ]
+      //   };
+
+      // if (prefixFilters.length > 0) {
+      //     filters["$and"].push({ "db": { "$in": prefixFilters } });
+      //   }
       // }
-      // console.log("Search API - Here is the filters that I will send to Pinecone.ts: ", search_filters)
 
-      let matches
-      if (filters.length === 0){
-        matches = await getMatchesFromEmbeddings(embedding, 50, '', countryOption);
-      } else {
-        matches = await getMatchesFromEmbeddings(embedding, 50, '', countryOption, filters);
+      let filters: any = {
+        "$and": [
+          { "unix_timestamp": { "$gte": selectedMinDateUnix } },
+          { "unix_timestamp": { "$lte": selectedMaxDateUnix } },
+        ],
+      };
+  
+      if (countryOption === "hk" && prefixFilters.length > 0) {
+        filters["$and"].push({ "case_prefix": { "$in": prefixFilters } });
+      } else if (prefixFilters.length > 0) {
+        filters["$and"].push({ "db": { "$in": prefixFilters } });
       }
+
+      console.log("Search API - Here is the filters that I will send to Pinecone.ts: ", filters)
+
+      const matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption, filters)
+
+
+      // let matches
+      // if (filters.length === 0){
+      //   matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption);
+      // } else {
+      //   matches = await getMatchesFromEmbeddings(embedding, 10, '', countryOption, filters);
+      // }
       
       console.log("Search API - Retrieval done.")
       console.log("Search API - Number of matches BEFORE deduplication:", matches.length)
@@ -144,30 +191,29 @@ export async function POST(req: Request) {
 
 
       // -------Starting search period filtering-------
-      console.log("Search API - Search period filtering started. The search period is from", selectedMinDate, "to", selectedMaxDate)
-      const filteredResults = deduplicatedResults.filter(
-        (result: search_result) => {
-          const caseDate = dayjs(result.case_date);
-          console.log("Search API - Here is the case date:", caseDate)
-          return (
-            (caseDate.isSame(selectedMinDate) ||
-              caseDate.isAfter(selectedMinDate)) &&
-            (caseDate.isSame(selectedMaxDate) ||
-              caseDate.isBefore(selectedMaxDate))
-          );
-        }
-      );
+      // console.log("Search API - Search period filtering started. The search period is from", selectedMinDate, "to", selectedMaxDate)
+      // const filteredResults = deduplicatedResults.filter(
+      //   (result: search_result) => {
+      //     const caseDate = dayjs(result.case_date);
+      //     return (
+      //       (caseDate.isSame(selectedMinDate) ||
+      //         caseDate.isAfter(selectedMinDate)) &&
+      //       (caseDate.isSame(selectedMaxDate) ||
+      //         caseDate.isBefore(selectedMaxDate))
+      //     );
+      //   }
+      // );
 
       
-      console.log("Search API - Search Period filtering done.")
-      console.log("Search API - Number of matches AFTER search period filtering:", filteredResults.length)
+      // console.log("Search API - Search Period filtering done.")
+      // console.log("Search API - Number of matches AFTER search period filtering:", filteredResults.length)
 
       
 
       // -------Starting sorting-------
 
       if (sortOption === "Recency") {
-        filteredResults.sort((a: search_result, b: search_result) => {
+        deduplicatedResults.sort((a: search_result, b: search_result) => {
           // Convert case_date strings to Day.js objects for comparison
           const dateA = dayjs(a.case_date);
           const dateB = dayjs(b.case_date);
@@ -178,12 +224,12 @@ export async function POST(req: Request) {
       }
 
       console.log("Search API - Results sorting done.")
-      console.log("Search API - Number of matches AFTER sorting:", filteredResults.length)
-      // console.log("Search API - Here are the final results to pass back and upload to db:", filteredResults)
+      console.log("Search API - Number of matches AFTER sorting:", deduplicatedResults.length)
+      // console.log("Search API - Here are the final results to pass back and upload to db:", deduplicatedResults)
 
 
       // -------If action no or case title is an array, then just get the first one-------
-      const processedResults = filteredResults.map(result => {
+      const processedResults = deduplicatedResults.map(result => {
         const processedResult = { ...result };
       
         if (Array.isArray(processedResult.case_title)) {

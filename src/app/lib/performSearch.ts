@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { toast } from "sonner";
 
 interface PerformSearchProps {
-    filters: string[]
+    prefixFilters: string[]
     searchQuery: string
     selectedMinDate: dayjs.Dayjs
     selectedMaxDate: dayjs.Dayjs
@@ -22,9 +22,11 @@ interface search_result {
 
 
 
-export async function performSearch({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }: PerformSearchProps) {
+export async function performSearch({ prefixFilters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }: PerformSearchProps) {
 
-    console.log("performSearch.ts - Here is the filters: ", filters)
+    console.log("performSearch.ts - Here is the prefixFilters: ", prefixFilters)
+    console.log("performSearch.ts - Here is the selectedMinDate: ", selectedMinDate)
+    console.log("performSearch.ts - Here is the selectedMaxDate: ", selectedMaxDate)
     
     let noCredits = false
 
@@ -34,7 +36,7 @@ export async function performSearch({ filters, searchQuery, selectedMinDate, sel
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ filters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }),
+        body: JSON.stringify({ prefixFilters, searchQuery, selectedMinDate, selectedMaxDate, sortOption, countryOption }),
       });
 
       if (response.status === 403) {

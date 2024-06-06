@@ -12,10 +12,15 @@ interface db_filter {
   db: { "$in": string[]}
 }
 
-type metadata_filter = neutral_cit_filter | case_prefix_filter | db_filter
+interface search_filter {
+  "$and": any[]
+}
+
+type metadata_filter = neutral_cit_filter | case_prefix_filter | db_filter | search_filter
+
 
 // The function `getMatchesFromEmbeddings` is used to retrieve matches for the given embeddings
-const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, countryOption: string, filter?:metadata_filter): Promise<any[]> => {
+const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, namespace: string, countryOption: string, filter?:any): Promise<any[]> => {
   
   console.log("Pinecone.ts -  Here is my countryOption: " + countryOption)
   console.log("Pinecone.ts -  Here is the filter I received from search API: " + JSON.stringify(filter))
@@ -64,31 +69,21 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
   const queryObject:any = {
     vector: embeddings,
     topK,
-    includeMetadata: true
+    includeMetadata: true,
+    filter: filter
   };
 
+  
   // if (filter){
-  //   if (filter as neutral_cit_filter === undefined){
-  //     console.log("Pinecone.ts -  HEREHRE", filter)
+  //   if ("neutral_cit" in filter){
   //     queryObject.filter = filter
   //   } else if (countryOption === "hk"){
-  //     console.log("Pinecone.ts -  HK!!!!")
+  //     console.log("Pinecone.ts -  HK!!!!", filter)
   //     queryObject.filter = { case_prefix: { "$in": filter} }
   //   } else if (countryOption === "uk"){
   //     queryObject.filter = { db: { "$in": filter}}
   //   }
   // }
-  
-  if (filter){
-    if ("neutral_cit" in filter){
-      queryObject.filter = filter
-    } else if (countryOption === "hk"){
-      console.log("Pinecone.ts -  HK!!!!", filter)
-      queryObject.filter = { case_prefix: { "$in": filter} }
-    } else if (countryOption === "uk"){
-      queryObject.filter = { db: { "$in": filter}}
-    }
-  }
 
   console.log("Pinecone.ts -  Here is the filter I will send to Pinecone.ts: ", queryObject.filter)
 

@@ -190,6 +190,10 @@ const SearchForm = () => {
       id: "United Kingdom VAT & Duties Tribunals Decisions",
       label: "United Kingdom VAT & Duties Tribunals Decisions",
     },
+    {
+      id: "United Kingdom House of Lords Decisions",
+      label: "United Kingdom House of Lords Decisions",
+    },
   ];
 
   const router = useRouter();
@@ -208,7 +212,7 @@ const SearchForm = () => {
     }
 
     if (!hasError) {
-      const filters = [
+      const prefixFilters = [
         ...cofa,
         ...coa,
         ...coficivil,
@@ -222,7 +226,7 @@ const SearchForm = () => {
         ...ukCourts,
       ];
       performSearch({
-        filters,
+        prefixFilters,
         searchQuery,
         selectedMinDate,
         selectedMaxDate,
