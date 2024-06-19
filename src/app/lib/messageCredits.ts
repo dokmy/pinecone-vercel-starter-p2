@@ -9,8 +9,18 @@ export const incrementMessageCredit = async (userId: string, no_of_credits:numbe
   }
 
   const user = await currentUser();
-  const userName = user?.firstName + " " + user?.lastName;
-  const userEmail = user?.emailAddresses[0].emailAddress;
+  
+  // const userName = user?.firstName + " " + user?.lastName;
+  // const userEmail = user?.emailAddresses[0].emailAddress;
+
+  // Ensure userName is either a concatenated string of firstName and lastName or null
+  const userName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : null;
+
+  // Ensure userEmail is a non-empty string, throw an error if it is missing
+  const userEmail = user?.emailAddresses[0]?.emailAddress || '';
+  if (!userEmail) {
+    throw new Error("User email is required");
+  }
 
   const userMessageCredit = await prismadb.userMessageCredit.findUnique({
     where: { userId: userId },
