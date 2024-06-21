@@ -7,7 +7,8 @@ export default authMiddleware({
   apiRoutes: ['/api/chat', '/api/search'],
   publicRoutes: ["/", "/api/webhook",
   "/api/dx/credits/add",     
-  "/api/dx/credits/reset",   
+  "/api/dx/credits/reset",
+  "/api/dx/user/add",
   "/api/dx/credits/(.*)"  ]
 });
  
