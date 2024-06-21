@@ -12,7 +12,8 @@ export async function POST(request: Request) {
 
   const { userId, userEmail, userName, no_of_credits } = await request.json();
 
-  if (!userId || !userEmail || !userName || !no_of_credits) {
+  // Check for missing required fields
+  if (!userId || !userEmail || !userName || no_of_credits === undefined) {
     return NextResponse.json({ error: 'Missing userId, userEmail, userName, or no_of_credits' }, { status: 400 });
   }
 
