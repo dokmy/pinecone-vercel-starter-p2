@@ -89,3 +89,27 @@ export const getSearchCreditCount = async (userId: string) => {
 
   return userSearchCredit.count;
 };
+
+
+export const getMessageCreditCount = async (userId: string) => {
+
+  if (!userId) {
+    return false;
+  }
+
+  const userMessageCredit = await prismadb.userMessageCredit.findUnique({
+    where: {
+      userId
+    }
+  });
+
+  if (userMessageCredit == null) {
+    return false
+  }
+
+  if (userMessageCredit.count == 0) {
+    return 0
+  }
+
+  return userMessageCredit.count;
+};

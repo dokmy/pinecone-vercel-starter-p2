@@ -47,6 +47,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "country-flag-icons": "^1.5.11",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "eslint": "8.44.0",
@@ -79,6 +80,7 @@
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/md5": "^2.3.2",
     "prisma": "^5.7.1",
     "ts-node": "^10.9.2",
