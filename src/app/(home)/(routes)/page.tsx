@@ -69,7 +69,7 @@ export default function Home() {
   // try again
   return (
     <div className="min-h-min w-screen">
-      <Navbar hasSubscription={false} isHomePage={true} />
+      <Navbar zeroMessageCredits={false} />
       <div className="p-5 sm:p-10">
         <div className="flex flex-col items-center text-center">
           <div className="flex items-center">
