@@ -24,6 +24,7 @@ const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
   const logo = theme === "light" ? FastLegalLogoWhite : FastLegalLogo;
   const { user } = useUser();
   const [metadata, setMetadata] = useState<PrivateMetadata | null>(null);
+  const [encryptedUserId, setEncryptedUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserMetadata = async () => {
@@ -49,7 +50,35 @@ const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
       }
     };
 
-    fetchUserMetadata();
+    const fetchEncryptedUserId = async (userId: string) => {
+      try {
+        const response = await fetch("/api/dx/encrypt-userid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to encrypt user ID");
+        }
+
+        const data = await response.json();
+        setEncryptedUserId(data.encryptedUserId);
+      } catch (error) {
+        console.error("Error encrypting user ID:", error);
+      }
+    };
+
+    const fetchData = async () => {
+      if (user) {
+        await fetchUserMetadata();
+        await fetchEncryptedUserId(user.id);
+      }
+    };
+
+    fetchData();
   }, [user]);
 
   return (
@@ -81,7 +110,7 @@ const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
               See FAQs
             </a>
             <a
-              href={`http://fastlegal.dataxquad.com/pricing?p=${user?.id}`}
+              href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
               className="text-white px-4 py-2 rounded bg-[#C69048] text-sm"
             >
               Subscribe a Plan
@@ -108,6 +137,7 @@ export default Navbar;
 // import { MobileSidebar } from "./mobile-sidebar";
 // import { useUser } from "@clerk/nextjs";
 // import { useEffect, useState } from "react";
+// import CryptoJS from "crypto-js";
 
 // // Define the type for private metadata
 // type PrivateMetadata = {
@@ -118,14 +148,20 @@ export default Navbar;
 //   registerFrom: string;
 // };
 
+// // Encryption function
+// const AESEncrypt = (content: string, key: string) => {
+//   return CryptoJS.AES.encrypt(content, key).toString();
+// };
+
+// // You should store this key securely, preferably in environment variables
+// const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "default-key";
+
 // const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
 //   const { theme } = useTheme();
 //   const logo = theme === "light" ? FastLegalLogoWhite : FastLegalLogo;
 //   const { user } = useUser();
 //   const [metadata, setMetadata] = useState<PrivateMetadata | null>(null);
-//   const [subscriptionLink, setSubscriptionLink] = useState(
-//     "http://localhost:3001/dashboard"
-//   ); // Default link
+//   const [encryptedUserId, setEncryptedUserId] = useState<string | null>(null);
 
 //   useEffect(() => {
 //     const fetchUserMetadata = async () => {
@@ -145,6 +181,10 @@ export default Navbar;
 
 //           const data = await response.json();
 //           setMetadata(data);
+
+//           // Encrypt the user ID
+//           const encrypted = AESEncrypt(user.id, ENCRYPTION_KEY);
+//           setEncryptedUserId(encodeURIComponent(encrypted));
 //         } catch (error) {
 //           console.error("Error fetching user metadata:", error);
 //         }
@@ -152,41 +192,6 @@ export default Navbar;
 //     };
 
 //     fetchUserMetadata();
-//   }, [user]);
-
-//   useEffect(() => {
-//     if (user) {
-//       const fetchSubscriptionLink = async () => {
-//         try {
-//           const response = await fetch(
-//             "https://x050mvneya.execute-api.us-east-2.amazonaws.com/prod/api/v1/payment/subscription-mgt-link",
-//             {
-//               method: "POST",
-//               headers: {
-//                 "Content-Type": "application/json",
-//               },
-//               body: JSON.stringify({ userID: user.id }),
-//             }
-//           );
-
-//           if (!response.ok) {
-//             throw new Error("Failed to fetch subscription link");
-//           }
-
-//           const result = await response.json();
-//           if (result.data && result.data.link) {
-//             setSubscriptionLink(result.data.link);
-//           } else {
-//             throw new Error("No link returned from the API");
-//           }
-//         } catch (error) {
-//           console.error("Error fetching subscription link:", error);
-//           setSubscriptionLink("#"); // Set to a fallback link or error state
-//         }
-//       };
-
-//       fetchSubscriptionLink();
-//     }
 //   }, [user]);
 
 //   return (
@@ -218,7 +223,7 @@ export default Navbar;
 //               See FAQs
 //             </a>
 //             <a
-//               href={subscriptionLink}
+//               href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
 //               className="text-white px-4 py-2 rounded bg-[#C69048] text-sm"
 //             >
 //               Subscribe a Plan
