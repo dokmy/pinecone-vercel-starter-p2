@@ -63,20 +63,22 @@ const SettingsPage = async () => {
               Oops! It looks like you have no credits. Please upgrade or buy
               more.
             </p>
-            <a
-              href={subscriptionMgtUrl || "#"}
-              className="text-white py-2 rounded bg-[#C69048] text-sm w-40 px-2 text-center"
-            >
-              Manage Subscription
-            </a>
-            <a
-              href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
-              className="text-white py-2 rounded bg-[#C69048] text-sm w-32 px-2 text-center"
-            >
-              Subscribe a Plan
-            </a>
           </div>
         ) : null}
+        <div className="mt-3 flex flex-col gap-y-3">
+          <a
+            href={subscriptionMgtUrl || "#"}
+            className="text-black py-2 rounded bg-white text-sm w-40 px-2 text-center"
+          >
+            Manage Subscription
+          </a>
+          <a
+            href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
+            className="text-black py-2 rounded bg-white text-sm w-32 px-2 text-center"
+          >
+            Subscribe a Plan
+          </a>
+        </div>
       </div>
     </div>
   );

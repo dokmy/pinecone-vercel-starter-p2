@@ -96,28 +96,27 @@ const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
       </Link>
 
       <div className="mr-3 flex flex-row items-center gap-x-3">
-        {zeroMessageCredits && (
-          <p className="text-sm text-gray-400">
-            Message credits left is 0. Please upgrade or buy more.
-          </p>
+        {zeroMessageCredits && metadata?.registerFrom === "DX" && (
+          <>
+            <p className="text-sm text-gray-400">
+              Message credits left is 0. Please upgrade or buy more.
+            </p>
+            <div className="flex flex-row gap-x-2">
+              <a
+                href="http://fastlegal.dataxquad.com/#FAQ"
+                className="text-white px-4 py-2 rounded bg-black border border-white text-sm"
+              >
+                See FAQs
+              </a>
+              <a
+                href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
+                className="text-white px-4 py-2 rounded bg-black border border-white text-sm"
+              >
+                Subscribe a Plan
+              </a>
+            </div>
+          </>
         )}
-        {metadata?.registerFrom === "DX" && (
-          <div className="flex flex-row gap-x-2">
-            <a
-              href="http://fastlegal.dataxquad.com/#FAQ"
-              className="text-white px-4 py-2 rounded bg-[#C69048] text-sm"
-            >
-              See FAQs
-            </a>
-            <a
-              href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
-              className="text-white px-4 py-2 rounded bg-[#C69048] text-sm"
-            >
-              Subscribe a Plan
-            </a>
-          </div>
-        )}
-
         <UserButton afterSignOutUrl="/" />
       </div>
     </header>

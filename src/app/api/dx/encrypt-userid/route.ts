@@ -13,5 +13,7 @@ export async function POST(req: NextRequest) {
   const encryptedUserId = CryptoJS.AES.encrypt(userId, ENCRYPTION_KEY).toString();
   const encodedUserId = encodeURIComponent(encryptedUserId);
 
+  console.log("ENCRYPTION_KEY: " + ENCRYPTION_KEY)
+
   return NextResponse.json({ encryptedUserId: encodedUserId });
 }
