@@ -2,6 +2,8 @@ import React from "react";
 import { getMessageCreditCount } from "@/lib/messageCredits";
 import { auth, currentUser } from "@clerk/nextjs";
 import CryptoJS from "crypto-js";
+import prismadb from "@/lib/prismadb"; // Ensure you have this import
+import LanguageSelector from "@/components/LanguageSelector"; // We'll create this component
 
 // Encryption function
 const AESEncrypt = (content: string, key: string) => {
@@ -52,6 +54,12 @@ const SettingsPage = async () => {
   const user = await currentUser();
   const firstName = user?.firstName;
 
+  const settings = await prismadb.settings.findUnique({
+    where: { userId },
+  });
+
+  const outputLanguage = settings?.outputLanguage || "English";
+
   return (
     <div className="h-full p-4 space-y-2">
       <h3 className="text-lg font-medium">Settings</h3>
@@ -80,6 +88,9 @@ const SettingsPage = async () => {
               Subscribe a Plan
             </a>
           ) : null}
+        </div>
+        <div className="mt-3">
+          <LanguageSelector userId={userId} initialLanguage={outputLanguage} />
         </div>
       </div>
     </div>

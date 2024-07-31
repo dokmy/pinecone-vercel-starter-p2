@@ -23,6 +23,7 @@ interface ChatComponentProps {
   countryOption: string;
   isIframeShown: boolean;
   onToggleIframe: () => void;
+  outputLanguage: string;
 }
 
 interface chatArgs {
@@ -36,6 +37,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   countryOption,
   isIframeShown,
   onToggleIframe,
+  outputLanguage,
 }) => {
   const [dbMessages, setDbMessages] = useState<null | []>(null);
   const [chatArgs, setChatArgs] = useState<null | chatArgs>(null);
@@ -61,10 +63,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
     if (dbMessages.length === 0) {
       console.log("no messages. Adding initial input.");
+      const initialPrompt =
+        outputLanguage === "Chinese"
+          ? "請先為我總結此案例，然後解釋為什麼這個案例與我的情況相關。請用中文回答。"
+          : "Please first summarise this case for me and then explain why this case is relevant to my situation as follow: ";
       setChatArgs({
-        initialInput:
-          "Please first summarise this case for me and then explain why this case is relevant to my situation as follow: " +
-          query,
+        initialInput: initialPrompt + query,
       });
     } else {
       console.log("Have messages. Adding initial messages.");
@@ -77,7 +81,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setChatArgs({ initialMessages: simplifiedMessages });
       // setInitialInput("");
     }
-  }, [dbMessages, query]);
+  }, [dbMessages, query, outputLanguage]);
 
   if (chatArgs == null) {
     return (

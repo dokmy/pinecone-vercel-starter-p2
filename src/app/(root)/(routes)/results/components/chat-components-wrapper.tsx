@@ -23,11 +23,13 @@ const ChatComponentsWrapper = ({
   searchMetadataQuery,
   searchId,
   searchCountryOption,
+  outputLanguage,
 }: {
   searchResults: SearchResult[];
   searchMetadataQuery: string;
   searchId: string;
   searchCountryOption: string;
+  outputLanguage: string;
 }) => {
   const [activeChatId, setActiveChatId] = useState(null);
   const [casesShown, setCasesShown] = useState(3);
@@ -129,6 +131,7 @@ const ChatComponentsWrapper = ({
               countryOption={searchCountryOption}
               isIframeShown={activeChatId === result.id}
               onToggleIframe={() => toggleIframe(result.id)}
+              outputLanguage={outputLanguage}
             />
           </div>
         ))}

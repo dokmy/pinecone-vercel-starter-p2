@@ -106,3 +106,18 @@ model UserMessageCredit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum OutputLanguage {
+  English
+  Chinese
+}
+
+model Settings {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  outputLanguage OutputLanguage @default(English)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([userId])
+}

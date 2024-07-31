@@ -31,21 +31,27 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
     return redirect("/sign-in");
   }
 
-  const search_metadata = await prismadb.search.findUnique({
-    where: {
-      id: searchId,
-    },
-  });
-
-  const searchResults = await prismadb.searchResult.findMany({
-    where: {
-      searchId: searchId,
-    },
-  });
+  const [search_metadata, searchResults, userSettings] = await Promise.all([
+    prismadb.search.findUnique({
+      where: {
+        id: searchId,
+      },
+    }),
+    prismadb.searchResult.findMany({
+      where: {
+        searchId: searchId,
+      },
+    }),
+    prismadb.settings.findUnique({
+      where: { userId },
+    }),
+  ]);
 
   if (!search_metadata) {
     return <div>Cannot find this search in db.</div>;
   }
+
+  const outputLanguage = userSettings?.outputLanguage || "English";
 
   return (
     <ChatComponentsWrapper
@@ -53,6 +59,7 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
       searchMetadataQuery={search_metadata.query}
       searchId={searchId}
       searchCountryOption={search_metadata.countryOption}
+      outputLanguage={outputLanguage}
     />
   );
 };

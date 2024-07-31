@@ -66,7 +66,7 @@ export async function POST(req: Request) {
         
         Your responses will be rendered using ReactMarkdown, so please use Markdown syntax for formatting as much as possible to make your responses more readable. If necessary, use bullet points, h1, h2, h3 to structure your responses. Also, use bold and italics to emphasize key points.
         
-        Here is the question:
+        Here is the question. 
         `,
         },
       ]
