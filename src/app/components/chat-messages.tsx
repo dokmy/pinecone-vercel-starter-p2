@@ -47,17 +47,10 @@ export default function Messages({
             {msg.role === "assistant" ? "🤖" : "🧑‍💻"}
           </div>
           <div className="ml-4 flex flex-col items-center text-gray-200 pr-7">
-            {/* {msg.content.split("\n").map((line, i) => (
-              <span key={i}>
-                {line}
-                <br></br>
-              </span>
-            ))} */}
             <ReactMarkdown
               className="prose mt-1 w-full break-words prose-p:leading-relaxed"
               remarkPlugins={[remarkGfm]}
               components={{
-                // open links in new tab
                 a: (props) => (
                   <a
                     {...props}
@@ -70,9 +63,17 @@ export default function Messages({
                     }}
                   />
                 ),
-                p: (props) => <p {...props} style={{ marginBottom: "1rem" }} />,
-
-                // add margin bottom to headings
+                p: (props) => (
+                  <p
+                    {...props}
+                    style={{
+                      marginBottom: "1rem",
+                      overflowWrap: "break-word",
+                      wordWrap: "break-word",
+                      hyphens: "auto",
+                    }}
+                  />
+                ),
                 h1: (props) => (
                   <h1
                     {...props}
@@ -113,6 +114,30 @@ export default function Messages({
                     style={{ marginBottom: "1rem", fontSize: "0.75rem" }}
                   />
                 ),
+                pre: (props) => (
+                  <pre
+                    {...props}
+                    style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  />
+                ),
+                code: ({ node, inline, className, children, ...props }) => {
+                  const match = /language-(\w+)/.exec(className || "");
+                  return !inline && match ? (
+                    <pre className="bg-gray-100 rounded p-4 my-4 text-gray-800 overflow-x-auto whitespace-pre-wrap break-words">
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    </pre>
+                  ) : (
+                    <code
+                      className={`${className} px-1 py-0.5 rounded bg-gray-200 text-gray-800`}
+                      style={{ wordBreak: "break-word" }}
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  );
+                },
               }}
             >
               {msg.content}

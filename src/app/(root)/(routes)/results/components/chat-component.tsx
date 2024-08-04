@@ -65,8 +65,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       console.log("no messages. Adding initial input.");
       const initialPrompt =
         outputLanguage === "Chinese"
-          ? "請先為我總結此案例，然後解釋為什麼這個案例與我的情況相關。請用中文回答。"
-          : "Please first summarise this case for me and then explain why this case is relevant to my situation as follow: ";
+          ? "以下是我的情況或問題。請用中文回答。"
+          : "Here is the situation or question: ";
+      // const initialPrompt = "Here is the situation: ";
       setChatArgs({
         initialInput: initialPrompt + query,
       });
