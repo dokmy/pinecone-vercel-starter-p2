@@ -64,7 +64,7 @@ export const columns: ColumnDef<SearchWithResults>[] = [
     header: "Go to Result",
     cell: (row) => {
       const searchId = row.getValue();
-      const path = `/results/${searchId}`;
+      const path = `/results2/${searchId}`;
       return (
         <Button>
           <Link href={path}>Go to Result</Link>

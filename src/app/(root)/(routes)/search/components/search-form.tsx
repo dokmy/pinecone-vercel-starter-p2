@@ -239,7 +239,7 @@ const SearchForm = () => {
             router.push(`/settings`);
           } else {
             // router.refresh();
-            router.push(`/results/${searchId}`);
+            router.push(`/results2/${searchId}`);
           }
           setIsLoading(false);
         })

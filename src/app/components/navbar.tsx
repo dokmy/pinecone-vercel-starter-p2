@@ -43,6 +43,7 @@ const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
           }
 
           const data = await response.json();
+          console.log("METAdata = " + JSON.stringify(data));
           setMetadata(data);
         } catch (error) {
           console.error("Error fetching user metadata:", error);
