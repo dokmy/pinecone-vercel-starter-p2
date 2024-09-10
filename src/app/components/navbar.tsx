@@ -104,7 +104,7 @@ const Navbar = ({ zeroMessageCredits }: { zeroMessageCredits: boolean }) => {
             </p>
             <div className="flex flex-row gap-x-2">
               <a
-                href="http://fastlegal.dataxquad.com/#FAQ"
+                href="http://www.dataxquad.com/legal/fastlegal#FAQ"
                 className="text-white px-4 py-2 rounded bg-black border border-white text-sm"
               >
                 See FAQs
