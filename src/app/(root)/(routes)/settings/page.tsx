@@ -110,8 +110,8 @@ const SettingsPage = async () => {
           </a>
           {creditCount == 0 ? (
             <a
-              href="https://www.dataxquad.com/legal/fastlegal-pricing"
-              // href={`http://fastlegal.dataxquad.com/pricing?p=${encryptedUserId}`}
+              // href="https://www.dataxquad.com/legal/fastlegal-pricing"
+              href={`https://www.dataxquad.com/legal/fastlegal-pricing?p=${encryptedUserId}`}
               className="text-black py-2 rounded bg-white text-sm w-32 px-2 text-center"
             >
               Subscribe a Plan
