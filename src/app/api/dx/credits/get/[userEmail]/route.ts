@@ -22,7 +22,8 @@ export async function GET(request: Request, { params }: { params: Params }) {
   }
 
   try {
-    const userMessageCredit = await prismadb.userMessageCredit.findUnique({
+    // Find first user with this email
+    const userMessageCredit = await prismadb.userMessageCredit.findFirst({
       where: { userEmail: userEmail },
     });
 
