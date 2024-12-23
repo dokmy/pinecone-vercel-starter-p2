@@ -18,8 +18,9 @@ export async function POST(request: Request) {
   }
 
   try {
+    // Check if user exists by userId (unique field)
     const existingUser = await prismadb.userMessageCredit.findUnique({
-      where: { userEmail: userEmail },
+      where: { userId: userId },
     });
 
     if (existingUser) {
