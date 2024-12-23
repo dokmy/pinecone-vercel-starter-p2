@@ -17,18 +17,24 @@ export async function POST(request: Request) {
   }
 
   try {
-    const userMessageCredit = await prismadb.userMessageCredit.findUnique({
+    // First find all users with this email
+    const userMessageCredits = await prismadb.userMessageCredit.findMany({
       where: { userEmail: userEmail },
     });
 
-    if (userMessageCredit) {
-      await prismadb.userMessageCredit.update({
-        where: { userEmail: userEmail },
-        data: { count: 0 },
-      });
-    } else {
+    if (userMessageCredits.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    // Reset credits for each user with this email
+    await Promise.all(
+      userMessageCredits.map((credit) =>
+        prismadb.userMessageCredit.update({
+          where: { userId: credit.userId },
+          data: { count: 0 },
+        })
+      )
+    );
 
     return NextResponse.json({ message: 'Credits reset to 0 successfully' });
   } catch (error) {
