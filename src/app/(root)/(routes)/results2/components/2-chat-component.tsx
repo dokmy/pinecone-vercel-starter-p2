@@ -6,19 +6,10 @@ import ChatComponentReady from "./2-chat-component-ready";
 import { Message } from "ai";
 import Image from "next/image";
 import FastLegalLogo from "public/logo_rec.png";
+import { SearchResult } from "../../../../../types";
 
 interface ChatComponentProps {
-  data: {
-    id: string;
-    caseName: string;
-    caseNeutralCit: string;
-    caseActionNo: string;
-    caseDate: Date;
-    caseUrl: string;
-    createdAt: Date;
-    searchId: string;
-    userId: string;
-  };
+  data: SearchResult;
   query: string;
   countryOption: string;
   outputLanguage: string;

@@ -1,66 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Search {
-  createdAt     DateTime       @default(now())
-  userName      String?
-  userEmail     String?
-  query         String         @db.Text
-  userId        String
-  prefixFilters String
-  countryOption String         @default("hk")
   id            String         @id @default(uuid())
+  query         String         @db.Text
+  prefixFilters String
   minDate       DateTime?
   maxDate       DateTime?
-  searchResults SearchResult[]
+  createdAt     DateTime       @default(now())
+  userId        String
   resultsShown  Int            @default(3)
+  userEmail     String?
+  userName      String?
+  countryOption String         @default("hk")
+  refinedQuery  String?        @db.Text
+  searchResults SearchResult[]
+  rawMatches    RawMatch[]
 
   @@index([userId])
 }
 
 model SearchResult {
-  createdAt      DateTime @default(now())
-  userName       String?
-  userEmail      String?
-  caseName       String   @db.Text
+  id             String    @id @default(uuid())
+  caseName       String    @db.Text
   caseNeutralCit String
   caseActionNo   String
   caseDate       DateTime
   caseUrl        String
-  id             String   @id @default(uuid())
+  createdAt      DateTime  @default(now())
   searchId       String
   userId         String
-
-  search   Search    @relation(fields: [searchId], references: [id])
-  messages Message[]
+  userEmail      String?
+  userName       String?
+  gptScore       Float?
+  vectorScore    Float?
+  search         Search    @relation(fields: [searchId], references: [id])
+  messages       Message[]
 
   @@index([searchId])
   @@index([userId])
 }
 
-enum Role {
-  user
-  assistant
-}
-
 model Message {
-  createdAt      DateTime @default(now())
-  userName       String?
-  userEmail      String?
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   role           Role
-  content        String   @db.Text
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
   userId         String
   searchResultId String
-
-  searchResult SearchResult @relation(fields: [searchResultId], references: [id])
+  userEmail      String?
+  userName       String?
+  searchResult   SearchResult @relation(fields: [searchResultId], references: [id])
 
   @@index([searchResultId])
   @@index([userId])
@@ -81,13 +78,23 @@ model FastAskMessage {
 model UserSubscription {
   id                     String    @id @default(cuid())
   userId                 String    @unique
-  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
-  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
-  stripePriceId          String?   @map(name: "stripe_price_id")
-  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+  stripeCustomerId       String?   @unique @map("stripe_customer_id")
+  stripeSubscriptionId   String?   @unique @map("stripe_subscription_id")
+  stripePriceId          String?   @map("stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map("stripe_current_period_end")
 }
 
 model UserSearchCredit {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userEmail String?
+  userName  String?
+}
+
+model UserMessageCredit {
   id        String   @id @default(cuid())
   userId    String   @unique
   userName  String?
@@ -95,21 +102,6 @@ model UserSearchCredit {
   count     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model UserMessageCredit {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  userName  String?
-  userEmail String   @unique
-  count     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum OutputLanguage {
-  English
-  Chinese
 }
 
 model Settings {
@@ -120,4 +112,28 @@ model Settings {
   updatedAt      DateTime       @updatedAt
 
   @@index([userId])
+}
+
+model RawMatch {
+  id            String   @id @default(cuid())
+  searchId      String
+  metadata      String   @db.LongText
+  score         Float
+  chunk         String   @db.Text
+  createdAt     DateTime @default(now())
+  gptEvaluation String?  @db.Text
+  gptScore      Float?
+  search        Search   @relation(fields: [searchId], references: [id], onDelete: Cascade)
+
+  @@index([searchId])
+}
+
+enum Role {
+  user
+  assistant
+}
+
+enum OutputLanguage {
+  English
+  Chinese
 }

@@ -1,19 +1,19 @@
 import React from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-
-interface SortByProps {
-  sortOption: string;
-  setSortOption: React.Dispatch<React.SetStateAction<string>>;
-}
+import { SortByProps } from "./types";
+import { SortOption } from "@/lib/types/search";
 
 const SortBy: React.FC<SortByProps> = ({ sortOption, setSortOption }) => {
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
-    option: string
+    option: SortOption | null
   ) => {
-    setSortOption(option);
+    if (option) {
+      setSortOption(option);
+    }
   };
+
   return (
     <div className="flex flex-col lg:flex-row items-center">
       <p className="hidden xl:block">Sort the results by:</p>
@@ -25,20 +25,17 @@ const SortBy: React.FC<SortByProps> = ({ sortOption, setSortOption }) => {
           onChange={handleChange}
           aria-label="Platform"
           sx={{
-            backgroundColor: "black", // Background color for the toggle button group
+            backgroundColor: "black",
             ".MuiToggleButton-root": {
-              // Styles for each toggle button
-              borderColor: "gray.300", // Border color for toggle buttons
-              color: "white", // Text color for toggle buttons
+              borderColor: "gray.300",
+              color: "white",
               "&.Mui-selected, &.Mui-selected:hover": {
-                // Styles for a selected toggle button
-                backgroundColor: "gray", // Background color for a selected toggle button
-                color: "white", // Text color for a selected toggle button
+                backgroundColor: "gray",
+                color: "white",
               },
               "&:hover": {
-                // Hover styles for toggle buttons
-                backgroundColor: "gray.800", // Background color on hover for toggle buttons
-                color: "white", // Text color on hover for toggle buttons
+                backgroundColor: "gray.800",
+                color: "white",
               },
             },
           }}

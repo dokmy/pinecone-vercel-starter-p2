@@ -4,18 +4,7 @@ import ChatComponent from "./2-chat-component";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import axios from "axios";
-
-interface SearchResult {
-  id: string;
-  caseName: string;
-  caseNeutralCit: string;
-  caseActionNo: string;
-  caseDate: Date; // or string, if you are using ISO date strings
-  caseUrl: string;
-  createdAt: Date; // or string, for ISO date strings
-  searchId: string;
-  userId: string;
-}
+import { SearchResult } from "../../../../../types";
 
 const ChatComponentsWrapper = ({
   searchResults,
@@ -32,8 +21,15 @@ const ChatComponentsWrapper = ({
 }) => {
   const [casesShown, setCasesShown] = useState(3);
 
+  // Sort results by gptScore in descending order
+  const sortedResults = [...searchResults].sort((a, b) => {
+    const scoreA = a.gptScore ?? 0;
+    const scoreB = b.gptScore ?? 0;
+    return scoreB - scoreA;
+  });
+
   const addCasesShown = () => {
-    if (casesShown < searchResults.length) {
+    if (casesShown < sortedResults.length) {
       const newCasesShown = casesShown + 1;
       setCasesShown(newCasesShown);
     }
@@ -98,7 +94,7 @@ const ChatComponentsWrapper = ({
         </Button>
       </div>
       <div className="flex flex-col w-full">
-        {searchResults.slice(0, casesShown).map((result) => (
+        {sortedResults.slice(0, casesShown).map((result) => (
           <div key={result.id} className="rounded-lg p-3">
             <ChatComponent
               data={result}

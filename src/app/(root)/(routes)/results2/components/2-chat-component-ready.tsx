@@ -8,19 +8,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import MoonLoader from "react-spinners/MoonLoader";
+import { SearchResult } from "../../../../../types";
 
 interface ChatComponentReadyProps {
-  data: {
-    id: string;
-    caseName: string;
-    caseNeutralCit: string;
-    caseActionNo: string;
-    caseDate: Date;
-    caseUrl: string;
-    createdAt: Date;
-    searchId: string;
-    userId: string;
-  };
+  data: SearchResult;
   query: string;
   chatArgs: chatArgs;
   countryOption: string;

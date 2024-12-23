@@ -2,27 +2,13 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import prismadb from "../../../../lib/prismadb";
 import ChatComponentsWrapper from "../components/2-chat-components-wrapper";
+import { SearchResult } from "../../../../../types";
 
 type Props = {
   params: {
     searchId: string;
   };
 };
-
-interface SearchResult {
-  id: string;
-  caseName: string;
-  caseNeutralCit: string;
-  caseActionNo: string;
-  caseDate: Date; // or string, if you are using ISO date strings
-  caseUrl: string;
-  createdAt: Date; // or string, for ISO date strings
-  searchId: string;
-  userId: string;
-  countryOption: string;
-}
-
-// interface SearchResultsArray extends Array<SearchResult> {}
 
 const ResultsPage = async ({ params: { searchId } }: Props) => {
   const { userId } = await auth();
@@ -41,7 +27,7 @@ const ResultsPage = async ({ params: { searchId } }: Props) => {
       where: {
         searchId: searchId,
       },
-    }),
+    }) as Promise<SearchResult[]>,
     prismadb.settings.findUnique({
       where: { userId },
     }),

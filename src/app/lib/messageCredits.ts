@@ -62,8 +62,6 @@ export const deductMessageCredit = async (userId: string) => {
 
 export const checkMessageCredits = async (userId: string) => {
 
-  console.log("checkMessageCredits: userId = " + userId)
-
   if (!userId) {
     return false;
   }
