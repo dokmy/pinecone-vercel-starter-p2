@@ -2,21 +2,21 @@
 
 import { useState, useCallback } from "react";
 import { Listbox } from "@headlessui/react";
-import dynamic from "next/dynamic";
 import t1codesData from "../data/t1codes.json";
 import SearchBar from "./SearchBar";
-import type { ComponentType } from "react";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import dayjs from "dayjs";
 
-// Dynamic import for DatePicker with no SSR
-const ReactDatePicker = dynamic(() => import("react-datepicker"), {
-  ssr: false,
-}) as ComponentType<any>;
-
-// Remove the type assertion since we properly typed it above
-const DatePicker = ReactDatePicker;
-
-// Import styles in a way that works with SSR
-import "react-datepicker/dist/react-datepicker.css";
+// Create a dark theme instance
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 interface FilterState {
   t1Codes: string[];
@@ -48,8 +48,8 @@ export default function FilterSection({
   const [selectedT1Codes, setSelectedT1Codes] = useState<string[]>([]);
   const [selectedStockCodes, setSelectedStockCodes] = useState<string[]>([]);
   const [selectedStockNames, setSelectedStockNames] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [sortBy, setSortBy] = useState<"relevancy" | "recency">("relevancy");
 
   const handleFilterChange = useCallback(
@@ -59,8 +59,8 @@ export default function FilterSection({
         stockCodes: selectedStockCodes,
         stockNames: selectedStockNames,
         dateRange: {
-          start: startDate?.getTime(),
-          end: endDate?.getTime(),
+          start: startDate?.valueOf(),
+          end: endDate?.valueOf(),
         },
         sortBy,
       };
@@ -115,189 +115,195 @@ export default function FilterSection({
     </svg>
   );
 
-  // Wrap DatePicker in a client-only div
-  const DatePickerWrapper = ({ selected, onChange, placeholderText }: any) => (
-    <div suppressHydrationWarning>
-      <DatePicker
-        selected={selected}
-        onChange={onChange}
-        placeholderText={placeholderText}
-        className="w-full px-3 py-2 border rounded-md bg-transparent"
-      />
-    </div>
-  );
-
   return (
-    <div className="w-64 p-4 border-r min-h-screen">
-      <SearchBar
-        onSearch={onSearch}
-        onViewModeChange={onViewModeChange}
-        onFilterChange={onFilterChange}
-      />
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <div className="w-64 p-4 border-r min-h-screen">
+          <SearchBar
+            onSearch={onSearch}
+            onViewModeChange={onViewModeChange}
+            onFilterChange={onFilterChange}
+          />
 
-      <h2 className="text-lg font-semibold mb-4 mt-6">Filters</h2>
+          <h2 className="text-lg font-semibold mb-4 mt-6">Filters</h2>
 
-      <div className="space-y-6">
-        {/* Document Types */}
-        <div className="space-y-2">
-          <label className="block text-sm">Document Types</label>
-          <Listbox
-            value={selectedT1Codes}
-            onChange={handleT1CodesChange}
-            multiple
-          >
-            <div className="relative mt-1">
-              <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg border">
-                {selectedT1Codes.length === 0 ? (
-                  "Select document types"
-                ) : (
-                  <span className="block truncate">
-                    {selectedT1Codes
-                      .map(
-                        (code) =>
-                          t1codesData.codes.find((c) => c.code === code)?.name
-                      )
-                      .join(", ")}
-                  </span>
-                )}
-                <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-                  <ChevronUpDownIcon />
-                </span>
-              </Listbox.Button>
-              <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-black border border-gray-700">
-                {t1codesData.codes.map((t1code) => (
-                  <Listbox.Option
-                    key={t1code.code}
-                    value={t1code.code}
-                    className={({ active, selected }) =>
-                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                        active ? "bg-gray-700" : "bg-black"
-                      } ${selected ? "font-medium" : ""}`
-                    }
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span
-                          className={`block truncate ${
-                            selected ? "font-medium" : "font-normal"
-                          }`}
-                        >
-                          {t1code.name}
-                        </span>
-                        {selected && (
-                          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <CheckIcon />
-                          </span>
-                        )}
-                      </>
+          <div className="space-y-6">
+            {/* Document Types */}
+            <div className="space-y-2">
+              <label className="block text-sm">Document Types</label>
+              <Listbox
+                value={selectedT1Codes}
+                onChange={handleT1CodesChange}
+                multiple
+              >
+                <div className="relative mt-1">
+                  <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg border">
+                    {selectedT1Codes.length === 0 ? (
+                      "Select document types"
+                    ) : (
+                      <span className="block truncate">
+                        {selectedT1Codes
+                          .map(
+                            (code) =>
+                              t1codesData.codes.find((c) => c.code === code)
+                                ?.name
+                          )
+                          .join(", ")}
+                      </span>
                     )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
+                    <span className="absolute inset-y-0 right-0 flex items-center pr-2">
+                      <ChevronUpDownIcon />
+                    </span>
+                  </Listbox.Button>
+                  <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-black border border-gray-700">
+                    {t1codesData.codes.map((t1code) => (
+                      <Listbox.Option
+                        key={t1code.code}
+                        value={t1code.code}
+                        className={({ active, selected }) =>
+                          `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                            active ? "bg-gray-700" : "bg-black"
+                          } ${selected ? "font-medium" : ""}`
+                        }
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span
+                              className={`block truncate ${
+                                selected ? "font-medium" : "font-normal"
+                              }`}
+                            >
+                              {t1code.name}
+                            </span>
+                            {selected && (
+                              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <CheckIcon />
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </div>
+              </Listbox>
             </div>
-          </Listbox>
-        </div>
 
-        {/* Stock Code Facets */}
-        <div className="space-y-2">
-          <label className="block text-sm">Stock Code</label>
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {facets?.STOCK_CODE?.map(({ value, count }) => (
-              <label key={value} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={selectedStockCodes.includes(value)}
-                  onChange={(e) => {
-                    const newCodes = e.target.checked
-                      ? [...selectedStockCodes, value]
-                      : selectedStockCodes.filter((code) => code !== value);
-                    setSelectedStockCodes(newCodes);
-                    handleFilterChange({ stockCodes: newCodes });
+            {/* Stock Code Facets */}
+            <div className="space-y-2">
+              <label className="block text-sm">Stock Code</label>
+              <div className="max-h-40 overflow-y-auto space-y-1">
+                {facets?.STOCK_CODE?.map(({ value, count }) => (
+                  <label key={value} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedStockCodes.includes(value)}
+                      onChange={(e) => {
+                        const newCodes = e.target.checked
+                          ? [...selectedStockCodes, value]
+                          : selectedStockCodes.filter((code) => code !== value);
+                        setSelectedStockCodes(newCodes);
+                        handleFilterChange({ stockCodes: newCodes });
+                      }}
+                      className="rounded border-gray-300"
+                    />
+                    <span>{value}</span>
+                    <span className="text-sm text-gray-500">({count})</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Stock Name Facets */}
+            <div className="space-y-2">
+              <label className="block text-sm">Stock Name</label>
+              <div className="max-h-40 overflow-y-auto space-y-1">
+                {facets?.STOCK_NAME?.map(({ value, count }) => (
+                  <label key={value} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedStockNames.includes(value)}
+                      onChange={(e) => {
+                        const newNames = e.target.checked
+                          ? [...selectedStockNames, value]
+                          : selectedStockNames.filter((name) => name !== value);
+                        setSelectedStockNames(newNames);
+                        handleFilterChange({ stockNames: newNames });
+                      }}
+                      className="rounded border-gray-300"
+                    />
+                    <span>{value}</span>
+                    <span className="text-sm text-gray-500">({count})</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Date Range */}
+            <div className="space-y-2">
+              <label className="block text-sm">Date Range</label>
+              <div className="space-y-2">
+                <DatePicker
+                  label="Start Date"
+                  value={startDate}
+                  onChange={(newValue) => {
+                    setStartDate(newValue);
+                    handleFilterChange({
+                      dateRange: {
+                        start: newValue?.valueOf(),
+                        end: endDate?.valueOf(),
+                      },
+                    });
                   }}
-                  className="rounded border-gray-300"
-                />
-                <span>{value}</span>
-                <span className="text-sm text-gray-500">({count})</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Stock Name Facets */}
-        <div className="space-y-2">
-          <label className="block text-sm">Stock Name</label>
-          <div className="max-h-40 overflow-y-auto space-y-1">
-            {facets?.STOCK_NAME?.map(({ value, count }) => (
-              <label key={value} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={selectedStockNames.includes(value)}
-                  onChange={(e) => {
-                    const newNames = e.target.checked
-                      ? [...selectedStockNames, value]
-                      : selectedStockNames.filter((name) => name !== value);
-                    setSelectedStockNames(newNames);
-                    handleFilterChange({ stockNames: newNames });
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      fullWidth: true,
+                    },
                   }}
-                  className="rounded border-gray-300"
                 />
-                <span>{value}</span>
-                <span className="text-sm text-gray-500">({count})</span>
-              </label>
-            ))}
+                <DatePicker
+                  label="End Date"
+                  value={endDate}
+                  onChange={(newValue) => {
+                    setEndDate(newValue);
+                    handleFilterChange({
+                      dateRange: {
+                        start: startDate?.valueOf(),
+                        end: newValue?.valueOf(),
+                      },
+                    });
+                  }}
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      fullWidth: true,
+                    },
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Sort By */}
+            <div className="space-y-2">
+              <label className="block text-sm">Sort By</label>
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  const newSortBy = e.target.value as "relevancy" | "recency";
+                  setSortBy(newSortBy);
+                  handleFilterChange({ sortBy: newSortBy });
+                }}
+                className="w-full px-3 py-2 border rounded-md bg-transparent"
+              >
+                <option value="relevancy">Sort by Relevance</option>
+                <option value="recency">Sort by Date</option>
+              </select>
+            </div>
           </div>
         </div>
-
-        {/* Date Range */}
-        <div className="space-y-2">
-          <label className="block text-sm">Date Range</label>
-          <div className="space-y-2">
-            <DatePickerWrapper
-              selected={startDate}
-              onChange={(date: Date | null) => {
-                setStartDate(date);
-                handleFilterChange({
-                  dateRange: {
-                    start: date?.getTime(),
-                    end: endDate?.getTime(),
-                  },
-                });
-              }}
-              placeholderText="Start Date"
-            />
-            <DatePickerWrapper
-              selected={endDate}
-              onChange={(date: Date | null) => {
-                setEndDate(date);
-                handleFilterChange({
-                  dateRange: {
-                    start: startDate?.getTime(),
-                    end: date?.getTime(),
-                  },
-                });
-              }}
-              placeholderText="End Date"
-            />
-          </div>
-        </div>
-
-        {/* Sort By */}
-        <div className="space-y-2">
-          <label className="block text-sm">Sort By</label>
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              const newSortBy = e.target.value as "relevancy" | "recency";
-              setSortBy(newSortBy);
-              handleFilterChange({ sortBy: newSortBy });
-            }}
-            className="w-full px-3 py-2 border rounded-md bg-transparent"
-          >
-            <option value="relevancy">Sort by Relevance</option>
-            <option value="recency">Sort by Date</option>
-          </select>
-        </div>
-      </div>
-    </div>
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 }
