@@ -531,7 +531,7 @@ function ResultColumn({
 
 export default function RetrievalEvalPage() {
   const searchParams = useSearchParams();
-  const searchId = searchParams.get("searchId");
+  const searchId = searchParams?.get("searchId");
   const [searchRecord, setSearchRecord] = useState<SearchRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
