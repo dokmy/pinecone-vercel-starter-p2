@@ -46,6 +46,11 @@ export default function PDFViewer({
 }: PDFViewerProps) {
   const [searchStatus, setSearchStatus] = useState(SearchStatus.NotSearchedYet);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [currentSearchState, setCurrentSearchState] = useState<{
+    keyword: string;
+    currentMatch: number;
+    numberOfMatches: number;
+  }>({ keyword: "", currentMatch: 0, numberOfMatches: 0 });
 
   // Create a ref to store search instance
   const searchPluginInstance = useRef(
@@ -61,6 +66,15 @@ export default function PDFViewer({
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const { Search } = searchPluginInstance;
 
+  // Move the useEffect to the main component
+  useEffect(() => {
+    console.log("Search state changed:", {
+      keyword: currentSearchState.keyword,
+      currentMatch: currentSearchState.currentMatch,
+      numberOfMatches: currentSearchState.numberOfMatches,
+    });
+  }, [currentSearchState]);
+
   const renderSearchSidebar = (renderProps: RenderSearchProps) => {
     const {
       keyword,
@@ -73,15 +87,14 @@ export default function PDFViewer({
       numberOfMatches,
     } = renderProps;
 
-    // Use effect to track search state changes
+    // Update search state when it changes
     useEffect(() => {
-      console.log("Search state changed:", {
+      setCurrentSearchState({
         keyword,
         currentMatch,
         numberOfMatches,
-        matchesCount: matches.length,
       });
-    }, [keyword, currentMatch, numberOfMatches, matches.length]);
+    }, [keyword, currentMatch, numberOfMatches]);
 
     const handleSearchKeyDown = async (e: React.KeyboardEvent) => {
       if (e.key === "Enter" && keyword) {
