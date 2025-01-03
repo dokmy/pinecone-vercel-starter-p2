@@ -29,8 +29,9 @@ function WelcomeScreen() {
       <BookOpen className="h-12 w-12 text-blue-500 mb-4" />
       <h1 className="text-2xl font-bold mb-2">HKEX Listing Rules Assistant</h1>
       <p className="text-gray-400 mb-8 max-w-md">
-        Ask any questions about Hong Kong Stock Exchange listing rules. I'll
-        help you find relevant information and explain the requirements.
+        Ask any questions about Hong Kong Stock Exchange listing rules.
+        I&apos;ll help you find relevant information and explain the
+        requirements.
       </p>
     </div>
   );
