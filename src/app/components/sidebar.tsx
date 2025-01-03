@@ -1,6 +1,14 @@
 "use client";
 
-import { Home, Search, Settings, Bot, History, FileText } from "lucide-react";
+import {
+  Home,
+  Search,
+  Settings,
+  Bot,
+  History,
+  FileText,
+  BookOpen,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +37,12 @@ export const Sidebar = () => {
       icon: FileText,
       href: "/search-hkex",
       label: "HKEX",
+      pro: true,
+    },
+    {
+      icon: BookOpen,
+      href: "/listing-rules",
+      label: "Rules",
       pro: true,
     },
     {
