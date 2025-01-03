@@ -1,0 +1,84 @@
+{
+  "codes": [
+    {
+      "code": "10000",
+      "name": "Announcements and Notices",
+      "count": 5546
+    },
+    {
+      "code": "20000",
+      "name": "Circulars",
+      "count": 1056
+    },
+    {
+      "code": "30000",
+      "name": "Listing Documents",
+      "count": 65
+    },
+    {
+      "code": "40000",
+      "name": "Financial Statements/ESG Information",
+      "count": 408
+    },
+    {
+      "code": "50000",
+      "name": "Next Day Disclosure Returns",
+      "count": 1412
+    },
+    {
+      "code": "51500",
+      "name": "Monthly Returns",
+      "count": 2814
+    },
+    {
+      "code": "52000",
+      "name": "Proxy Forms",
+      "count": 240
+    },
+    {
+      "code": "53000",
+      "name": "Company Information Sheet",
+      "count": 69
+    },
+    {
+      "code": "80000",
+      "name": "Trading Information of Exchange Traded Funds",
+      "count": 2017
+    },
+    {
+      "code": "81000",
+      "name": "Trading Information of Leveraged and Inverse Products",
+      "count": 160
+    },
+    {
+      "code": "54000",
+      "name": "Constitutional Documents",
+      "count": 54
+    },
+    {
+      "code": "56000",
+      "name": "Documents on Display",
+      "count": 131
+    },
+    {
+      "code": "90000",
+      "name": "Regulatory Announcement & News",
+      "count": 5
+    },
+    {
+      "code": "55000",
+      "name": "Takeovers Code - dealing disclosures",
+      "count": 609
+    },
+    {
+      "code": "70000",
+      "name": "Debt and Structured Products",
+      "count": 1276
+    },
+    {
+      "code": "91000",
+      "name": "Application Proofs, OC Announcements and Post Hearing Information Packs or PHIPs",
+      "count": 20
+    }
+  ]
+} 

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@mui/material";
-import MoonLoader from "react-spinners/MoonLoader";
 import { Checkbox } from "@/components/ui/checkbox";
 import SearchQuery from "@/components/search-query";
 import SearchPeriod from "@/components/search-period";
@@ -11,12 +10,25 @@ import CourtOptions from "@/components/court-options";
 import { HK_COURT_OPTIONS, UK_COURT_OPTIONS } from "@/lib/config/court-options";
 import { useSearchForm } from "../../../../lib/hooks/useSearchForm";
 import { CourtOption, CountryOption, SortOption } from "@/lib/types/search";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { Dayjs } from "dayjs";
+import { toast } from "sonner";
 
-const SearchForm = () => {
-  const { state, isLoading, hasError, updateField, updateCourt, handleSubmit } =
-    useSearchForm();
+interface SearchFormProps {
+  LoadingStateComponent: React.ComponentType<{ message: string }>;
+}
+
+const SearchForm: React.FC<SearchFormProps> = ({ LoadingStateComponent }) => {
+  const [loadingMessage, setLoadingMessage] = useState("Searching...");
+  const {
+    state,
+    isLoading,
+    setIsLoading,
+    hasError,
+    setHasError,
+    updateField,
+    updateCourt,
+  } = useSearchForm();
 
   // Create wrapped update functions that match React's setState type
   const setSearchQuery: Dispatch<SetStateAction<string>> = useCallback(
@@ -68,8 +80,70 @@ const SearchForm = () => {
     [state.dates, updateField]
   );
 
+  const validateForm = (): boolean => {
+    if (!state.query) {
+      setHasError(true);
+      return false;
+    }
+    return true;
+  };
+
+  const getAllCourtFilters = (): string[] => {
+    return Object.values(state.courts).flat();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoadingMessage("Validating your request...");
+
+    if (!validateForm()) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const payload = {
+        prefixFilters: getAllCourtFilters(),
+        searchQuery: state.query,
+        selectedMinDate: state.dates.min,
+        selectedMaxDate: state.dates.max,
+        sortOption: state.sortOption,
+        countryOption: state.countryOption,
+      };
+
+      setLoadingMessage("Searching through case law database...");
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.status === 403) {
+        toast("Not enough credits. Please upgrade or buy more.");
+        window.location.href = "/settings";
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.statusText}`);
+      }
+
+      setLoadingMessage("Processing results...");
+      const data = await response.json();
+      window.location.replace(`/results2/${data.searchId}`);
+    } catch (error) {
+      console.error("Search error:", error);
+      setHasError(true);
+      toast.error("Search failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="px-12 lg:px-52 py-5 flex-col">
+      {isLoading && <LoadingStateComponent message={loadingMessage} />}
       <form onSubmit={handleSubmit} noValidate autoComplete="off">
         <SearchQuery
           searchQueryError={hasError}
@@ -151,17 +225,7 @@ const SearchForm = () => {
             }}
             type="submit"
           >
-            {isLoading ? (
-              <MoonLoader
-                color="#36d7b7"
-                loading={isLoading}
-                size={20}
-                aria-label="Loading Spinner"
-                data-testid="loader"
-              />
-            ) : (
-              "Search"
-            )}
+            {isLoading ? "Searching..." : "Search"}
           </Button>
         </div>
       </form>

@@ -9,7 +9,8 @@ export default authMiddleware({
   "/api/dx/credits/add",     
   "/api/dx/credits/reset",
   "/api/dx/user/add",
-  "/api/dx/credits/(.*)"  ]
+  "/api/dx/credits/(.*)",
+  "/api/listing-rules/chat"  ]
 });
  
 export const config = {

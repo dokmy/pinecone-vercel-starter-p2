@@ -31,20 +31,31 @@ async function validateUserAndCredits(userId: string | null) {
     throw new Error("Unauthorized");
   }
 
-  const creditsLeft = await getMessageCreditCount(userId);
-  if (creditsLeft === false || typeof creditsLeft === 'number' && creditsLeft <= 0) {
-    throw new Error("No more credits. Please upgrade or buy more credits.");
-  }
+  // Add timeout to currentUser call
+  const userPromise = currentUser();
+  const timeoutPromise = new Promise((_, reject) => 
+    setTimeout(() => reject(new Error("User validation timed out")), 5000)
+  );
 
-  const user = await currentUser();
-  if (!user || !user.firstName || !user.lastName || !user.emailAddresses?.[0]?.emailAddress) {
-    throw new Error("User information incomplete");
-  }
+  try {
+    const user = await Promise.race([userPromise, timeoutPromise]) as any;
+    if (!user?.firstName || !user?.lastName || !user?.emailAddresses?.[0]?.emailAddress) {
+      throw new Error("User information incomplete");
+    }
 
-  return {
-    userName: `${user.firstName} ${user.lastName}`,
-    userEmail: user.emailAddresses[0].emailAddress,
-  };
+    const creditsLeft = await getMessageCreditCount(userId);
+    if (creditsLeft === false || typeof creditsLeft === 'number' && creditsLeft <= 0) {
+      throw new Error("No more credits. Please upgrade or buy more credits.");
+    }
+
+    return {
+      userName: `${user.firstName} ${user.lastName}`,
+      userEmail: user.emailAddresses[0].emailAddress,
+    };
+  } catch (error) {
+    console.error("Validation error:", error);
+    throw error;
+  }
 }
 
 function parseSearchRequest(data: any): SearchRequest {
@@ -233,22 +244,21 @@ function sortResults(results: SearchResult[], sortOption: string): SearchResult[
 
 export async function POST(req: Request) {
   try {
+    // Read request body once
+    const requestData = await req.json();
+
     // Step 1: Validate user and check credits
     const { userId } = auth();
-    console.log('1. userId:', userId);
-
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const { userName, userEmail } = await validateUserAndCredits(userId);
 
     // Step 2: Parse and validate request
-    const searchData = parseSearchRequest(await req.json());
-    console.log('3. searchData:', searchData);
+    const searchData = parseSearchRequest(requestData);
 
     // Step 3: Create search record
     const searchRecord = await createSearchRecord(searchData, userId, userName, userEmail);
-    console.log('4. searchRecord:', searchRecord);
 
     // Step 4: Build search filters
     const minDateUnix = dayjs(searchData.selectedMinDate).unix();
@@ -260,75 +270,31 @@ export async function POST(req: Request) {
       searchData.countryOption
     );
 
-    // Step 5: Perform vector search with original query and GPT evaluation
+    // Step 5: Perform vector search
     const { matches, rawMatches } = await performVectorSearch(
       searchData.searchQuery,
       searchData.countryOption,
       filters
     );
 
-    console.log('5. matches length:', matches?.length);
-    console.log('6. rawMatches length (after dedup):', rawMatches?.length);
+    // Step 6: Process search results
+    const results = processSearchResults(matches, searchData.countryOption);
+    const sortedResults = sortResults(results, searchData.sortOption);
 
-    // Step 8: Process and sort results (already sorted by GPT score)
-    let results = processSearchResults(matches, searchData.countryOption);
+    // Step 7: Save search results
+    await saveSearchResults(sortedResults, searchRecord.id, userId, userName, userEmail, rawMatches);
 
-    // Step 9: Save raw matches and processed results
-    try {
-      // Save raw matches with GPT scores
-      const rawMatchPromises = rawMatches.map((match, index) => {
-        return prismadb.rawMatch.create({
-          data: {
-            searchId: searchRecord.id,
-            metadata: match.metadata,
-            score: match.score,
-            chunk: match.chunk || "",
-            gptScore: match.gptScore,
-            gptEvaluation: JSON.stringify(match.gptEvaluation)
-          }
-        });
-      });
-
-      const savedRawMatches = await Promise.all(rawMatchPromises);
-      console.log('11. Successfully saved raw matches:', savedRawMatches.length);
-
-      // Save processed results
-      await saveSearchResults(results, searchRecord.id, userId, userName, userEmail, rawMatches);
-    } catch (dbError: any) {
-      console.error('12. Database error details:', dbError);
-    }
-
-    // Step 10: Return response with searchId
-    const redirectUrl = `/results2/${searchRecord.id}`;
-    console.log('Setting redirect URL to:', redirectUrl);
-    
-    const responseData = { 
-      processedResults: results, 
-      searchId: searchRecord.id,
-      redirectTo: redirectUrl
-    };
-
-    console.log('13. Final response data:', JSON.stringify(responseData, null, 2));
-
-    const response = new Response(
-      JSON.stringify(responseData), 
+    return new Response(
+      JSON.stringify({ searchId: searchRecord.id }),
       { headers: { 'Content-Type': 'application/json' } }
     );
 
-    console.log('14. Sending response with status:', response.status);
-    return response;
-
-  } catch (error: any) {
-    console.error('14. Error in /api/search:', {
-      name: error?.name || 'Unknown',
-      message: error?.message || 'No message',
-      stack: error?.stack || 'No stack trace'
-    });
-    const message = error instanceof Error ? error.message : 'Internal Server Error';
-    const status = message === 'Unauthorized' ? 401 : 
-                   message.includes('credits') ? 403 : 500;
-                   
-    return new NextResponse(message, { status });
+  } catch (error) {
+    console.error("API Error:", error);
+    if (error instanceof Error && error.message === "No more credits. Please upgrade or buy more credits.") {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
   

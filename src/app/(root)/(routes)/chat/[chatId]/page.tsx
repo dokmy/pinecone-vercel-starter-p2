@@ -33,8 +33,8 @@ interface FormattedSearchResult {
 }
 
 const ChatPage = () => {
-  const params = useParams();
-  const chatId = params.chatId as string;
+  const params = useParams() as { chatId: string };
+  const chatId = params.chatId;
   const [searchResult, setSearchResult] =
     useState<FormattedSearchResult | null>(null);
   const [dbMessages, setDbMessages] = useState<Message[]>([]);
