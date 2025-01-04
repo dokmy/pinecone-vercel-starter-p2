@@ -86,7 +86,9 @@ export default function Home() {
             context of your legal inquiries, providing precise, relevant
             results. Discover the future of legal research with FastLegal.
           </p>
-          <ExampleComponent />
+          <div className="h-32 w-full flex justify-center items-center">
+            <ExampleComponent />
+          </div>
           <div className="w-full mt-8 mb-10">
             {user ? (
               <Link href="/dashboard">
