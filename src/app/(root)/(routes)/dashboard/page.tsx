@@ -11,7 +11,17 @@ import { useUser } from "@clerk/nextjs";
 import { TypeAnimation } from "react-type-animation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { FolderSearch, Hammer, Bot, History } from "lucide-react";
+import {
+  FolderSearch,
+  Hammer,
+  Bot,
+  History,
+  BookOpen,
+  MessageSquare,
+  ScrollText,
+  Settings,
+  Search,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import DashboardOverlay from "@/components/disclaimer-overlay";
 
@@ -35,6 +45,7 @@ const ExampleComponent = () => {
 type CardProps = React.ComponentProps<typeof Card>;
 
 const features = [
+  // Litigation Lawyers Tools - Purple/Violet theme
   {
     icon: FolderSearch,
     href: "/search",
@@ -42,15 +53,11 @@ const features = [
     description:
       "I have a client situation and I need to find similar cases and understand them in depth.",
     pro: true,
+    category: "Litigation",
+    color: "text-violet-500",
+    bgColor: "bg-violet-500/10",
+    borderColor: "border-violet-200/10",
   },
-  // {
-  //   icon: Bot,
-  //   href: "/ask",
-  //   label: "FastAsk",
-  //   description:
-  //     "I have a legal question and I just need a quick answer with sources.",
-  //   pro: true,
-  // },
   {
     icon: History,
     href: "/history",
@@ -58,15 +65,36 @@ const features = [
     description:
       "Historical searches and results so you don't have to start from scratch.",
     pro: true,
+    category: "Litigation",
+    color: "text-violet-400",
+    bgColor: "bg-violet-400/10",
+    borderColor: "border-violet-200/10",
   },
-  // {
-  //   icon: Hammer,
-  //   href: "/dashboard",
-  //   label: "Coming soon...",
-  //   description:
-  //     "New features will be added to the dashboard. Stay tuned for updates.",
-  //   pro: true,
-  // },
+  // IPO Lawyers Tools - Blue theme
+  {
+    icon: Search,
+    href: "/search-hkex",
+    label: "HKEX News Search",
+    description:
+      "Search through HKEX news and announcements to stay updated with the latest market information.",
+    pro: true,
+    category: "IPO",
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-200/10",
+  },
+  {
+    icon: BookOpen,
+    href: "/listing-rules",
+    label: "Listing Rules Assistant",
+    description:
+      "Ask questions about HKEX listing rules and get instant answers with source references.",
+    pro: true,
+    category: "IPO",
+    color: "text-blue-400",
+    bgColor: "bg-blue-400/10",
+    borderColor: "border-blue-200/10",
+  },
 ];
 
 const FeatureCard = ({
@@ -81,18 +109,42 @@ const FeatureCard = ({
   };
 
   return (
-    <Card className={cn("w-[380px]", className)} {...props}>
+    <Card
+      className={cn("w-[380px]", feature.borderColor, className)}
+      {...props}
+    >
       <CardHeader>
-        <CardTitle>{feature.label}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>{feature.label}</CardTitle>
+          <span
+            className={cn(
+              "px-2 py-1 rounded-full text-xs font-semibold",
+              feature.bgColor,
+              feature.color,
+              "border",
+              feature.borderColor
+            )}
+          >
+            {feature.category}
+          </span>
+        </div>
         <CardDescription className="italic">
           {feature.description}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center">
-        <feature.icon className="h-1/3 w-1/3" />
+        <feature.icon className={cn("h-1/3 w-1/3", feature.color)} />
       </CardContent>
       <CardFooter>
-        <Button className="w-full" onClick={() => onNavigate(feature.href)}>
+        <Button
+          className={cn(
+            "w-full",
+            feature.bgColor,
+            feature.color,
+            "hover:opacity-80"
+          )}
+          onClick={() => onNavigate(feature.href)}
+        >
           {feature.label}
         </Button>
       </CardFooter>

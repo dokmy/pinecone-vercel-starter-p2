@@ -5,6 +5,7 @@ import SearchBar from "./components/SearchBar";
 import FilterSection from "./components/FilterSection";
 import ResultCard from "./components/ResultCard";
 import Pagination from "./components/Pagination";
+import { toast } from "sonner";
 
 interface Filters {
   t1Codes: string[];
@@ -55,6 +56,11 @@ export default function SearchHKEX() {
         },
         body: JSON.stringify(searchParams),
       });
+
+      if (response.status === 403) {
+        toast("Not enough credits. Please upgrade or buy more.");
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json();

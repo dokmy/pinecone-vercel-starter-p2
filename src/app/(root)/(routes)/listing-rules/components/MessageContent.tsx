@@ -4,6 +4,7 @@
 import { Message } from "ai";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { ExternalLink } from "lucide-react";
 
 interface SearchResult {
@@ -68,16 +69,121 @@ export default function MessageContent({ message }: MessageProps) {
               </div>
             </div>
           )}
-        <div className="text-sm text-gray-200 leading-relaxed prose prose-invert max-w-none">
+        <div className="prose mt-1 w-full break-words prose-invert">
           <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
             components={{
-              a: ({ node, ...props }) => (
+              a: (props) => (
                 <a
                   {...props}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300"
+                  style={{
+                    color: "#60A5FA",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
                 />
+              ),
+              p: (props) => (
+                <p
+                  {...props}
+                  style={{
+                    marginBottom: "1rem",
+                    overflowWrap: "break-word",
+                    wordWrap: "break-word",
+                    hyphens: "auto",
+                  }}
+                />
+              ),
+              h1: (props) => (
+                <h1
+                  {...props}
+                  style={{
+                    marginBottom: "1rem",
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                  }}
+                />
+              ),
+              h2: (props) => (
+                <h2
+                  {...props}
+                  style={{ marginBottom: "1rem", fontSize: "1.25rem" }}
+                />
+              ),
+              h3: (props) => (
+                <h3
+                  {...props}
+                  style={{ marginBottom: "1rem", fontSize: "1rem" }}
+                />
+              ),
+              pre: (props) => (
+                <pre
+                  {...props}
+                  style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                />
+              ),
+              code: ({ node, inline, className, children, ...props }) => {
+                const match = /language-(\w+)/.exec(className || "");
+                return !inline && match ? (
+                  <pre className="bg-gray-800 rounded p-4 my-4 overflow-x-auto whitespace-pre-wrap break-words">
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  </pre>
+                ) : (
+                  <code
+                    className={`${className} px-1 py-0.5 rounded bg-gray-800`}
+                    style={{ wordBreak: "break-word" }}
+                    {...props}
+                  >
+                    {children}
+                  </code>
+                );
+              },
+              table: (props) => (
+                <div className="overflow-x-auto my-4">
+                  <table
+                    {...props}
+                    className="min-w-full divide-y divide-gray-700"
+                  />
+                </div>
+              ),
+              th: (props) => (
+                <th
+                  {...props}
+                  className="px-4 py-2 bg-gray-800 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                />
+              ),
+              td: (props) => (
+                <td
+                  {...props}
+                  className="px-4 py-2 text-sm text-gray-300 border-t border-gray-700"
+                />
+              ),
+              blockquote: (props) => (
+                <blockquote
+                  {...props}
+                  className="border-l-4 border-gray-700 pl-4 my-4 italic text-gray-400"
+                />
+              ),
+              ol: (props) => (
+                <ol
+                  {...props}
+                  className="list-decimal list-outside ml-6 space-y-2 my-4"
+                />
+              ),
+              ul: (props) => (
+                <ul
+                  {...props}
+                  className="list-disc list-outside ml-6 space-y-2 my-4"
+                />
+              ),
+              li: (props) => (
+                <li {...props} className="pl-2">
+                  {props.children}
+                </li>
               ),
             }}
           >

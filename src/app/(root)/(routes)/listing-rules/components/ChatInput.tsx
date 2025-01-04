@@ -3,7 +3,7 @@
 
 import { SendHorizontal, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "../../../../../components/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { FormEvent, KeyboardEvent } from "react";
 
 interface ChatInputProps {

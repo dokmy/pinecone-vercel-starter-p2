@@ -5,6 +5,8 @@ import { Message } from "ai";
 import { useState } from "react";
 import MessageContent from "./components/MessageContent";
 import { BookOpen } from "lucide-react";
+import { toast } from "sonner";
+import Image from "next/image";
 
 interface SearchResult {
   url: string;
@@ -23,7 +25,7 @@ const sampleQuestions = [
   "What is the minimum public float requirement?",
 ];
 
-function WelcomeScreen() {
+function WelcomeScreen({ onSelect }: { onSelect: (question: string) => void }) {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center px-4">
       <BookOpen className="h-12 w-12 text-blue-500 mb-4" />
@@ -33,18 +35,7 @@ function WelcomeScreen() {
         I&apos;ll help you find relevant information and explain the
         requirements.
       </p>
-    </div>
-  );
-}
-
-function SampleQuestions({
-  onSelect,
-}: {
-  onSelect: (question: string) => void;
-}) {
-  return (
-    <div className="absolute bottom-20 left-0 right-0">
-      <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 gap-2">
+      <div className="w-full max-w-4xl grid grid-cols-2 gap-2">
         {sampleQuestions.map((question, index) => (
           <button
             key={index}
@@ -60,10 +51,10 @@ function SampleQuestions({
 }
 
 export default function ListingRules() {
-  const [messageSearchResults, setMessageSearchResults] = useState<
-    Record<string, SearchResult[]>
-  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [messageSearchResults, setMessageSearchResults] = useState<{
+    [key: number]: SearchResult[];
+  }>({});
 
   const {
     messages,
@@ -75,6 +66,14 @@ export default function ListingRules() {
   } = useChat({
     api: "/api/listing-rules/chat",
     onFinish: () => setIsSubmitting(false),
+    onError: (error) => {
+      setIsSubmitting(false);
+      if (error?.message?.includes("403")) {
+        toast("Not enough credits. Please upgrade or buy more.");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    },
   });
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -87,8 +86,19 @@ export default function ListingRules() {
       const searchResponse = await fetch(
         `/api/listing-rules/chat?query=${encodeURIComponent(input)}`
       );
-      const results = await searchResponse.json();
 
+      if (searchResponse.status === 403) {
+        toast("Not enough credits. Please upgrade or buy more.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!searchResponse.ok) {
+        const error = await searchResponse.json();
+        throw new Error(error.message || "Search failed");
+      }
+
+      const results = await searchResponse.json();
       const tempMessageId = Date.now().toString();
       setMessageSearchResults((prev) => ({
         ...prev,
@@ -99,6 +109,7 @@ export default function ListingRules() {
     } catch (error) {
       console.error("Error during submission:", error);
       setIsSubmitting(false);
+      toast.error("Failed to search listing rules. Please try again.");
     }
   };
 
@@ -109,42 +120,41 @@ export default function ListingRules() {
   return (
     <div className="h-[calc(100vh-4rem)]">
       <div className="relative h-full">
-        <div className="overflow-y-auto h-[calc(100%-4rem)] pt-2 pb-8">
+        <div className="overflow-y-auto h-[calc(100%-4rem)] pt-2">
           <div className="max-w-4xl mx-auto px-4 space-y-4 h-full">
             {messages.length === 0 ? (
               <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
-                <WelcomeScreen />
+                <WelcomeScreen onSelect={handleSampleQuestionSelect} />
               </div>
             ) : (
-              messages.map((message, index) => (
-                <MessageContent
-                  key={index}
-                  message={
-                    {
-                      ...message,
-                      searchResults:
-                        message.role === "assistant"
-                          ? Object.values(messageSearchResults)[
-                              Math.floor(index / 2)
-                            ]
-                          : undefined,
-                    } as ExtendedMessage
-                  }
-                />
-              ))
+              <>
+                {messages.map((message, index) => (
+                  <MessageContent
+                    key={index}
+                    message={
+                      {
+                        ...message,
+                        searchResults:
+                          message.role === "assistant"
+                            ? Object.values(messageSearchResults)[
+                                Math.floor(index / 2)
+                              ]
+                            : undefined,
+                      } as ExtendedMessage
+                    }
+                  />
+                ))}
+                <div className="h-36" />
+              </>
             )}
           </div>
         </div>
 
-        {messages.length === 0 && (
-          <SampleQuestions onSelect={handleSampleQuestionSelect} />
-        )}
-
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-black border-t border-gray-800">
-          <div className="max-w-4xl mx-auto h-full px-4 flex items-center">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent">
+          <div className="max-w-4xl mx-auto">
             <form
               onSubmit={handleFormSubmit}
-              className="flex gap-x-2 w-full py-3"
+              className="flex gap-x-2 w-full p-4"
             >
               <input
                 value={input}
@@ -168,6 +178,10 @@ export default function ListingRules() {
                 )}
               </button>
             </form>
+            <div className="text-xs text-center text-muted-foreground pb-4">
+              HKEX Listing Rules Assistant can make mistakes. Please verify
+              information with official HKEX sources.
+            </div>
           </div>
         </div>
       </div>

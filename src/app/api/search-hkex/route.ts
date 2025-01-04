@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import typesenseClient from "../../../lib/typesense";
+import { auth, currentUser } from "@clerk/nextjs";
+import prismadb from "../../lib/prismadb";
+import { getMessageCreditCount, deductMessageCredit } from "@/lib/messageCredits";
 
 interface TypesenseDocument {
   chunk_text: string;
@@ -59,7 +62,29 @@ interface SearchRequestBody {
 }
 
 export async function POST(req: Request) {
+  // Declare userId outside try block
+  const { userId } = auth();
+  if (!userId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
   try {
+    console.log("Starting HKEX search for user", userId);
+
+    // Check message credits
+    const creditsLeft = await getMessageCreditCount(userId);
+    console.log("User has", creditsLeft, "credits remaining");
+
+    if (creditsLeft === false || creditsLeft <= 0) {
+      console.log("Search rejected - insufficient credits");
+      return new NextResponse("No more credits. Please upgrade or buy more credits.", { status: 403 });
+    }
+
+    // Get user details
+    const user = await currentUser();
+    const userName = user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : null;
+    const userEmail = user?.emailAddresses[0]?.emailAddress || null;
+
     const body = await req.json() as SearchRequestBody;
     console.log("API Route - Received search request with viewMode:", body.viewMode);
 
@@ -135,6 +160,32 @@ export async function POST(req: Request) {
       acc[facet.field_name] = facet.counts;
       return acc;
     }, {} as Record<string, Array<{ value: string; count: number }>>);
+
+    try {
+      // Save search to database after successful search
+      await prismadb.searchHKEX.create({
+        data: {
+          userId,
+          userName,
+          userEmail,
+          query: body.query,
+          t1Codes: body.t1Codes.length > 0 ? JSON.stringify(body.t1Codes) : null,
+          stockCodes: body.stockCodes?.length ? JSON.stringify(body.stockCodes) : null,
+          stockNames: body.stockNames?.length ? JSON.stringify(body.stockNames) : null,
+          dateRange: body.dateRange ? JSON.stringify(body.dateRange) : null,
+          sortBy: body.sortBy,
+          viewMode: body.viewMode
+        }
+      });
+      console.log("Search history saved");
+    } catch (error) {
+      console.error("Failed to save search history:", error);
+      // Continue with the search even if saving history fails
+    }
+
+    // Deduct credit after successful search but before returning results
+    await deductMessageCredit(userId);
+    console.log("Search completed, credit deducted");
 
     if (viewMode === "consolidated") {
       const groupedHits = results.grouped_hits?.map(gh => gh.hits[0]) || [];
