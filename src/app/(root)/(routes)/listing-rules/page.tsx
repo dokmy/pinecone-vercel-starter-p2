@@ -55,6 +55,11 @@ export default function ListingRules() {
   const [messageSearchResults, setMessageSearchResults] = useState<{
     [key: number]: SearchResult[];
   }>({});
+  const [selectedParser, setSelectedParser] = useState<"cheerio" | "firecrawl">(
+    "cheerio"
+  );
+  const [responseTime, setResponseTime] = useState<number | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null);
 
   const {
     messages,
@@ -64,14 +69,27 @@ export default function ListingRules() {
     isLoading,
     setInput,
   } = useChat({
-    api: "/api/listing-rules/chat",
-    onFinish: () => setIsSubmitting(false),
-    onError: (error) => {
+    api:
+      selectedParser === "cheerio"
+        ? "/api/listing-rules/chat"
+        : "/api/listing-rules-firecrawl",
+    onFinish: () => {
       setIsSubmitting(false);
+      if (startTime) {
+        const endTime = Date.now();
+        const duration = endTime - startTime;
+        console.log(`✅ Request completed in ${duration}ms`);
+        setResponseTime(duration);
+      }
+    },
+    onError: (error) => {
+      console.error("❌ Chat error:", error);
+      setIsSubmitting(false);
+      setStartTime(null);
       if (error?.message?.includes("403")) {
         toast("Not enough credits. Please upgrade or buy more.");
       } else {
-        toast.error("An error occurred. Please try again.");
+        toast.error(`An error occurred: ${error?.message || "Unknown error"}`);
       }
     },
   });
@@ -80,36 +98,69 @@ export default function ListingRules() {
     e.preventDefault();
     if (!input.trim()) return;
 
+    console.log(`🚀 Starting request with ${selectedParser} parser`);
+    console.log(`📝 Input query: "${input}"`);
+
     setIsSubmitting(true);
+    setStartTime(Date.now());
+    setResponseTime(null);
 
     try {
-      const searchResponse = await fetch(
-        `/api/listing-rules/chat?query=${encodeURIComponent(input)}`
-      );
+      const apiUrl = `${
+        selectedParser === "cheerio"
+          ? "/api/listing-rules/chat"
+          : "/api/listing-rules-firecrawl"
+      }?query=${encodeURIComponent(input)}`;
+
+      console.log(`📤 Sending request to: ${apiUrl}`);
+      const searchResponse = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log(`📥 Response status:`, searchResponse.status);
 
       if (searchResponse.status === 403) {
+        console.error("❌ Credit check failed");
         toast("Not enough credits. Please upgrade or buy more.");
         setIsSubmitting(false);
+        setStartTime(null);
         return;
       }
 
       if (!searchResponse.ok) {
-        const error = await searchResponse.json();
-        throw new Error(error.message || "Search failed");
+        const errorText = await searchResponse.text();
+        console.error("❌ Search failed:", {
+          status: searchResponse.status,
+          statusText: searchResponse.statusText,
+          error: errorText,
+        });
+        throw new Error(errorText || "Search failed");
       }
 
       const results = await searchResponse.json();
+      console.log(`✅ Received ${results.length} search results`);
+      console.log("📝 Search results:", results);
+
       const tempMessageId = Date.now().toString();
       setMessageSearchResults((prev) => ({
         ...prev,
         [tempMessageId]: results,
       }));
 
+      console.log("🤖 Submitting to chat...");
       handleSubmit(e);
-    } catch (error) {
-      console.error("Error during submission:", error);
+    } catch (error: any) {
+      console.error("❌ Error during submission:", error);
       setIsSubmitting(false);
-      toast.error("Failed to search listing rules. Please try again.");
+      setStartTime(null);
+      toast.error(
+        `Failed to search listing rules: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   };
 
@@ -122,6 +173,23 @@ export default function ListingRules() {
       <div className="relative h-full">
         <div className="overflow-y-auto h-[calc(100%-4rem)] pt-2">
           <div className="max-w-4xl mx-auto px-4 space-y-4 h-full">
+            <div className="flex justify-between items-center">
+              <select
+                value={selectedParser}
+                onChange={(e) =>
+                  setSelectedParser(e.target.value as "cheerio" | "firecrawl")
+                }
+                className="bg-[#1C1C1C] text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="cheerio">Cheerio Parser</option>
+                <option value="firecrawl">Firecrawl Parser</option>
+              </select>
+              {responseTime && (
+                <div className="text-sm text-gray-400">
+                  Response time: {(responseTime / 1000).toFixed(2)}s
+                </div>
+              )}
+            </div>
             {messages.length === 0 ? (
               <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
                 <WelcomeScreen onSelect={handleSampleQuestionSelect} />

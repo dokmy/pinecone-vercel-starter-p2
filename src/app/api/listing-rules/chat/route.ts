@@ -7,20 +7,50 @@ import prismadb from "../../../lib/prismadb";
 import { getMessageCreditCount, deductMessageCredit } from "@/lib/messageCredits";
 import fetch from 'node-fetch';
 import https from 'https';
+import * as cheerio from 'cheerio';
 
 // Create a custom fetch agent that ignores SSL certificate issues
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false
 });
 
+const MAX_CONTENT_LENGTH = 300000; // ~75k tokens
+
+function cleanHtml(html: string): string {
+  const $ = cheerio.load(html);
+  
+  // Remove scripts, styles, and other unnecessary elements
+  $('script').remove();
+  $('style').remove();
+  $('link').remove();
+  $('meta').remove();
+  $('noscript').remove();
+  $('iframe').remove();
+  
+  // Get text content from body
+  const text = $('body').text();
+  
+  // Clean up whitespace
+  return text
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 async function fetchWithSSLHandling(url: string) {
   try {
     const response = await fetch(url, { 
       agent: httpsAgent,
-      timeout: 5000 // 5 second timeout
+      timeout: 5000
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.text();
+    const html = await response.text();
+    
+    // Clean and truncate the content
+    const cleanedContent = cleanHtml(html);
+    if (cleanedContent.length > MAX_CONTENT_LENGTH / 2) { // Split limit between two results
+      return cleanedContent.slice(0, MAX_CONTENT_LENGTH / 2);
+    }
+    return cleanedContent;
   } catch (error) {
     // Only log non-SSL certificate errors
     if (!(error instanceof Error) || !error.message.includes('certificate')) {
@@ -105,6 +135,7 @@ export async function GET(req: Request) {
         url: result.link,
         title: result.title,
         snippet: result.snippet,
+        content: undefined
       }));
 
     // Fetch full content for top 2 results using SSL-handling fetch
@@ -172,15 +203,47 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1];
     const userQuery = lastMessage.content;
 
-    // Get search results first
-    const searchResponse = await fetch(`${req.url}?query=${encodeURIComponent(userQuery)}`);
-    const searchResults = await searchResponse.json();
+    // Generate optimized search query
+    console.log("🔍 Generating search query for:", userQuery);
+    const searchQuery = await generateSearchQuery(userQuery);
+    console.log("✨ Optimized query:", searchQuery);
+
+    // Perform search directly using serperSearch
+    console.log("🔎 Searching with optimized query...");
+    const searchResults = await serperSearch(searchQuery);
+    const filteredResults: SearchResult[] = searchResults.organic
+      .filter((result: SerperOrganicResult) => result.link.startsWith('https://en-rules.hkex.com.hk/'))
+      .map((result: SerperOrganicResult) => ({
+        url: result.link,
+        title: result.title,
+        snippet: result.snippet
+      }));
+
+    // Fetch full content for top 2 results using SSL-handling fetch
+    console.log("📡 Fetching page contents for top 2 results...");
+    for (let i = 0; i < Math.min(2, filteredResults.length); i++) {
+      try {
+        const content = await fetchWithSSLHandling(filteredResults[i].url);
+        if (content) {
+          filteredResults[i].content = content;
+          console.log(`✅ Successfully fetched content for result ${i + 1}`);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to fetch content for result ${i + 1}:`, error);
+      }
+    }
+
+    // Add debug logging
+    console.log('🔍 POST: Search Results:', {
+      resultsLength: filteredResults.length,
+      rawResults: JSON.stringify(filteredResults, null, 2)
+    });
 
     // Prepare context with search results
-    const searchContext = searchResults.length > 0
+    const searchContext = filteredResults.length > 0
       ? `Here are the relevant HKEX listing rules I found:
 
-${searchResults.map((r: SearchResult, index: number) => 
+${filteredResults.map((r: SearchResult, index: number) => 
   index < 2 && r.content
     ? `Source: ${r.title}\nURL: ${r.url}\n\nFull Content:\n${r.content}\n---\n`
     : `Additional Reference:\n- ${r.title}\n  ${r.url}\n  ${r.snippet}\n`
@@ -189,25 +252,43 @@ ${searchResults.map((r: SearchResult, index: number) =>
 Based on these sources (particularly the first two which are most relevant), `
       : "I couldn't find specific HKEX listing rules for this query. However, ";
 
+    console.log('🤖 POST: Sending to OpenAI...');
+    console.log('📝 POST: Context length:', searchContext.length);
+
+    // Get previous messages from the conversation
+    const previousMessages = messages.slice(0, -1);
+    
+    // Construct the full message array
+    const fullMessages = [
+      {
+        role: 'system',
+        content: `You are a helpful assistant that answers questions about HKEX listing rules. 
+        Always reference the sources provided when answering.
+        Focus primarily on the full content provided from the first two sources.
+        Use additional references as supporting information if needed.
+        Keep responses clear, well-structured, and comprehensive.
+        When citing specific rules or requirements, quote the exact text from the source content.`
+      },
+      ...previousMessages,
+      {
+        role: 'user',
+        content: searchContext + userQuery
+      }
+    ];
+
+    // Log the full messages being sent to OpenAI
+    console.log('📤 POST: Full OpenAI messages:', JSON.stringify(fullMessages, null, 2));
+    console.log('📊 POST: Message stats:', {
+      totalMessages: fullMessages.length,
+      systemPromptLength: fullMessages[0].content.length,
+      finalPromptLength: fullMessages[fullMessages.length - 1].content.length,
+      historyMessages: fullMessages.length - 2 // excluding system and final prompt
+    });
+
     // Create completion with search results as context
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: `You are a helpful assistant that answers questions about HKEX listing rules. 
-          Always reference the sources provided when answering.
-          Focus primarily on the full content provided from the first two sources.
-          Use additional references as supporting information if needed.
-          Keep responses clear, well-structured, and comprehensive.
-          When citing specific rules or requirements, quote the exact text from the source content.`
-        },
-        ...messages.slice(0, -1),
-        {
-          role: 'user',
-          content: searchContext + userQuery
-        }
-      ],
+      messages: fullMessages,
       stream: true,
     });
 
@@ -227,7 +308,7 @@ Based on these sources (particularly the first two which are most relevant), `
               userEmail,
               question: userQuery,
               answer: completion,
-              sources: JSON.stringify(searchResults)
+              sources: JSON.stringify(filteredResults)
             }
           });
           console.log("✅ Chat history saved");
