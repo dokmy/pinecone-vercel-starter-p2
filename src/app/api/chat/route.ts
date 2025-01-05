@@ -7,7 +7,15 @@ import { checkMessageCredits, deductMessageCredit, getMessageCreditCount } from 
 import { streamText, StreamingTextResponse } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { createOpenAI } from '@ai-sdk/openai';
+import OpenAI from 'openai';
+import { OpenAIStream } from 'ai';
 
+// Initialize OpenAI client
+const openaiClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Initialize Fireworks client as fallback
 const fireworks = createOpenAI({
   apiKey: process.env.FIREWORKS_API_KEY ?? '',
   baseURL: 'https://api.fireworks.ai/inference/v1',
@@ -55,11 +63,16 @@ export async function POST(req: Request) {
 
     const { messages, filter, searchResultId, countryOption } = await req.json()
 
+    console.log("\n💬 CHAT STATUS:");
+    console.log("Number of messages in chat:", messages.length);
+    console.log("Latest message from:", messages[messages.length - 1].role);
+
     const lastMessage = messages[messages.length - 1]
 
     const context = await getContext(lastMessage.content, '', filter, countryOption)
 
-    const englishPrompt = "I am analyzing the case with neutral citation " + filter + " in response to the following query:\n\n" +
+    // First LLM response (comprehensive analysis)
+    const englishFirstPrompt = "I am analyzing the case with neutral citation " + filter + " in response to the following query:\n\n" +
       "USER QUERY:\n" + lastMessage.content + "\n\n" +
       "Here is the context information from this specific case:\n" +
       "START CASE CONTEXT BLOCK\n" +
@@ -94,7 +107,21 @@ export async function POST(req: Request) {
       "## Answer to Your Query\n" +
       "(Provide a detailed answer to the user's query, using this specific case as a reference and guide. Be practical and specific in your advice.)";
 
-    const chinesePrompt = "我正在分析案例編號 " + filter + "，以回應以下查詢：\n\n" +
+    // Subsequent messages (focused response)
+    const englishFollowUpPrompt = "I am continuing our discussion about the case with neutral citation " + filter + ". Here is your query:\n\n" +
+      "USER QUERY:\n" + lastMessage.content + "\n\n" +
+      "Here is the context information from this case:\n" +
+      "START CASE CONTEXT BLOCK\n" +
+      context +
+      "\nEND CASE CONTEXT BLOCK\n\n" +
+      "Please answer the query based on the context information provided above. Use relevant quotes from the case to support your answer.\n\n" +
+      "Format your response using markdown:\n" +
+      "- Use headings and lists as needed\n" +
+      "- Enclose case quotes in triple backticks\n" +
+      "- Use bold for emphasis where appropriate";
+
+    // First LLM response in Chinese
+    const chineseFirstPrompt = "我正在分析案例編號 " + filter + "，以回應以下查詢：\n\n" +
       "用戶查詢：\n" + lastMessage.content + "\n\n" +
       "以下是這個特定案例的背景資訊（以英文提供）：\n" +
       "開始案例背景資訊\n" +
@@ -129,52 +156,125 @@ export async function POST(req: Request) {
       "## 回應你的查詢\n" +
       "（根據這個特定案例為參考和指導，詳細回答用戶的查詢。提供實用和具體的建議。）";
 
+    // Subsequent messages in Chinese
+    const chineseFollowUpPrompt = "我們正在討論案例編號 " + filter + "。以下是你的查詢：\n\n" +
+      "用戶查詢：\n" + lastMessage.content + "\n\n" +
+      "以下是這個案例的背景資訊（以英文提供）：\n" +
+      "開始案例背景資訊\n" +
+      context +
+      "\n結束案例背景資訊\n\n" +
+      "請根據上述背景資訊回答查詢。引用案例中的相關內容（保持英文原文）來支持你的答案。\n\n" +
+      "請使用以下格式（除了引用外，其餘部分請使用繁體中文）：\n" +
+      "- 使用標題和列表\n" +
+      "- 使用三個反引號包圍案例引用\n" +
+      "- 適當使用粗體來強調";
+
+    // Select appropriate prompt based on message count and language
+    const selectedPrompt = messages.length === 1 
+      ? (outputLanguage === "English" ? englishFirstPrompt : chineseFirstPrompt)
+      : (outputLanguage === "English" ? englishFollowUpPrompt : chineseFollowUpPrompt);
+
+    console.log("\n🤖 PROMPT SENT TO LLM:");
+    console.log("=".repeat(80));
+    console.log(selectedPrompt);
+    console.log("=".repeat(80));
+
     let initialPrompt = [
       {
         role: 'user',
-        content: outputLanguage === "English" ? englishPrompt : chinesePrompt
+        content: selectedPrompt
       }
     ];
 
-    const model = fireworks('accounts/fireworks/models/llama-v3-70b-instruct');
+    try {
+      // Try OpenAI GPT-4o-mini first
+      const response = await openaiClient.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: "You are a legal assistant analyzing case law. Provide detailed analysis and practical insights."
+          },
+          {
+            role: 'user',
+            content: initialPrompt[0].content
+          },
+          ...messages
+        ],
+        stream: true,
+      });
 
-    // new AI SDK
-    const result = await streamText({
-      model: model,
-      system: initialPrompt[0].content,
-      messages: messages,
-      maxTokens: 1000
-    })
+      const stream = OpenAIStream(response, {
+        async onCompletion(completion) {
+          console.log("\n🤖 RAW LLM RESPONSE:");
+          console.log("=".repeat(80));
+          console.log(completion);
+          console.log("=".repeat(80));
 
-    const stream = result.toAIStream({
-      async onStart()  {
-        await prismadb.message.create({
-          data:{
-            role: Role.user,
-            content: lastMessage.content,
-            userId: user.id,
-            searchResultId: searchResultId,
-            userName: userName,
-            userEmail: userEmail
-          }
-        });
-      },
-      async onCompletion(completion: string) {
-        await prismadb.message.create({
-          data:{
-            role: Role.assistant,
-            content: completion,
-            userId: user.id,
-            searchResultId: searchResultId,
-            userName: userName,
-            userEmail: userEmail
-          }
-        });
-        await deductMessageCredit(userId)
-      }
-    })
+          await prismadb.message.create({
+            data:{
+              role: Role.assistant,
+              content: completion,
+              userId: user.id,
+              searchResultId: searchResultId,
+              userName: userName,
+              userEmail: userEmail
+            }
+          });
+          await deductMessageCredit(userId)
+        }
+      });
 
-    return new StreamingTextResponse(stream)
+      return new StreamingTextResponse(stream);
+
+    } catch (error) {
+      console.log("OpenAI error, falling back to Fireworks:", error);
+      
+      // Fallback to Fireworks
+      const model = fireworks('accounts/fireworks/models/llama-v3-70b-instruct');
+
+      const result = await streamText({
+        model: model,
+        system: "You are a legal assistant analyzing case law. Provide detailed analysis and practical insights.",
+        messages: messages,
+        maxTokens: 1000
+      });
+
+      const stream = result.toAIStream({
+        async onStart()  {
+          await prismadb.message.create({
+            data:{
+              role: Role.user,
+              content: lastMessage.content,
+              userId: user.id,
+              searchResultId: searchResultId,
+              userName: userName,
+              userEmail: userEmail
+            }
+          });
+        },
+        async onCompletion(completion: string) {
+          console.log("\n🤖 RAW LLM RESPONSE (Fireworks fallback):");
+          console.log("=".repeat(80));
+          console.log(completion);
+          console.log("=".repeat(80));
+
+          await prismadb.message.create({
+            data:{
+              role: Role.assistant,
+              content: completion,
+              userId: user.id,
+              searchResultId: searchResultId,
+              userName: userName,
+              userEmail: userEmail
+            }
+          });
+          await deductMessageCredit(userId)
+        }
+      });
+
+      return new StreamingTextResponse(stream);
+    }
 
   } catch (e) {
     throw (e)
