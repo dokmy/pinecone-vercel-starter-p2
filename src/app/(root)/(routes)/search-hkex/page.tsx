@@ -135,12 +135,10 @@ export default function SearchHKEX() {
       />
 
       <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-8">Search HKEX Announcements</h1>
-
         <div className="space-y-6">
           {isLoading ? (
             <div className="text-center py-8">Loading...</div>
-          ) : (
+          ) : results.length > 0 ? (
             <>
               <div className="space-y-4">
                 {results.map((result, index) => (
@@ -159,6 +157,95 @@ export default function SearchHKEX() {
                 />
               )}
             </>
+          ) : (
+            <div className="flex justify-center mt-4">
+              <div className="space-y-6 max-w-3xl">
+                <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Welcome to HKEX Announcements Search
+                  </h2>
+                  <p className="text-gray-300 mb-4">
+                    Start searching by typing in the search bar. You can use
+                    these powerful search operators:
+                  </p>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-medium text-blue-400 mb-2">
+                        Exact Phrase Search
+                      </h3>
+                      <code className="bg-gray-700 px-2 py-1 rounded">
+                        "annual report"
+                      </code>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Use quotes to find exact phrases
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-medium text-blue-400 mb-2">
+                        Boolean Operators
+                      </h3>
+                      <code className="bg-gray-700 px-2 py-1 rounded">
+                        dividend && bonus
+                      </code>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Use && (AND) and || (OR) to combine terms
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-medium text-blue-400 mb-2">
+                        Exclude Terms
+                      </h3>
+                      <code className="bg-gray-700 px-2 py-1 rounded">
+                        announcement -interim
+                      </code>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Use - to exclude terms from results
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-medium text-blue-400 mb-2">
+                        Field-Specific Search
+                      </h3>
+                      <code className="bg-gray-700 px-2 py-1 rounded">
+                        STOCK_CODE:700 || TITLE:"Annual Results"
+                      </code>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Search in specific fields: TITLE:, STOCK_CODE:,
+                        STOCK_NAME:, or chunk_text:
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-medium text-blue-400 mb-2">
+                        Optional Terms
+                      </h3>
+                      <code className="bg-gray-700 px-2 py-1 rounded">
+                        announcement~ dividend~
+                      </code>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Add ~ after terms to make them optional
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="font-medium text-blue-400 mb-2">
+                        Complex Queries
+                      </h3>
+                      <code className="bg-gray-700 px-2 py-1 rounded">
+                        (STOCK_CODE:700 || STOCK_CODE:388) && "annual report"
+                        -interim
+                      </code>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Combine operators for more precise searches
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </main>

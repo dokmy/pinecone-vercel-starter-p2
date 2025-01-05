@@ -119,7 +119,7 @@ export async function POST(req: Request) {
     }
 
     if (dateRange?.start && dateRange?.end) {
-      filterBy.push(`unix_timestamp:>=${dateRange.start} && unix_timestamp:<=${dateRange.end}`);
+      filterBy.push(`unix_timestamp:>=${Math.floor(dateRange.start / 1000)} && unix_timestamp:<=${Math.floor(dateRange.end / 1000)}`);
     }
 
     console.log("API Route - Filter conditions:", filterBy);

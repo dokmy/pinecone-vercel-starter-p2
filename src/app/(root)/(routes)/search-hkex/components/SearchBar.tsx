@@ -25,7 +25,7 @@ export default function SearchBar({
     []
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setQuery(value);
     debouncedSearch(value);
@@ -47,12 +47,18 @@ export default function SearchBar({
 
   return (
     <div className="w-full max-w-4xl space-y-4">
-      <input
-        type="text"
+      <textarea
         value={query}
         onChange={handleChange}
-        placeholder="Search HKEX announcements..."
-        className="w-full px-4 py-2 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Enter your search query..."
+        rows={1}
+        className="w-full px-3 py-2 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
+        style={{ minHeight: "2.5rem" }}
+        onInput={(e) => {
+          const target = e.target as HTMLTextAreaElement;
+          target.style.height = "auto";
+          target.style.height = target.scrollHeight + "px";
+        }}
       />
 
       <div className="flex items-center space-x-2">
