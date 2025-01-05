@@ -199,6 +199,29 @@ export default function Chat() {
                           style={{ marginBottom: "1rem", fontSize: "0.75rem" }}
                         />
                       ),
+                      ol: (props) => (
+                        <ol
+                          {...props}
+                          style={{
+                            listStyleType: "decimal",
+                            marginLeft: "1.5rem",
+                            marginBottom: "1rem",
+                          }}
+                        />
+                      ),
+                      ul: (props) => (
+                        <ul
+                          {...props}
+                          style={{
+                            listStyleType: "disc",
+                            marginLeft: "1.5rem",
+                            marginBottom: "1rem",
+                          }}
+                        />
+                      ),
+                      li: (props) => (
+                        <li {...props} style={{ marginBottom: "0.5rem" }} />
+                      ),
                     }}
                   >
                     {message.content}

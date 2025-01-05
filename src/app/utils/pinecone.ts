@@ -30,15 +30,16 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
 
   let indexName: string;
 
-  if (countryOption === "hk") {
-    indexName = process.env.PINECONE_INDEX_HK || '';
-    if (indexName === '') {
-      throw new Error('PINECONE_INDEX_HK environment variable not set')
-    }
-  } else {
+  if (countryOption === "uk") {
     indexName = process.env.PINECONE_INDEX_UK || '';
     if (indexName === '') {
       throw new Error('PINECONE_INDEX_UK environment variable not set')
+    }
+  } else {
+    // Default to HK index for undefined or "hk"
+    indexName = process.env.PINECONE_INDEX_HK || '';
+    if (indexName === '') {
+      throw new Error('PINECONE_INDEX_HK environment variable not set')
     }
   }
 
@@ -73,25 +74,27 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
     filter: filter
   };
 
+  console.log("\n🔍 PINECONE QUERY DETAILS:");
+  console.log("Index Name:", indexName);
+  console.log("Namespace:", namespace);
+  console.log("Filter:", JSON.stringify(filter, null, 2));
+  console.log("Top K:", topK);
   
-  // if (filter){
-  //   if ("neutral_cit" in filter){
-  //     queryObject.filter = filter
-  //   } else if (countryOption === "hk"){
-  //     console.log("Pinecone.ts -  HK!!!!", filter)
-  //     queryObject.filter = { case_prefix: { "$in": filter} }
-  //   } else if (countryOption === "uk"){
-  //     queryObject.filter = { db: { "$in": filter}}
-  //   }
-  // }
-
-  console.log("Pinecone.ts -  Here is the filter I will send to Pinecone.ts: ", queryObject.filter)
-
   try {
     // Query the index with the defined request
+    console.log("\n📡 Sending query to Pinecone...");
     const queryResult = await pineconeNamespace.query(queryObject)
+    console.log("\n✅ Pinecone response received");
+    console.log("Number of matches:", queryResult.matches?.length || 0);
 
     if (queryResult.matches) {
+      // console.log("\n📄 First match details (if any):");
+      if (queryResult.matches.length > 0) {
+        const firstMatch = queryResult.matches[0];
+        // console.log("Score:", firstMatch.score);
+        // console.log("Metadata:", JSON.stringify(firstMatch.metadata, null, 2));
+      }
+
       queryResult.matches.forEach(match => {
         if (match.metadata && typeof match.metadata._node_content === 'string') {
           const nodeContent = JSON.parse(match.metadata._node_content);
@@ -103,7 +106,8 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
     return queryResult.matches || []
   } catch (e) {
     // Log the error and throw it
-    console.log("Error querying embeddings: ", e)
+    console.log("\n❌ Error querying Pinecone:");
+    console.log(e)
     throw new Error(`Error querying embeddings: ${e}`)
   }
 }

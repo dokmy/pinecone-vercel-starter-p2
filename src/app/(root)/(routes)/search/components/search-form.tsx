@@ -131,7 +131,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ LoadingStateComponent }) => {
 
       setLoadingMessage("Processing results...");
       const data = await response.json();
-      window.location.replace(`/results2/${data.searchId}`);
+      window.location.replace(`/results/${data.searchId}`);
     } catch (error) {
       console.error("Search error:", error);
       setHasError(true);
