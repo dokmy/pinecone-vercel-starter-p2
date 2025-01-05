@@ -174,7 +174,7 @@ export default function SearchHKEX() {
                         Exact Phrase Search
                       </h3>
                       <code className="bg-gray-700 px-2 py-1 rounded">
-                        "annual report"
+                        &quot;annual report&quot;
                       </code>
                       <p className="text-sm text-gray-400 mt-1">
                         Use quotes to find exact phrases
@@ -210,7 +210,7 @@ export default function SearchHKEX() {
                         Field-Specific Search
                       </h3>
                       <code className="bg-gray-700 px-2 py-1 rounded">
-                        STOCK_CODE:700 || TITLE:"Annual Results"
+                        STOCK_CODE:700 || TITLE:&quot;Annual Results&quot;
                       </code>
                       <p className="text-sm text-gray-400 mt-1">
                         Search in specific fields: TITLE:, STOCK_CODE:,
@@ -235,8 +235,8 @@ export default function SearchHKEX() {
                         Complex Queries
                       </h3>
                       <code className="bg-gray-700 px-2 py-1 rounded">
-                        (STOCK_CODE:700 || STOCK_CODE:388) && "annual report"
-                        -interim
+                        (STOCK_CODE:700 || STOCK_CODE:388) && &quot;annual
+                        report&quot; -interim
                       </code>
                       <p className="text-sm text-gray-400 mt-1">
                         Combine operators for more precise searches
