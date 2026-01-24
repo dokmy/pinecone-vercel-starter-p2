@@ -2,6 +2,7 @@
 // Add authorized email addresses here
 const AUTHORIZED_EMAILS = [
   "harryhtkwong@gmail.com",
+  "adrien@stepone.agency",
 ];
 
 export function isAuthorizedForBetaFeatures(email: string | null | undefined): boolean {
