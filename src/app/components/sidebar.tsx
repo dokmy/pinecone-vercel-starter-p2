@@ -8,11 +8,20 @@ import {
   History,
   FileText,
   BookOpen,
+  FolderSearch,
+  Sparkles,
+  Scale,
+  MessageSquare,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { RESTRICTED_ROUTES } from "@/lib/accessControl";
 
-export const Sidebar = () => {
+interface SidebarProps {
+  isAuthorizedForBeta?: boolean;
+}
+
+export const Sidebar = ({ isAuthorizedForBeta = false }: SidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -30,11 +39,39 @@ export const Sidebar = () => {
     },
     // Litigation Tools
     {
-      icon: Search,
+      icon: FolderSearch,
       href: "/search",
       label: "Cases",
       pro: true,
       color: "text-violet-500",
+    },
+    {
+      icon: Search,
+      href: "/kw-search",
+      label: "Keyword",
+      pro: true,
+      color: "text-violet-400",
+    },
+    {
+      icon: Sparkles,
+      href: "/element-search",
+      label: "Elements",
+      pro: true,
+      color: "text-purple-500",
+    },
+    {
+      icon: Scale,
+      href: "/pi-precedents",
+      label: "PI Precedents",
+      pro: true,
+      color: "text-pink-500",
+    },
+    {
+      icon: MessageSquare,
+      href: "/legal-chat",
+      label: "Legal Chat",
+      pro: true,
+      color: "text-cyan-500",
     },
     {
       icon: History,
@@ -68,11 +105,20 @@ export const Sidebar = () => {
     },
   ];
 
+  // Filter routes based on authorization
+  const visibleRoutes = routes.filter((route) => {
+    // If route is restricted, only show if user is authorized
+    if (RESTRICTED_ROUTES.includes(route.href)) {
+      return isAuthorizedForBeta;
+    }
+    return true;
+  });
+
   return (
     <div className="space-y-4 flex flex-col h-full text-primary bg-transparent">
       <div className="p-3 flex-1 flex justify-center">
         <div className="space-y-2">
-          {routes.map((route) => (
+          {visibleRoutes.map((route) => (
             <div
               onClick={() => onNavigate(route.href, route.pro)}
               key={route.href}

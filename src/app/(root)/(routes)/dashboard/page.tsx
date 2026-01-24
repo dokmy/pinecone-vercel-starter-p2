@@ -21,6 +21,7 @@ import {
   ScrollText,
   Settings,
   Search,
+  Sparkles,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import DashboardOverlay from "@/components/disclaimer-overlay";
@@ -57,6 +58,30 @@ const features = [
     color: "text-violet-500",
     bgColor: "bg-violet-500/10",
     borderColor: "border-violet-200/10",
+  },
+  {
+    icon: Search,
+    href: "/kw-search",
+    label: "Keyword Search",
+    description:
+      "Advanced search through cases and legislation with filtering and AI-powered analysis.",
+    pro: true,
+    category: "Litigation",
+    color: "text-violet-400",
+    bgColor: "bg-violet-400/10",
+    borderColor: "border-violet-200/10",
+  },
+  {
+    icon: Sparkles,
+    href: "/element-search",
+    label: "Element Search",
+    description:
+      "Define 3 specific elements you're looking for. AI finds cases matching all criteria with intelligent scoring.",
+    pro: true,
+    category: "Litigation",
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    borderColor: "border-purple-200/10",
   },
   {
     icon: History,
