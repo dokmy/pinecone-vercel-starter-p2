@@ -1,16 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
 import { Dayjs } from "dayjs";
-import { CountryOption, SortOption } from "@/lib/types/search";
+import { SortOption } from "@/lib/types/search";
 
 export interface SearchQueryProps {
   searchQueryError: boolean;
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
-}
-
-export interface ChooseCountryProps {
-  countryOption: CountryOption;
-  setCountryOption: Dispatch<SetStateAction<CountryOption>>;
 }
 
 export interface SearchPeriodProps {

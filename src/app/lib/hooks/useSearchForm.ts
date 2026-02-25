@@ -22,7 +22,6 @@ const DEFAULT_STATE: SearchFormState = {
     fc: [],
     lt: [],
     others: [],
-    ukCourts: [],
   },
   sortOption: "Relevance",
 };

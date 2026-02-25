@@ -23,7 +23,7 @@ interface SearchRequest {
   selectedMinDate: string;
   selectedMaxDate: string;
   sortOption: "Relevance" | "Recency";
-  countryOption: "hk" | "uk";
+  countryOption: "hk";
 }
 
 async function validateUserAndCredits(userId: string | null) {
@@ -80,7 +80,7 @@ async function createSearchRecord(searchData: SearchRequest, userId: string, use
   });
 }
 
-function buildSearchFilters(minDateUnix: number, maxDateUnix: number, prefixFilters: string[], countryOption: string) {
+function buildSearchFilters(minDateUnix: number, maxDateUnix: number, prefixFilters: string[]) {
   let filters: any = {
     "$and": [
       { "unix_timestamp": { "$gte": minDateUnix } },
@@ -88,25 +88,20 @@ function buildSearchFilters(minDateUnix: number, maxDateUnix: number, prefixFilt
     ],
   };
 
-  if (countryOption === "hk" && prefixFilters.length > 0) {
+  if (prefixFilters.length > 0) {
     filters["$and"].push({ "case_prefix": { "$in": prefixFilters } });
-  } else if (prefixFilters.length > 0) {
-    filters["$and"].push({ "db": { "$in": prefixFilters } });
   }
 
   return filters;
 }
 
-function convertToUrl(caseRef: string, countryOption: string) {
-  if (countryOption === "hk") {
-    const parts = caseRef.split('_');
-    if (parts.length === 3) {
-      const [year, court, caseNumber] = parts;
-      return `https://www.hklii.hk/en/cases/${court.toLowerCase()}/${year}/${caseNumber}`;
-    }
-    return 'Invalid case reference format';
-  } 
-  return `https://www.bailii.org/uk/cases${caseRef}`;
+function convertToUrl(caseRef: string) {
+  const parts = caseRef.split('_');
+  if (parts.length === 3) {
+    const [year, court, caseNumber] = parts;
+    return `https://www.hklii.hk/en/cases/${court.toLowerCase()}/${year}/${caseNumber}`;
+  }
+  return 'Invalid case reference format';
 }
 
 async function evaluateRelevance(query: string, chunk: string): Promise<number> {
@@ -189,11 +184,10 @@ async function performVectorSearch(searchQuery: string, countryOption: string, f
   return { matches, rawMatches: dedupedMatches };
 }
 
-function processSearchResults(matches: any[], countryOption: string): SearchResult[] {
+function processSearchResults(matches: any[]): SearchResult[] {
   return matches.map((match) => {
-    const { raw_case_num, cases_title, date, db, neutral_cit, cases_act, case_path = '' } = match.metadata;
-    const caseRef = countryOption === "hk" ? raw_case_num : case_path;
-    const url = convertToUrl(caseRef, countryOption);
+    const { raw_case_num, cases_title, date, db, neutral_cit, cases_act } = match.metadata;
+    const url = convertToUrl(raw_case_num);
 
     return {
       raw_case_num,
@@ -266,8 +260,7 @@ export async function POST(req: Request) {
     const filters = buildSearchFilters(
       minDateUnix,
       maxDateUnix,
-      searchData.prefixFilters,
-      searchData.countryOption
+      searchData.prefixFilters
     );
 
     // Step 5: Perform vector search
@@ -278,7 +271,7 @@ export async function POST(req: Request) {
     );
 
     // Step 6: Process search results
-    const results = processSearchResults(matches, searchData.countryOption);
+    const results = processSearchResults(matches);
     const sortedResults = sortResults(results, searchData.sortOption);
 
     // Step 7: Save search results

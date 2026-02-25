@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "@prisma/client";
 import { SearchResult } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { GB } from "country-flag-icons/react/3x2";
 import { HK } from "country-flag-icons/react/3x2";
 import Link from "next/link";
 
@@ -28,13 +27,8 @@ export const columns: ColumnDef<SearchWithResults>[] = [
   {
     accessorKey: "countryOption",
     header: "Country",
-    cell: (row) => {
-      const countryOption = row.getValue();
-      if (countryOption === "hk") {
-        return <HK />;
-      } else {
-        return <GB />;
-      }
+    cell: () => {
+      return <HK />;
     },
   },
   {

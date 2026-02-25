@@ -8,7 +8,7 @@ export type CourtOption = {
 
 export type SearchFormState = {
   query: string;
-  countryOption: "hk" | "uk";
+  countryOption: "hk";
   dates: {
     min: Dayjs;
     max: Dayjs;

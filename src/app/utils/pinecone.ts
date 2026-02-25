@@ -28,19 +28,10 @@ const getMatchesFromEmbeddings = async (embeddings: number[], topK: number, name
   // Obtain a client for Pinecone
   const pinecone = new Pinecone();
 
-  let indexName: string;
-
-  if (countryOption === "uk") {
-    indexName = process.env.PINECONE_INDEX_UK || '';
-    if (indexName === '') {
-      throw new Error('PINECONE_INDEX_UK environment variable not set')
-    }
-  } else {
-    // Default to HK index for undefined or "hk"
-    indexName = process.env.PINECONE_INDEX_HK || '';
-    if (indexName === '') {
-      throw new Error('PINECONE_INDEX_HK environment variable not set')
-    }
+  // Only HK index is supported
+  const indexName = process.env.PINECONE_INDEX_HK || '';
+  if (indexName === '') {
+    throw new Error('PINECONE_INDEX_HK environment variable not set')
   }
 
   console.log("Pinecone.ts -  Here is my indexName: " + indexName)

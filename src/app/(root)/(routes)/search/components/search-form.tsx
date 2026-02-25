@@ -1,15 +1,13 @@
 "use client";
 
 import { Button } from "@mui/material";
-import { Checkbox } from "@/components/ui/checkbox";
 import SearchQuery from "@/components/search-query";
 import SearchPeriod from "@/components/search-period";
 import SortBy from "@/components/sort-by";
-import ChooseCountry from "@/components/choose-country";
 import CourtOptions from "@/components/court-options";
-import { HK_COURT_OPTIONS, UK_COURT_OPTIONS } from "@/lib/config/court-options";
+import { HK_COURT_OPTIONS } from "@/lib/config/court-options";
 import { useSearchForm } from "../../../../lib/hooks/useSearchForm";
-import { CourtOption, CountryOption, SortOption } from "@/lib/types/search";
+import { CourtOption, SortOption } from "@/lib/types/search";
 import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { Dayjs } from "dayjs";
 import { toast } from "sonner";
@@ -38,15 +36,6 @@ const SearchForm: React.FC<SearchFormProps> = ({ LoadingStateComponent }) => {
         typeof value === "function" ? value(state.query) : value
       ),
     [updateField, state.query]
-  );
-
-  const setCountryOption: Dispatch<SetStateAction<CountryOption>> = useCallback(
-    (value) =>
-      updateField(
-        "countryOption",
-        typeof value === "function" ? value(state.countryOption) : value
-      ),
-    [updateField, state.countryOption]
   );
 
   const setSortOption: Dispatch<SetStateAction<SortOption>> = useCallback(
@@ -109,7 +98,7 @@ const SearchForm: React.FC<SearchFormProps> = ({ LoadingStateComponent }) => {
         selectedMinDate: state.dates.min,
         selectedMaxDate: state.dates.max,
         sortOption: state.sortOption,
-        countryOption: state.countryOption,
+        countryOption: "hk",
       };
 
       setLoadingMessage("Searching through case law database...");
@@ -151,54 +140,19 @@ const SearchForm: React.FC<SearchFormProps> = ({ LoadingStateComponent }) => {
           setSearchQuery={setSearchQuery}
         />
 
-        <div className="mt-4 flex flex-col items-center w-full">
-          <ChooseCountry
-            countryOption={state.countryOption}
-            setCountryOption={setCountryOption}
-          />
-        </div>
-
         <div className="mt-4 flex flex-wrap justify-between">
-          {state.countryOption === "hk"
-            ? HK_COURT_OPTIONS.map((field: CourtOption) => (
-                <div className="py-2 w-full sm:w-[49%]" key={field.id}>
-                  <CourtOptions
-                    key={field.id}
-                    id={field.id}
-                    label={field.label}
-                    options={field.options || []}
-                    state={state.courts[field.id] || []}
-                    setState={setCourtState(field.id)}
-                  />
-                </div>
-              ))
-            : UK_COURT_OPTIONS.map((field: CourtOption) => (
-                <div
-                  className="py-2 flex flex-row space-x-2 w-full sm:w-[49%]"
-                  key={field.id}
-                >
-                  <Checkbox
-                    id={field.id}
-                    checked={state.courts.ukCourts.includes(field.id)}
-                    onCheckedChange={(checked) => {
-                      const newCourts = checked
-                        ? [...state.courts.ukCourts, field.id]
-                        : state.courts.ukCourts.filter(
-                            (court: string) => court !== field.id
-                          );
-                      updateCourt("ukCourts", newCourts);
-                    }}
-                  />
-                  <div className="grid gap-1.5 leading-none">
-                    <label
-                      htmlFor={field.id}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {field.label}
-                    </label>
-                  </div>
-                </div>
-              ))}
+          {HK_COURT_OPTIONS.map((field: CourtOption) => (
+            <div className="py-2 w-full sm:w-[49%]" key={field.id}>
+              <CourtOptions
+                key={field.id}
+                id={field.id}
+                label={field.label}
+                options={field.options || []}
+                state={state.courts[field.id] || []}
+                setState={setCourtState(field.id)}
+              />
+            </div>
+          ))}
         </div>
 
         <div className="mt-4 flex flex-col items-center py-2 w-full">

@@ -1,6 +1,6 @@
 import { Dayjs } from "dayjs";
 
-export type CountryOption = "hk" | "uk";
+export type CountryOption = "hk";
 export type SortOption = "Relevance" | "Recency";
 
 export type CourtOption = {
